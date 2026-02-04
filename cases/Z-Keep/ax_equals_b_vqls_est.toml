@@ -1,0 +1,50 @@
+# VQLS Algorithm Sweep
+# Run with: q8020-sweep input/ax_equals_b_vqls.toml
+
+[global]
+_output_dir = "~/q8020"
+_inject_outdir = "--outdir"
+_env = "./.venv"
+_script = "python src/ax_equals_b_vqls_est.py"
+"--maxiter" = 200
+"--reps" = 3
+
+# Simple 2x2 system
+[simple_2x2]
+"--matrix" = "[[1,0.5],[0.5,1]]"
+"--vector" = "[1,0]"
+
+# Diagonal dominant system
+[diagonal_2x2]
+"--matrix" = "[[2,0.5],[0.5,2]]"
+"--vector" = "[1,1]"
+
+# Different vector
+[simple_2x2_alt]
+"--matrix" = "[[2,1],[1,2]]"
+"--vector" = "[1,0]"
+
+# Reps study
+[reps_study]
+"--matrix" = "[[1,0.5],[0.5,1]]"
+"--vector" = "[1,0]"
+"--reps" = [2, 3, 4, 5]
+
+# Seed study (reproducibility check)
+[seed_study]
+"--matrix" = "[[1,0.5],[0.5,1]]"
+"--vector" = "[1,0]"
+"--seed" = [42, 123, 456, 789]
+
+# Maxiter study
+[maxiter_study]
+"--matrix" = "[[1,0.5],[0.5,1]]"
+"--vector" = "[1,0]"
+"--maxiter" = [100, 200, 400]
+
+# 4x4 system
+[system_4x4]
+"--matrix" = "[[2,0.5,0,0],[0.5,2,0.5,0],[0,0.5,2,0.5],[0,0,0.5,2]]"
+"--vector" = "[1,0,0,0]"
+"--maxiter" = 300
+"--reps" = 4

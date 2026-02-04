@@ -1,0 +1,40 @@
+# Ax=b Algorithm Comparison Study
+# Compares VQLS, HHL, HHL-Qrisp, and CKS on the same small 2x2 system
+# Run with: python -m q8020_cfd_metautil.q8020_sweeper input/ax_equals_b_comparison.toml
+
+[global]
+_output_dir = "~/q8020"
+# No global _script - each group specifies its own
+_group_postproc = "python src/postproc/linear_system_viz.py"
+_final_postproc = "python src/postproc/algorithm_comparison_viz.py"
+
+# VQLS - Variational Quantum Linear Solver
+[vqls]
+_script = "src/ax_equals_b_vqls_est.py"
+size = 2
+seed = 42
+reps = 3
+maxiter = 200
+
+# HHL - Harrow-Hassidim-Lloyd (quantum_linear_solvers library)
+[hhl]
+_script = "src/ax_equals_b_hhl.py"
+size = 2
+seed = 42
+shots = 1024
+
+# HHL-Qrisp - HHL using Qrisp framework
+[hhl_qrisp]
+_script = "src/ax_equals_b_hhl_qrisp.py"
+size = 2
+seed = 42
+shots = 1024
+precision = 3
+
+# CKS - Childs-Kothari-Somma algorithm
+[cks]
+_script = "src/ax_equals_b_cks_qrisp_est.py"
+size = 2
+seed = 42
+shots = 1024
+epsilon = 0.01

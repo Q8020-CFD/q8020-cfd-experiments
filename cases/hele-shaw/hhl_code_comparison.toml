@@ -1,0 +1,22 @@
+
+[global]
+_output_dir = "~/q8020"
+_env = "./q8020-cfd-axequalsb/.venv"
+_inject_outdir = "--outdir"
+_case_preproc = "echo 'preproc: starting at' $(date +%s.%N) && sleep 1s"
+_case_postproc = "sleep 1s && echo 'postproc: finished at' $(date +%s.%N)"
+"--matrix" = "[[4,1,0,0],[1,4,1,0],[0,1,4,1],[0,0,1,4]]"
+"--vector" = "[1,0,0,1]"
+"--backend" = "guadalupe"
+"--shots" = 1024
+
+
+[hhl_qls_qiskit]
+_script = "python ./q8020-cfd-axequalsb/src/ax_equals_b_hhl.py"
+
+
+[hhl_qrisp]
+_script = "python ./q8020-cfd-axequalsb/src/ax_equals_b_hhl_qrisp.py"
+"--precision" = 4
+"--trotter-steps" = 2
+

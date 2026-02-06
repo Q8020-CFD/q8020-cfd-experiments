@@ -5,9 +5,19 @@ _env = "./fvm_euler_1d_solver/.venv"
 _script = "python ./fvm_euler_1d_solver/nozzle_1d_solver.py"
 
 
+[_smoke_test]
+"-linsolver" = "HHL"
+"-nelem" = 2
+"-localdt" = true
+"-noshow" = true
+"-shots" = 1024
+"-iters" = 4
+"-initers" = 1
+
+
 [fvm_1d_nelem_2]
 "-linsolver" = "HHL"
-"-backend" = "fake fake_guadalupe"
+"-backend" = "fake fake_melbourne"
 "-nelem" = 2
 "-localdt" = true
 "-noshow" = true

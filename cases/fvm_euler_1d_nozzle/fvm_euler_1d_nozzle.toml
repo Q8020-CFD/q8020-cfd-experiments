@@ -3,6 +3,10 @@ _output_dir = "~/q8020"
 _inject_outdir = "-outdir"
 _env = "./fvm_euler_1d_solver/.venv"
 _script = "python ./fvm_euler_1d_solver/nozzle_1d_solver.py"
+_case_postproc = [
+    "python q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
+    "python q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/backend_meta_harvester.py"
+]
 
 
 [_smoke_test]
@@ -26,3 +30,12 @@ _script = "python ./fvm_euler_1d_solver/nozzle_1d_solver.py"
 "-initers" = 1
 
 
+[_fake_quick]
+"-linsolver" = "HHL"
+"-backend" = "fake fake_melbourne"
+"-nelem" = 2
+"-localdt" = true
+"-noshow" = true
+"-shots" = 1
+"-iters" = 1
+"-initers" = 1

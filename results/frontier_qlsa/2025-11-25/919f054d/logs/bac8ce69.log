@@ -1,0 +1,22 @@
+[2025-11-25 20:34:35.591] [STATUS] PENDING (native: PENDING)
+[2025-11-25 20:34:35.609] [STATUS] INFO (native: INFO)
+  Details: {'jobDefn': "[name: entryPoint:python ~/proj/src/frontier-qlsa/circuit_HHL.py entryPointType:SHELL args:['-case', 'hele-shaw', '-casefile', '/Users/agallojr/.lwfm/out/qt02-cfd/919f054d/hs_2x2_0/input_vars_hs_2x2_0.yaml', '--savedata', '--no-transpile'] siteName:None computeType:None]", 'jobContext': '[job: bac8ce69 native:bac8ce69 parent: None     wf: 919f054d site:frontier-qlsa compute:default]', 'computeType': 'None', 'runArgs': 'None'}
+[2025-11-25 20:34:35.626] [INFO] 20251126T01:34:35Z LocalSite: submitting job bac8ce69 site=frontier-qlsa wfId=919f054d jobId=bac8ce69
+[2025-11-25 20:34:35.758] [STATUS] RUNNING (native: RUNNING)
+Case: hele-shaw
+Solving analytically...
+Traceback (most recent call last):
+  File "/Users/agallojr/proj/src/frontier-qlsa/circuit_HHL.py", line 46, in <module>
+    matrix, vector, input_vars = matvec.get_matrix_vector(args)
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/agallojr/proj/src/frontier-qlsa/func_matrix_vector.py", line 25, in get_matrix_vector
+    matrix, vector, filename = Hele_Shaw(doc_id, args)
+                               ~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/agallojr/proj/src/frontier-qlsa/func_matrix_vector.py", line 81, in Hele_Shaw
+    y = np.linspace(0, D, ny)
+  File "/Users/agallojr/proj/src/frontier-qlsa/.venv/lib/python3.13/site-packages/numpy/_core/function_base.py", line 131, in linspace
+    dt = conv.result_type(ensure_inexact=True)
+numpy.exceptions.DTypePromotionError: The DType <class 'numpy.dtypes._PyFloatDType'> could not be promoted by <class 'numpy.dtypes.StrDType'>. This means that no common DType exists for the given inputs. For example they cannot be stored in a single array unless the dtype is `object`. The full list of DTypes is: (<class 'numpy.dtypes._PyLongDType'>, <class 'numpy.dtypes.StrDType'>, <class 'numpy.dtypes._PyFloatDType'>)
+[2025-11-25 20:34:36.792] [ERROR] 20251126T01:34:36Z *** [name: entryPoint:python ~/proj/src/frontier-qlsa/circuit_HHL.py entryPointType:SHELL args:['-case', 'hele-shaw', '-casefile', '/Users/agallojr/.lwfm/out/qt02-cfd/919f054d/hs_2x2_0/input_vars_hs_2x2_0.yaml', '--savedata', '--no-transpile'] siteName:None computeType:None] site=frontier-qlsa wfId=919f054d jobId=bac8ce69
+[2025-11-25 20:34:36.799] [ERROR] 20251126T01:34:36Z ERROR: Job failed: Command 'python ~/proj/src/frontier-qlsa/circuit_HHL.py -case hele-shaw -casefile /Users/agallojr/.lwfm/out/qt02-cfd/919f054d/hs_2x2_0/input_vars_hs_2x2_0.yaml --savedata --no-transpile >> /Users/agallojr/.lwfm/logs/919f054d/bac8ce69.log 2>&1' returned non-zero exit status 1. site=frontier-qlsa wfId=919f054d jobId=bac8ce69
+[2025-11-25 20:34:36.805] [STATUS] FAILED (native: FAILED)

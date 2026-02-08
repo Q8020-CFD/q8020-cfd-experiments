@@ -346,7 +346,6 @@ def _build_backend(
 def _build_artifacts(
     qc_metadata: list[dict[str, Any]],
     file_inventory: dict[str, list[dict[str, Any]]],
-    outdir: Path,
 ) -> dict[str, Any]:
     """Build artifacts fragment with transpile_passes[], circuit_timing, linear_system."""
     transpile_passes: list[dict[str, Any]] = []
@@ -567,7 +566,7 @@ def generate_metadata(outdir: Path, experiment_id: str | None = None) -> dict[st
 
     # Build fragment sections
     backend = _build_backend(run_params, qc_metadata, outdir)
-    artifacts = _build_artifacts(qc_metadata, file_inventory, outdir)
+    artifacts = _build_artifacts(qc_metadata, file_inventory)
     results = _build_results(final_results, residuals, outdir)
     analysis = _build_analysis(hhl_metrics, residuals, run_params)
 

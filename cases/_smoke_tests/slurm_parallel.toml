@@ -1,0 +1,36 @@
+# Smoke test: SLURM parallel sweep for Frontier
+# Run from the q8020-cfd root:
+#   q8020-sweep q8020-cfd-experiments/cases/_smoke_tests/slurm_parallel.toml
+#
+# This generates a .sbatch file but does not submit it.
+# To auto-submit, set _slurm_submit = true.
+
+[global]
+_output_dir = "~/q8020"
+_run_mode = "parallel"
+_slurm = true
+_slurm_project = "<PROJECT_ID>"
+_slurm_walltime = "02:00:00"
+_slurm_partition = "batch"
+_slurm_conda_archive = "$MEMBERWORK/<PROJECT_ID>/qiskit_conda_env.tar.gz"
+_inject_outdir = "-outdir"
+_script = "python ./fvm_euler_1d_solver/nozzle_1d_solver.py"
+_case_postproc = [
+    "python q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
+    "python q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/backend_meta_harvester.py"
+]
+"-nelem" = 2
+"-linsolver" = "HHL"
+"-localdt" = true
+"-noshow" = true
+"-iters" = 4
+"-initers" = 1
+
+[ideal]
+
+[shots_1024]
+"-shots" = 1024
+
+[fake_melbourne]
+"-backend" = "fake fake_melbourne"
+"-shots" = 1024

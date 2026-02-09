@@ -171,11 +171,15 @@ def _extract_residuals(outdir: Path) -> list[dict[str, float]]:
 
 
 def _read_stdout(outdir: Path) -> str:
-    """Read the first q8020_stdout_*.txt file, or return empty string."""
+    """Read the first q8020_stdout_*.txt file, or run.log, or return empty string."""
     stdout_files = list(outdir.glob("q8020_stdout_*.txt"))
-    if not stdout_files:
-        return ""
-    return stdout_files[0].read_text(encoding="utf-8", errors="replace")
+    if stdout_files:
+        return stdout_files[0].read_text(encoding="utf-8", errors="replace")
+    # Fallback: Frontier runs produce run.log instead of q8020_stdout
+    run_log = outdir / "run.log"
+    if run_log.exists():
+        return run_log.read_text(encoding="utf-8", errors="replace")
+    return ""
 
 
 def _parse_stdout_lu_solutions(outdir: Path) -> list[dict[str, list[float]]]:

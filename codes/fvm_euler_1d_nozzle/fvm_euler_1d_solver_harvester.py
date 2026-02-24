@@ -520,7 +520,11 @@ def _build_analysis(
     return analysis
 
 
-def generate_metadata(outdir: Path, experiment_id: str | None = None) -> dict[str, Any]:
+def generate_metadata(
+    outdir: Path,
+    experiment_id: str | None = None,
+    write_dir: Path | None = None,
+) -> dict[str, Any]:
     """
     Generate structured metadata from FVM Euler 1D solver output.
 
@@ -528,12 +532,15 @@ def generate_metadata(outdir: Path, experiment_id: str | None = None) -> dict[st
     The sweeper handles experiment/workflow IDs, user info, and params.
 
     Args:
-        outdir: Path to the solver output directory
+        outdir: Path to the solver output directory (read artifacts from here)
         experiment_id: Experiment ID from sweeper (used for fragment filenames)
+        write_dir: Directory to write fragment files to.  Defaults to *outdir*.
 
     Returns:
         Metadata dict conforming to make_meta schema
     """
+    if write_dir is None:
+        write_dir = outdir
     run_params = _extract_run_params(outdir)
     hhl_metrics = _extract_hhl_metrics(outdir)
     qc_metadata = _extract_qc_metadata(outdir)
@@ -575,12 +582,12 @@ def generate_metadata(outdir: Path, experiment_id: str | None = None) -> dict[st
     analysis = _build_analysis(hhl_metrics, residuals, run_params)
 
     # Write solver-specific fragments (sweeper handles experiment, params, IDs)
-    write_case(outdir, case, experiment_id=experiment_id)
-    write_code(outdir, code, experiment_id=experiment_id)
-    write_backend(outdir, backend, experiment_id=experiment_id)
-    write_artifacts(outdir, artifacts, experiment_id=experiment_id)
-    write_results(outdir, results, experiment_id=experiment_id)
-    write_analysis(outdir, analysis, experiment_id=experiment_id)
+    write_case(write_dir, case, experiment_id=experiment_id)
+    write_code(write_dir, code, experiment_id=experiment_id)
+    write_backend(write_dir, backend, experiment_id=experiment_id)
+    write_artifacts(write_dir, artifacts, experiment_id=experiment_id)
+    write_results(write_dir, results, experiment_id=experiment_id)
+    write_analysis(write_dir, analysis, experiment_id=experiment_id)
 
 
 def main() -> None:

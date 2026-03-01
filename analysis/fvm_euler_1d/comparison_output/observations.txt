@@ -1,0 +1,47 @@
+Comparison: 2025-11-11  vs  2026-02-26-LuGo
+nelem=5, 150K shots, statevector HHL, 10 trials each
+================================================================
+
+SUMMARY TABLE
+----------------------------------------------------------------
+Metric                                   2025-11-11   2026-02-26-LuGo
+----------------------------------------------------------------
+Final residual (mean±std)          7.4447e-02 ± 1.4276e-01   1.1884e-02 ± 2.1623e-02
+Final L2 abs error (mean±std)      5.9563e-03 ± 1.0853e-02   6.0609e-04 ± 6.3413e-04
+Final fidelity (mean±std)          0.9595 ± 0.0955   0.9709 ± 0.0717
+Final linsys resid (mean±std)      6.8760e-02 ± 1.3456e-01   6.8962e-03 ± 9.1911e-03
+Gate count (median)                         689,127            22,499
+Circuit depth (median)                      689,027            22,395
+
+OBSERVATIONS
+----------------------------------------------------------------
+
+1. Residual convergence: 2026-02-26-LuGo converges ~6x lower
+   by iteration 14. Both start at the same point (~12) but diverge
+   after iteration 2. 2026-02-26-LuGo has tighter std bands.
+
+2. Final quality: 2026-02-26-LuGo has a tighter distribution on L2 error
+   and fidelity — less trial-to-trial variance. 2025-11-11 has a
+   couple of outlier trials dragging the mean.
+
+3. Final solution: Both sets land on essentially the same solution
+   profiles (rho, u, p, Mach vs x). Error bars are nearly invisible,
+   so the physics converges to the same answer regardless of circuit
+   implementation.
+
+4. Circuit cost: 31x fewer gates in 2026-02-26-LuGo
+   (22,499 vs 689,127),
+   yet better convergence. This is a known difference in
+   Qiskit compiler / transpile optimization level between the runs.
+
+PLOT INVENTORY
+----------------------------------------------------------------
+  v1_residual_total.png       - Total residual vs iteration (log)
+  v1_residual_components.png   - Component residuals (rho, rhou, rhoE)
+  v2_l2_error_abs.png          - L2 absolute error vs iteration (log)
+  v3_linsys_residual.png       - Linear system residual vs iteration (log)
+  v4_final_quality.png         - Box plots: L2 error, normalized, fidelity
+  v5_final_solution.png        - Final solution profiles (rho, u, p, Mach)
+  v6_circuit_depth.png         - Transpiled circuit depth vs iteration
+  v7_gate_count.png            - Transpiled gate count vs iteration
+  summary.csv                  - Numeric summary table

@@ -1,0 +1,1410 @@
+
+------------------------------------------------------------
+Using ideal local simulator with 'statevector' method
+Backend: aer_simulator_statevector
+Shots: 50000
+------------------------------------------------------------
+
+A info: before HHL prepare:
+Spectral radius (A): 4.814e+01, lambda_min:3.3136108943482814
+condition number(A): 1.453e+01, norm2_cond:197.88017001682982
+det(A): 1.276e+38
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.0688269177323334
+condition number(A): 1.453e+01, norm2_cond:197.88017001683053
+det(A): 4.260e-13, nnz: 11 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 4.2602079269883554e-13
+Condition # of padded matrix: 197.88017001683053
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 1.8149371581174162e-25
+Condition # of Hermitian matrix: 197.88017001683153
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 50.61 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.43 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103094 (original: 5)
+Transpiled circuit gates: 103221 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.46 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 11.686610676302772
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9885288808184681
+[HHL info]: L2 error (absolute): 1.9812554494515273
+[HHL info]: L2 error (relative): 0.5216653578476333
+[HHL info]: L2 error (normalized): 0.10725766112359789
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+ 4.852e-03   4.852e-03   0.000e+00  1.000e+02
+ 2.224e-03   2.224e-03   0.000e+00  1.000e+02
+ 1.012e-02   1.012e-02   0.000e+00  1.000e+02
+ 6.205e-03   6.205e-03   0.000e+00  1.000e+02
+ 1.905e-03   1.905e-03   0.000e+00  1.000e+02
+ 1.125e-02   1.125e-02   0.000e+00  1.000e+02
+-2.568e-02  -2.568e-02  -0.000e+00  1.000e+02
+-1.823e-02  -1.823e-02  -0.000e+00  1.000e+02
+-6.491e-02  -6.491e-02  -0.000e+00  1.000e+02
+-1.285e-01  -1.285e-01  -0.000e+00  1.000e+02
+-9.623e-02  -9.623e-02  -0.000e+00  1.000e+02
+-3.195e-01  -3.195e-01  -1.669e-01  4.777e+01
+-3.070e-01  -3.070e-01  -1.803e-01  4.127e+01
+-2.851e-01  -2.851e-01  -1.363e-01  5.221e+01
+-8.110e-01  -8.110e-01  -3.605e-01  5.555e+01
+-4.538e-01  -4.538e-01  -2.155e-01  5.252e+01
+-4.624e-01  -4.624e-01  -2.260e-01  5.113e+01
+-1.229e+00  -1.229e+00  -5.700e-01  5.361e+01
+-5.244e-01  -5.244e-01  -2.044e-01  6.102e+01
+-5.482e-01  -5.482e-01  -2.360e-01  5.695e+01
+-1.427e+00  -1.427e+00  -6.779e-01  5.249e+01
+-5.516e-01  -5.516e-01  -3.047e-01  4.476e+01
+-5.798e-01  -5.798e-01  -1.927e-01  6.676e+01
+-1.501e+00  -1.501e+00  -7.338e-01  5.111e+01
+-5.614e-01  -5.614e-01  -3.196e-01  4.308e+01
+-5.902e-01  -5.902e-01  -2.155e-01  6.349e+01
+-1.527e+00  -1.527e+00  -7.916e-01  4.814e+01
+-5.649e-01  -5.649e-01  -3.122e-01  4.473e+01
+-5.937e-01  -5.937e-01  -2.260e-01  6.194e+01
+-1.535e+00  -1.535e+00  -7.708e-01  4.980e+01
+========================================================================================
+
+step: 0/15 res:15.852040985520478, res/res0:1.0  dq_norm: [0.64275939 0.50985589 1.6436711 ]
+
+A info: before HHL prepare:
+Spectral radius (A): 4.963e+01, lambda_min:4.332035274001238
+condition number(A): 1.146e+01, norm2_cond:161.74980253416607
+det(A): 3.121e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08728337016364983
+condition number(A): 1.146e+01, norm2_cond:161.74980253416726
+det(A): 4.182e-12, nnz: 18 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 4.182293863799607e-12
+Condition # of padded matrix: 161.74980253416726
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 1.749158196317609e-23
+Condition # of Hermitian matrix: 161.7498025341659
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.86 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.68 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103110 (original: 5)
+Transpiled circuit gates: 103237 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.22 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 5.6050891540216865
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9874443911393104
+[HHL info]: L2 error (absolute): 0.5858107332946975
+[HHL info]: L2 error (relative): 0.33498421458208805
+[HHL info]: L2 error (normalized): 0.11222864634919053
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+ 4.022e-03   4.022e-03   0.000e+00  1.000e+02
+ 1.876e-03   1.876e-03   0.000e+00  1.000e+02
+ 8.401e-03   8.401e-03   0.000e+00  1.000e+02
+ 4.896e-03   4.896e-03   0.000e+00  1.000e+02
+ 1.457e-03   1.457e-03   0.000e+00  1.000e+02
+ 7.805e-03   7.805e-03   0.000e+00  1.000e+02
+-2.307e-02  -2.307e-02  -0.000e+00  1.000e+02
+-1.617e-02  -1.617e-02  -0.000e+00  1.000e+02
+-5.821e-02  -5.821e-02  -5.190e-02  1.085e+01
+-1.186e-01  -1.186e-01  -1.468e-01  2.378e+01
+-9.455e-02  -9.455e-02  -7.339e-02  2.238e+01
+-1.232e-01  -1.232e-01  -1.160e-01  5.816e+00
+-1.082e-01  -1.082e-01  -7.339e-02  3.218e+01
+-1.524e-01  -1.524e-01  -5.190e-02  6.596e+01
+-4.078e-01  -4.078e-01  -3.157e-01  2.259e+01
+-2.115e-01  -2.115e-01  -1.557e-01  2.639e+01
+-2.322e-01  -2.322e-01  -1.271e-01  4.525e+01
+-5.908e-01  -5.908e-01  -3.670e-01  3.789e+01
+-2.841e-01  -2.841e-01  -1.641e-01  4.223e+01
+-3.112e-01  -3.112e-01  -2.010e-01  3.541e+01
+-6.541e-01  -6.541e-01  -4.494e-01  3.129e+01
+-2.024e-01  -2.024e-01  -1.373e-01  3.215e+01
+-3.870e-01  -3.870e-01  -2.936e-01  2.415e+01
+-6.546e-01  -6.546e-01  -4.404e-01  3.273e+01
+-1.930e-01  -1.930e-01  -1.160e-01  3.988e+01
+-3.748e-01  -3.748e-01  -2.936e-01  2.168e+01
+-6.144e-01  -6.144e-01  -4.086e-01  3.349e+01
+-2.022e-01  -2.022e-01  -1.038e-01  4.866e+01
+-3.675e-01  -3.675e-01  -2.434e-01  3.376e+01
+-6.410e-01  -6.410e-01  -4.184e-01  3.473e+01
+========================================================================================
+
+step: 1/15 res:12.133203940510656, res/res0:0.7654032658377132  dq_norm: [0.34813123 0.5442934  0.99419084]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.029e+01, lambda_min:4.2775160427010555
+condition number(A): 1.176e+01, norm2_cond:152.49931058817995
+det(A): 4.737e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08505551941961562
+condition number(A): 1.176e+01, norm2_cond:152.49931058818117
+det(A): 4.274e-12, nnz: 18 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 4.273628053985e-12
+Condition # of padded matrix: 152.49931058818117
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 1.8263896743808006e-23
+Condition # of Hermitian matrix: 152.49931058818038
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.11 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 10.48 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103110 (original: 5)
+Transpiled circuit gates: 103237 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.07 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 3.2960461345303957
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9764007279633835
+[HHL info]: L2 error (absolute): 0.32944572959748564
+[HHL info]: L2 error (relative): 0.5683102653503096
+[HHL info]: L2 error (normalized): 0.15407845717682225
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+ 3.966e-03   3.966e-03   0.000e+00  1.000e+02
+ 1.749e-03   1.749e-03   0.000e+00  1.000e+02
+ 8.190e-03   8.190e-03   0.000e+00  1.000e+02
+ 4.115e-03   4.115e-03   0.000e+00  1.000e+02
+ 1.166e-03   1.166e-03   0.000e+00  1.000e+02
+ 6.881e-03   6.881e-03   0.000e+00  1.000e+02
+-2.581e-02  -2.581e-02  -1.496e-02  4.204e+01
+-1.811e-02  -1.811e-02  -0.000e+00  1.000e+02
+-1.309e-02  -1.309e-02  -0.000e+00  1.000e+02
+ 2.676e-02   2.676e-02   2.116e-02  2.093e+01
+-2.169e-02  -2.169e-02  -0.000e+00  1.000e+02
+-1.545e-02  -1.545e-02  -0.000e+00  1.000e+02
+-2.944e-02  -2.944e-02  -1.496e-02  4.919e+01
+-9.601e-02  -9.601e-02  -3.664e-02  6.183e+01
+-7.770e-02  -7.770e-02  -3.345e-02  5.695e+01
+-4.798e-02  -4.798e-02  -2.992e-02  3.764e+01
+-1.096e-01  -1.096e-01  -5.394e-02  5.081e+01
+-2.061e-01  -2.061e-01  -9.810e-02  5.241e+01
+-1.167e-01  -1.167e-01  -5.394e-02  5.378e+01
+-1.109e-01  -1.109e-01  -3.664e-02  6.695e+01
+-1.958e-01  -1.958e-01  -8.723e-02  5.546e+01
+-6.570e-02  -6.570e-02  -2.992e-02  5.446e+01
+-9.425e-02  -9.425e-02  -2.992e-02  6.826e+01
+-2.176e-01  -2.176e-01  -1.047e-01  5.189e+01
+-7.990e-02  -7.990e-02  -4.731e-02  4.079e+01
+-8.049e-02  -8.049e-02  -4.962e-02  3.836e+01
+-2.124e-01  -2.124e-01  -8.056e-02  6.208e+01
+-1.018e-01  -1.018e-01  -4.231e-02  5.843e+01
+-1.241e-01  -1.241e-01  -5.182e-02  5.823e+01
+-2.276e-01  -2.276e-01  -9.100e-02  6.002e+01
+========================================================================================
+
+step: 2/15 res:5.597744263041829, res/res0:0.35312451362918523  dq_norm: [0.09809712 0.10787572 0.20996898]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.050e+01, lambda_min:4.330857300654629
+condition number(A): 1.166e+01, norm2_cond:152.98767600042285
+det(A): 6.946e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08576746094676109
+condition number(A): 1.166e+01, norm2_cond:152.98767600042345
+det(A): 5.549e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 5.548545693961995e-12
+Condition # of padded matrix: 152.98767600042345
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.0786359317984205e-23
+Condition # of Hermitian matrix: 152.98767600042325
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.56 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.84 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103110 (original: 5)
+Transpiled circuit gates: 103237 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.50 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 2.482009666302618
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9612822393684882
+[HHL info]: L2 error (absolute): 0.22312649705634768
+[HHL info]: L2 error (relative): 0.6909722545103751
+[HHL info]: L2 error (normalized): 0.19773710424794053
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+ 3.833e-03   3.833e-03   0.000e+00  1.000e+02
+ 1.707e-03   1.707e-03   0.000e+00  1.000e+02
+ 7.958e-03   7.958e-03   0.000e+00  1.000e+02
+ 3.962e-03   3.962e-03   0.000e+00  1.000e+02
+ 9.722e-04   9.722e-04   0.000e+00  1.000e+02
+ 6.246e-03   6.246e-03   0.000e+00  1.000e+02
+-9.871e-03  -9.871e-03  -0.000e+00  1.000e+02
+-1.752e-02  -1.752e-02  -6.370e-03  6.363e+01
+-1.124e-02  -1.124e-02  -0.000e+00  1.000e+02
+ 7.456e-03   7.456e-03   6.370e-03  1.456e+01
+-2.173e-02  -2.173e-02  -9.009e-03  5.854e+01
+-1.316e-02  -1.316e-02  -0.000e+00  1.000e+02
+-1.398e-02  -1.398e-02  -0.000e+00  1.000e+02
+-5.960e-02  -5.960e-02  -1.911e-02  6.794e+01
+-4.324e-02  -4.324e-02  -1.802e-02  5.833e+01
+-1.678e-02  -1.678e-02  -6.370e-03  6.203e+01
+-5.494e-02  -5.494e-02  -1.802e-02  6.720e+01
+-1.050e-01  -1.050e-01  -3.371e-02  6.788e+01
+-5.966e-02  -5.966e-02  -2.113e-02  6.459e+01
+-7.433e-02  -7.433e-02  -3.121e-02  5.802e+01
+-1.060e-01  -1.060e-01  -3.055e-02  7.118e+01
+-3.383e-02  -3.383e-02  -0.000e+00  1.000e+02
+-6.360e-02  -6.360e-02  -2.113e-02  6.678e+01
+-1.085e-01  -1.085e-01  -3.185e-02  7.064e+01
+-3.096e-02  -3.096e-02  -1.424e-02  5.399e+01
+-3.119e-02  -3.119e-02  -6.370e-03  7.958e+01
+-1.295e-01  -1.295e-01  -3.371e-02  7.398e+01
+-5.837e-02  -5.837e-02  -2.207e-02  6.219e+01
+-7.228e-02  -7.228e-02  -2.297e-02  6.822e+01
+-1.355e-01  -1.355e-01  -4.459e-02  6.709e+01
+========================================================================================
+
+step: 3/15 res:3.2862342434335186, res/res0:0.20730669611788288  dq_norm: [0.03489075 0.05291444 0.08082814]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.043e+01, lambda_min:4.199265370201028
+condition number(A): 1.201e+01, norm2_cond:153.54491994430882
+det(A): 6.870e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08327660936743134
+condition number(A): 1.201e+01, norm2_cond:153.54491994430867
+det(A): 5.721e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 5.720515307858668e-12
+Condition # of padded matrix: 153.54491994430867
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.2724295387446053e-23
+Condition # of Hermitian matrix: 153.54491994430856
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 52.18 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.76 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103110 (original: 5)
+Transpiled circuit gates: 103237 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.32 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 1.1976757243216263
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9685477434242745
+[HHL info]: L2 error (absolute): 0.09486812462773696
+[HHL info]: L2 error (relative): 0.42919890074914263
+[HHL info]: L2 error (normalized): 0.17805486544980487
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+ 3.804e-03   3.804e-03   0.000e+00  1.000e+02
+ 1.698e-03   1.698e-03   0.000e+00  1.000e+02
+ 7.894e-03   7.894e-03   0.000e+00  1.000e+02
+ 4.039e-03   4.039e-03   0.000e+00  1.000e+02
+ 1.021e-03   1.021e-03   0.000e+00  1.000e+02
+ 6.396e-03   6.396e-03   0.000e+00  1.000e+02
+-9.396e-03  -9.396e-03  -8.361e-03  1.102e+01
+-1.095e-02  -1.095e-02  -8.361e-03  2.366e+01
+-1.016e-02  -1.016e-02  -8.361e-03  1.772e+01
+ 1.960e-03   1.960e-03   0.000e+00  1.000e+02
+-1.259e-02  -1.259e-02  -0.000e+00  1.000e+02
+-1.127e-02  -1.127e-02  -0.000e+00  1.000e+02
+-1.355e-02  -1.355e-02  -8.361e-03  3.829e+01
+-4.072e-02  -4.072e-02  -3.015e-02  2.596e+01
+-2.430e-02  -2.430e-02  -1.448e-02  4.041e+01
+-1.039e-02  -1.039e-02  -8.361e-03  1.952e+01
+-3.704e-02  -3.704e-02  -2.212e-02  4.028e+01
+-7.130e-02  -7.130e-02  -4.503e-02  3.685e+01
+-3.832e-02  -3.832e-02  -2.508e-02  3.453e+01
+-4.277e-02  -4.277e-02  -1.672e-02  6.090e+01
+-7.555e-02  -7.555e-02  -3.645e-02  5.176e+01
+-3.339e-02  -3.339e-02  -1.448e-02  5.663e+01
+-4.209e-02  -4.209e-02  -2.365e-02  4.381e+01
+-7.578e-02  -7.578e-02  -4.580e-02  3.956e+01
+-1.617e-02  -1.617e-02  -8.361e-03  4.830e+01
+-2.503e-02  -2.503e-02  -8.361e-03  6.660e+01
+-9.368e-02  -9.368e-02  -6.368e-02  3.203e+01
+-3.572e-02  -3.572e-02  -1.672e-02  5.318e+01
+-4.929e-02  -4.929e-02  -2.508e-02  4.911e+01
+-9.011e-02  -9.011e-02  -5.483e-02  3.915e+01
+========================================================================================
+
+step: 4/15 res:2.480914169271343, res/res0:0.15650440038209917  dq_norm: [0.03739265 0.05482838 0.1131089 ]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.051e+01, lambda_min:4.254968749182896
+condition number(A): 1.187e+01, norm2_cond:152.70320206275838
+det(A): 7.504e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08424135334651105
+condition number(A): 1.187e+01, norm2_cond:152.70320206275855
+det(A): 5.945e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 5.945287683227798e-12
+Condition # of padded matrix: 152.70320206275855
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.5346445636340164e-23
+Condition # of Hermitian matrix: 152.70320206275863
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.82 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.73 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103104 (original: 5)
+Transpiled circuit gates: 103231 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.16 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.9213631156559177
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9705845643418478
+[HHL info]: L2 error (absolute): 0.04103146453415008
+[HHL info]: L2 error (relative): 0.43604189889421385
+[HHL info]: L2 error (normalized): 0.17214817418033843
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+ 3.778e-03   3.778e-03   3.978e-03  5.315e+00
+ 1.681e-03   1.681e-03   0.000e+00  1.000e+02
+ 7.837e-03   7.837e-03   0.000e+00  1.000e+02
+ 3.996e-03   3.996e-03   0.000e+00  1.000e+02
+ 1.005e-03   1.005e-03   0.000e+00  1.000e+02
+ 6.291e-03   6.291e-03   3.978e-03  3.676e+01
+-9.711e-04  -9.711e-04  -0.000e+00  1.000e+02
+-2.531e-03  -2.531e-03  -3.978e-03  5.717e+01
+-1.715e-03  -1.715e-03  -0.000e+00  1.000e+02
+ 2.180e-03   2.180e-03   0.000e+00  1.000e+02
+-1.251e-02  -1.251e-02  -8.896e-03  2.890e+01
+-1.065e-02  -1.065e-02  -5.626e-03  4.719e+01
+-5.103e-03  -5.103e-03  -0.000e+00  1.000e+02
+-1.081e-02  -1.081e-02  -7.957e-03  2.639e+01
+-9.460e-03  -9.460e-03  -8.896e-03  5.963e+00
+-1.776e-03  -1.776e-03  -0.000e+00  1.000e+02
+-1.465e-02  -1.465e-02  -7.957e-03  4.568e+01
+-2.562e-02  -2.562e-02  -1.541e-02  3.987e+01
+-1.279e-02  -1.279e-02  -8.896e-03  3.047e+01
+-2.615e-02  -2.615e-02  -1.258e-02  5.189e+01
+-3.898e-02  -3.898e-02  -2.215e-02  4.318e+01
+-1.881e-02  -1.881e-02  -1.125e-02  4.016e+01
+-1.844e-02  -1.844e-02  -8.896e-03  5.176e+01
+-2.965e-02  -2.965e-02  -1.866e-02  3.707e+01
+-7.701e-03  -7.701e-03  -3.978e-03  4.834e+01
+-1.660e-02  -1.660e-02  -8.896e-03  4.643e+01
+-2.959e-02  -2.959e-02  -1.541e-02  4.792e+01
+-1.890e-02  -1.890e-02  -1.193e-02  3.686e+01
+-2.418e-02  -2.418e-02  -1.378e-02  4.302e+01
+-3.515e-02  -3.515e-02  -2.179e-02  3.801e+01
+========================================================================================
+
+step: 5/15 res:1.1990327756589787, res/res0:0.07563901561661338  dq_norm: [0.01948965 0.0269822  0.04376139]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.190586525008542
+condition number(A): 1.204e+01, norm2_cond:153.61892182790353
+det(A): 7.663e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08302491289379331
+condition number(A): 1.204e+01, norm2_cond:153.6189218279032
+det(A): 6.200e-12, nnz: 16 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.199929377166098e-12
+Condition # of padded matrix: 153.6189218279032
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.8439124281847206e-23
+Condition # of Hermitian matrix: 153.61892182790413
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.58 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.82 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103110 (original: 5)
+Transpiled circuit gates: 103237 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.30 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.5328413332510701
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8698707172126937
+[HHL info]: L2 error (absolute): 0.022392877081161496
+[HHL info]: L2 error (relative): 0.5471332998702345
+[HHL info]: L2 error (normalized): 0.3669643037526307
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.033e-04  -2.033e-04  -0.000e+00  1.000e+02
+ 1.674e-03   1.674e-03   0.000e+00  1.000e+02
+ 7.826e-03   7.826e-03   2.903e-03  6.290e+01
+ 4.010e-03   4.010e-03   0.000e+00  1.000e+02
+ 1.016e-03   1.016e-03   0.000e+00  1.000e+02
+ 2.346e-03   2.346e-03   0.000e+00  1.000e+02
+-9.079e-04  -9.079e-04  -0.000e+00  1.000e+02
+ 1.467e-03   1.467e-03   0.000e+00  1.000e+02
+-1.572e-03  -1.572e-03  -0.000e+00  1.000e+02
+ 2.251e-03   2.251e-03   0.000e+00  1.000e+02
+-3.637e-03  -3.637e-03  -0.000e+00  1.000e+02
+-4.896e-03  -4.896e-03  -2.903e-03  4.070e+01
+-5.091e-03  -5.091e-03  -2.903e-03  4.297e+01
+-2.860e-03  -2.860e-03  -0.000e+00  1.000e+02
+-4.996e-04  -4.996e-04  -0.000e+00  1.000e+02
+-1.740e-03  -1.740e-03  -0.000e+00  1.000e+02
+-6.680e-03  -6.680e-03  -2.903e-03  5.654e+01
+-1.020e-02  -1.020e-02  -5.029e-03  5.072e+01
+-3.852e-03  -3.852e-03  -0.000e+00  1.000e+02
+-1.354e-02  -1.354e-02  -8.710e-03  3.566e+01
+-1.682e-02  -1.682e-02  -5.807e-03  6.547e+01
+-7.476e-03  -7.476e-03  -6.492e-03  1.315e+01
+-9.555e-03  -9.555e-03  -4.106e-03  5.703e+01
+-1.098e-02  -1.098e-02  -8.212e-03  2.520e+01
+-3.677e-03  -3.677e-03  -0.000e+00  1.000e+02
+-7.676e-03  -7.676e-03  -5.029e-03  3.449e+01
+-1.411e-02  -1.411e-02  -5.029e-03  6.435e+01
+-6.877e-03  -6.877e-03  -5.029e-03  2.687e+01
+-1.040e-02  -1.040e-02  -6.492e-03  3.755e+01
+-1.338e-02  -1.338e-02  -6.492e-03  5.148e+01
+========================================================================================
+
+step: 6/15 res:0.9197578348449708, res/res0:0.058021414131157814  dq_norm: [0.00871019 0.01298438 0.01451698]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.1995860888808325
+condition number(A): 1.202e+01, norm2_cond:153.84301887415967
+det(A): 7.730e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.0832062708171048
+condition number(A): 1.202e+01, norm2_cond:153.84301887416152
+det(A): 6.262e-12, nnz: 16 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.2615475530995285e-12
+Condition # of padded matrix: 153.84301887416152
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.9206977759727256e-23
+Condition # of Hermitian matrix: 153.84301887416106
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.81 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.44 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103110 (original: 5)
+Transpiled circuit gates: 103237 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.16 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.3825701083479184
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8179736884661438
+[HHL info]: L2 error (absolute): 0.01693432035647797
+[HHL info]: L2 error (relative): 0.7556870722520639
+[HHL info]: L2 error (normalized): 0.4372208174669275
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.034e-04  -2.034e-04  -0.000e+00  1.000e+02
+ 1.674e-03   1.674e-03   9.377e-04  4.398e+01
+ 4.924e-03   4.924e-03   1.326e-03  7.307e+01
+ 4.005e-03   4.005e-03   9.377e-04  7.658e+01
+ 1.014e-03   1.014e-03   0.000e+00  1.000e+02
+ 2.334e-03   2.334e-03   9.377e-04  5.983e+01
+-9.236e-04  -9.236e-04  -0.000e+00  1.000e+02
+ 1.457e-03   1.457e-03   0.000e+00  1.000e+02
+-1.610e-03  -1.610e-03  -0.000e+00  1.000e+02
+ 2.242e-03   2.242e-03   9.377e-04  5.818e+01
+-3.636e-03  -3.636e-03  -1.624e-03  5.534e+01
+-2.021e-03  -2.021e-03  -0.000e+00  1.000e+02
+-2.168e-03  -2.168e-03  -0.000e+00  1.000e+02
+-2.849e-03  -2.849e-03  -9.377e-04  6.709e+01
+-4.940e-04  -4.940e-04  -0.000e+00  1.000e+02
+-1.720e-03  -1.720e-03  -0.000e+00  1.000e+02
+-3.785e-03  -3.785e-03  -1.624e-03  5.709e+01
+-5.168e-03  -5.168e-03  -0.000e+00  1.000e+02
+-3.845e-03  -3.845e-03  -9.377e-04  7.562e+01
+-4.825e-03  -4.825e-03  -1.326e-03  7.251e+01
+-1.100e-02  -1.100e-02  -2.813e-03  7.443e+01
+-9.799e-04  -9.799e-04  -0.000e+00  1.000e+02
+-5.451e-03  -5.451e-03  -2.297e-03  5.786e+01
+-2.798e-03  -2.798e-03  -9.377e-04  6.649e+01
+-3.685e-03  -3.685e-03  -1.326e-03  6.401e+01
+-2.643e-03  -2.643e-03  -0.000e+00  1.000e+02
+-9.108e-03  -9.108e-03  -1.624e-03  8.217e+01
+-1.851e-03  -1.851e-03  -0.000e+00  1.000e+02
+-3.904e-03  -3.904e-03  -1.624e-03  5.840e+01
+-6.916e-03  -6.916e-03  -2.097e-03  6.968e+01
+========================================================================================
+
+step: 7/15 res:0.5328234996470737, res/res0:0.03361229636825716  dq_norm: [0.00209668 0.00408719 0.00429692]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.046e+01, lambda_min:4.184292599977456
+condition number(A): 1.206e+01, norm2_cond:154.06579362653184
+det(A): 7.545e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08291475983394542
+condition number(A): 1.206e+01, norm2_cond:154.06579362653179
+det(A): 6.137e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.1367569151875955e-12
+Condition # of padded matrix: 154.06579362653179
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.76597854361033e-23
+Condition # of Hermitian matrix: 154.06579362653218
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.91 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.56 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103102 (original: 5)
+Transpiled circuit gates: 103229 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.44 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.23691833099971346
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8407386299771803
+[HHL info]: L2 error (absolute): 0.008613213541972895
+[HHL info]: L2 error (relative): 0.5092333337265066
+[HHL info]: L2 error (normalized): 0.4076321720953113
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.019e-04  -2.019e-04  -0.000e+00  1.000e+02
+ 7.368e-04   7.368e-04   0.000e+00  1.000e+02
+ 3.601e-03   3.601e-03   0.000e+00  1.000e+02
+ 3.072e-03   3.072e-03   1.323e-03  5.695e+01
+ 1.014e-03   1.014e-03   1.323e-03  3.039e+01
+ 1.404e-03   1.404e-03   1.323e-03  5.827e+00
+-9.134e-04  -9.134e-04  -1.323e-03  4.479e+01
+ 1.461e-03   1.461e-03   0.000e+00  1.000e+02
+-1.589e-03  -1.589e-03  -1.323e-03  1.677e+01
+ 1.317e-03   1.317e-03   0.000e+00  1.000e+02
+-2.015e-03  -2.015e-03  -1.323e-03  3.436e+01
+-1.997e-03  -1.997e-03  -1.323e-03  3.376e+01
+-2.165e-03  -2.165e-03  -1.870e-03  1.360e+01
+-1.910e-03  -1.910e-03  -0.000e+00  1.000e+02
+-4.851e-04  -4.851e-04  -0.000e+00  1.000e+02
+-1.719e-03  -1.719e-03  -0.000e+00  1.000e+02
+-2.159e-03  -2.159e-03  -0.000e+00  1.000e+02
+-5.165e-03  -5.165e-03  -4.182e-03  1.902e+01
+-2.905e-03  -2.905e-03  -1.870e-03  3.561e+01
+-3.499e-03  -3.499e-03  -1.870e-03  4.655e+01
+-8.179e-03  -8.179e-03  -5.290e-03  3.532e+01
+-9.737e-04  -9.737e-04  -0.000e+00  1.000e+02
+-3.153e-03  -3.153e-03  -1.870e-03  4.068e+01
+-1.843e-03  -1.843e-03  -0.000e+00  1.000e+02
+-2.352e-03  -2.352e-03  -1.870e-03  2.049e+01
+-2.645e-03  -2.645e-03  -1.323e-03  5.000e+01
+-7.467e-03  -7.467e-03  -4.182e-03  4.399e+01
+-1.850e-03  -1.850e-03  -0.000e+00  1.000e+02
+-2.280e-03  -2.280e-03  -1.323e-03  4.199e+01
+-4.816e-03  -4.816e-03  -2.645e-03  4.508e+01
+========================================================================================
+
+step: 8/15 res:0.38259985271478386, res/res0:0.02413568404625354  dq_norm: [0.0037407  0.0037407  0.00867245]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.185558966079768
+condition number(A): 1.206e+01, norm2_cond:154.00776420406982
+det(A): 7.571e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08293168499549962
+condition number(A): 1.206e+01, norm2_cond:154.00776420407016
+det(A): 6.140e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.13970818324158e-12
+Condition # of padded matrix: 154.00776420407016
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.769601657536389e-23
+Condition # of Hermitian matrix: 154.00776420407107
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.24 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 10.43 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103105 (original: 5)
+Transpiled circuit gates: 103232 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.46 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.2018232720178502
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8048637927005439
+[HHL info]: L2 error (absolute): 0.007577570782203763
+[HHL info]: L2 error (relative): 0.880247965079023
+[HHL info]: L2 error (normalized): 0.4535592272792202
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.014e-04  -2.014e-04  -0.000e+00  1.000e+02
+ 7.363e-04   7.363e-04   0.000e+00  1.000e+02
+ 3.601e-03   3.601e-03   4.009e-04  8.887e+01
+ 1.753e-03   1.753e-03   2.835e-04  8.383e+01
+-3.075e-04  -3.075e-04  -0.000e+00  1.000e+02
+ 8.850e-05   8.850e-05   0.000e+00  1.000e+02
+ 4.119e-04   4.119e-04   0.000e+00  1.000e+02
+ 1.460e-03   1.460e-03   0.000e+00  1.000e+02
+-2.623e-04  -2.623e-04  -0.000e+00  1.000e+02
+ 1.321e-03   1.321e-03   3.472e-04  7.372e+01
+-6.905e-04  -6.905e-04  -0.000e+00  1.000e+02
+-6.664e-04  -6.664e-04  -0.000e+00  1.000e+02
+-2.898e-04  -2.898e-04  -0.000e+00  1.000e+02
+-1.909e-03  -1.909e-03  -2.004e-04  8.950e+01
+-4.866e-04  -4.866e-04  -0.000e+00  1.000e+02
+-1.718e-03  -1.718e-03  -2.004e-04  8.833e+01
+-2.159e-03  -2.159e-03  -4.009e-04  8.144e+01
+-9.765e-04  -9.765e-04  -0.000e+00  1.000e+02
+-1.033e-03  -1.033e-03  -0.000e+00  1.000e+02
+-1.628e-03  -1.628e-03  -2.004e-04  8.769e+01
+-2.882e-03  -2.882e-03  -4.009e-04  8.609e+01
+-9.706e-04  -9.706e-04  -0.000e+00  1.000e+02
+-1.280e-03  -1.280e-03  -0.000e+00  1.000e+02
+-1.833e-03  -1.833e-03  -2.004e-04  8.907e+01
+-4.817e-04  -4.817e-04  -0.000e+00  1.000e+02
+-1.325e-03  -1.325e-03  -2.004e-04  8.488e+01
+-3.281e-03  -3.281e-03  -5.303e-04  8.384e+01
+-1.855e-03  -1.855e-03  -4.009e-04  7.839e+01
+-9.579e-04  -9.579e-04  -0.000e+00  1.000e+02
+-2.176e-03  -2.176e-03  -2.004e-04  9.079e+01
+========================================================================================
+
+step: 9/15 res:0.23684189058153585, res/res0:0.014940782123757516  dq_norm: [0.00063381 0.00053029 0.00082639]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.183200247760182
+condition number(A): 1.206e+01, norm2_cond:154.00594164157084
+det(A): 7.579e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.0828865284043348
+condition number(A): 1.206e+01, norm2_cond:154.00594164157127
+det(A): 6.150e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.149650101135351e-12
+Condition # of padded matrix: 154.00594164157127
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.78181963663943e-23
+Condition # of Hermitian matrix: 154.00594164157084
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.58 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 10.57 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103106 (original: 5)
+Transpiled circuit gates: 103233 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.44 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.18942183160184348
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.7658665733186427
+[HHL info]: L2 error (absolute): 0.007147648398851793
+[HHL info]: L2 error (relative): 0.9434267538122999
+[HHL info]: L2 error (normalized): 0.49972386172873623
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.012e-04  -2.012e-04  -0.000e+00  1.000e+02
+ 7.363e-04   7.363e-04   0.000e+00  1.000e+02
+ 3.201e-03   3.201e-03   2.681e-04  9.162e+01
+ 1.470e-03   1.470e-03   0.000e+00  1.000e+02
+-3.076e-04  -3.076e-04  -0.000e+00  1.000e+02
+ 8.844e-05   8.844e-05   0.000e+00  1.000e+02
+ 4.127e-04   4.127e-04   0.000e+00  1.000e+02
+ 1.460e-03   1.460e-03   8.478e-05  9.419e+01
+-2.612e-04  -2.612e-04  -0.000e+00  1.000e+02
+ 9.750e-04   9.750e-04   0.000e+00  1.000e+02
+-6.907e-04  -6.907e-04  -0.000e+00  1.000e+02
+-6.653e-04  -6.653e-04  -8.478e-05  8.726e+01
+-2.895e-04  -2.895e-04  -0.000e+00  1.000e+02
+-1.709e-03  -1.709e-03  -8.478e-05  9.504e+01
+-4.859e-04  -4.859e-04  -0.000e+00  1.000e+02
+-1.517e-03  -1.517e-03  -8.478e-05  9.441e+01
+-1.758e-03  -1.758e-03  -1.468e-04  9.165e+01
+-9.768e-04  -9.768e-04  -0.000e+00  1.000e+02
+-1.033e-03  -1.033e-03  -1.199e-04  8.839e+01
+-1.428e-03  -1.428e-03  -8.478e-05  9.406e+01
+-2.482e-03  -2.482e-03  -8.478e-05  9.658e+01
+-9.713e-04  -9.713e-04  -0.000e+00  1.000e+02
+-1.281e-03  -1.281e-03  -0.000e+00  1.000e+02
+-1.634e-03  -1.634e-03  -8.478e-05  9.481e+01
+-4.809e-04  -4.809e-04  -0.000e+00  1.000e+02
+-1.124e-03  -1.124e-03  -8.478e-05  9.246e+01
+-2.748e-03  -2.748e-03  -2.398e-04  9.127e+01
+-1.451e-03  -1.451e-03  -8.478e-05  9.416e+01
+-9.577e-04  -9.577e-04  -0.000e+00  1.000e+02
+-1.972e-03  -1.972e-03  -1.199e-04  9.392e+01
+========================================================================================
+
+step: 10/15 res:0.20181911592032217, res/res0:0.012731427839775784  dq_norm: [0.00016956 0.0002243  0.00040659]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.184487205010239
+condition number(A): 1.206e+01, norm2_cond:154.0004018647541
+det(A): 7.588e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08291004194693483
+condition number(A): 1.206e+01, norm2_cond:154.00040186475326
+det(A): 6.153e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.152845423590303e-12
+Condition # of padded matrix: 154.00040186475326
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.785750680659775e-23
+Condition # of Hermitian matrix: 154.00040186475462
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.55 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.81 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103106 (original: 5)
+Transpiled circuit gates: 103233 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.35 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.17772418412619786
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8345914860460604
+[HHL info]: L2 error (absolute): 0.0068315234572364015
+[HHL info]: L2 error (relative): 0.9558158653934115
+[HHL info]: L2 error (normalized): 0.41578891786984457
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.011e-04  -2.011e-04  -0.000e+00  1.000e+02
+ 7.363e-04   7.363e-04   4.816e-05  9.346e+01
+ 2.933e-03   2.933e-03   1.445e-04  9.507e+01
+ 1.470e-03   1.470e-03   6.811e-05  9.537e+01
+-3.076e-04  -3.076e-04  -0.000e+00  1.000e+02
+ 8.846e-05   8.846e-05   0.000e+00  1.000e+02
+ 4.127e-04   4.127e-04   4.816e-05  8.833e+01
+ 1.375e-03   1.375e-03   6.811e-05  9.505e+01
+-2.610e-04  -2.610e-04  -0.000e+00  1.000e+02
+ 9.751e-04   9.751e-04   6.811e-05  9.302e+01
+-6.908e-04  -6.908e-04  -0.000e+00  1.000e+02
+-5.805e-04  -5.805e-04  -4.816e-05  9.170e+01
+-2.895e-04  -2.895e-04  -0.000e+00  1.000e+02
+-1.624e-03  -1.624e-03  -9.632e-05  9.407e+01
+-4.857e-04  -4.857e-04  -0.000e+00  1.000e+02
+-1.432e-03  -1.432e-03  -1.180e-04  9.176e+01
+-1.611e-03  -1.611e-03  -9.632e-05  9.402e+01
+-9.770e-04  -9.770e-04  -0.000e+00  1.000e+02
+-9.131e-04  -9.131e-04  -4.816e-05  9.473e+01
+-1.343e-03  -1.343e-03  -0.000e+00  1.000e+02
+-2.397e-03  -2.397e-03  -1.180e-04  9.508e+01
+-9.715e-04  -9.715e-04  -0.000e+00  1.000e+02
+-1.281e-03  -1.281e-03  -6.811e-05  9.468e+01
+-1.550e-03  -1.550e-03  -6.811e-05  9.561e+01
+-4.807e-04  -4.807e-04  -0.000e+00  1.000e+02
+-1.039e-03  -1.039e-03  -6.811e-05  9.345e+01
+-2.508e-03  -2.508e-03  -8.341e-05  9.667e+01
+-1.366e-03  -1.366e-03  -4.816e-05  9.647e+01
+-9.576e-04  -9.576e-04  -0.000e+00  1.000e+02
+-1.852e-03  -1.852e-03  -8.341e-05  9.550e+01
+========================================================================================
+
+step: 11/15 res:0.1894215966374227, res/res0:0.011949350674177765  dq_norm: [0.00017364 0.00018652 0.00023593]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.184046585222573
+condition number(A): 1.206e+01, norm2_cond:154.00232678878797
+det(A): 7.589e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08290026166631308
+condition number(A): 1.206e+01, norm2_cond:154.00232678878925
+det(A): 6.151e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.151403633670827e-12
+Condition # of padded matrix: 154.00232678878925
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.7839766664338655e-23
+Condition # of Hermitian matrix: 154.0023267887888
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 52.30 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.49 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103106 (original: 5)
+Transpiled circuit gates: 103233 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.48 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.1743868447975843
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8268650918284833
+[HHL info]: L2 error (absolute): 0.00673836580380787
+[HHL info]: L2 error (relative): 0.986378736837716
+[HHL info]: L2 error (normalized): 0.42586094942641356
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-2.011e-04  -2.011e-04  -1.662e-05  9.173e+01
+ 6.882e-04   6.882e-04   1.662e-05  9.758e+01
+ 2.789e-03   2.789e-03   3.717e-05  9.867e+01
+ 1.402e-03   1.402e-03   2.351e-05  9.832e+01
+-3.077e-04  -3.077e-04  -0.000e+00  1.000e+02
+ 8.845e-05   8.845e-05   0.000e+00  1.000e+02
+ 3.647e-04   3.647e-04   0.000e+00  1.000e+02
+ 1.307e-03   1.307e-03   2.879e-05  9.780e+01
+-2.608e-04  -2.608e-04  -0.000e+00  1.000e+02
+ 9.071e-04   9.071e-04   0.000e+00  1.000e+02
+-6.909e-04  -6.909e-04  -1.662e-05  9.759e+01
+-5.322e-04  -5.322e-04  -0.000e+00  1.000e+02
+-2.894e-04  -2.894e-04  -0.000e+00  1.000e+02
+-1.528e-03  -1.528e-03  -3.325e-05  9.782e+01
+-4.855e-04  -4.855e-04  -0.000e+00  1.000e+02
+-1.314e-03  -1.314e-03  -1.662e-05  9.874e+01
+-1.515e-03  -1.515e-03  -2.351e-05  9.845e+01
+-9.771e-04  -9.771e-04  -1.662e-05  9.830e+01
+-8.649e-04  -8.649e-04  -0.000e+00  1.000e+02
+-1.343e-03  -1.343e-03  -1.662e-05  9.876e+01
+-2.279e-03  -2.279e-03  -1.662e-05  9.927e+01
+-9.716e-04  -9.716e-04  -0.000e+00  1.000e+02
+-1.213e-03  -1.213e-03  -2.351e-05  9.806e+01
+-1.482e-03  -1.482e-03  -2.879e-05  9.806e+01
+-4.806e-04  -4.806e-04  -0.000e+00  1.000e+02
+-9.708e-04  -9.708e-04  -2.351e-05  9.758e+01
+-2.424e-03  -2.424e-03  -3.717e-05  9.847e+01
+-1.318e-03  -1.318e-03  -1.662e-05  9.874e+01
+-9.576e-04  -9.576e-04  -1.662e-05  9.826e+01
+-1.768e-03  -1.768e-03  -1.662e-05  9.906e+01
+========================================================================================
+
+step: 12/15 res:0.17772424982016857, res/res0:0.011211442739928877  dq_norm: [3.71734950e-05 6.85445380e-05 6.64979695e-05]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.184185553488456
+condition number(A): 1.206e+01, norm2_cond:154.0036643105077
+det(A): 7.588e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08290311408633803
+condition number(A): 1.206e+01, norm2_cond:154.00366431050713
+det(A): 6.151e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.150583172293637e-12
+Condition # of padded matrix: 154.00366431050713
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.7829673359301665e-23
+Condition # of Hermitian matrix: 154.0036643105073
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 51.24 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.68 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103106 (original: 5)
+Transpiled circuit gates: 103233 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 20.29 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.1651130872813215
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.6411831229119904
+[HHL info]: L2 error (absolute): 0.006349039721032118
+[HHL info]: L2 error (relative): 0.9422173574214873
+[HHL info]: L2 error (normalized): 0.6312858142033307
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-1.844e-04  -1.844e-04  -0.000e+00  1.000e+02
+ 6.716e-04   6.716e-04   0.000e+00  1.000e+02
+ 2.752e-03   2.752e-03   2.246e-04  9.184e+01
+ 1.379e-03   1.379e-03   1.200e-04  9.130e+01
+-3.077e-04  -3.077e-04  -0.000e+00  1.000e+02
+ 8.857e-05   8.857e-05   0.000e+00  1.000e+02
+ 3.648e-04   3.648e-04   0.000e+00  1.000e+02
+ 1.279e-03   1.279e-03   8.488e-05  9.336e+01
+-2.606e-04  -2.606e-04  -0.000e+00  1.000e+02
+ 9.072e-04   9.072e-04   0.000e+00  1.000e+02
+-6.743e-04  -6.743e-04  -0.000e+00  1.000e+02
+-5.320e-04  -5.320e-04  -0.000e+00  1.000e+02
+-2.894e-04  -2.894e-04  -0.000e+00  1.000e+02
+-1.494e-03  -1.494e-03  -1.698e-04  8.864e+01
+-4.853e-04  -4.853e-04  -8.488e-05  8.251e+01
+-1.298e-03  -1.298e-03  -0.000e+00  1.000e+02
+-1.491e-03  -1.491e-03  -0.000e+00  1.000e+02
+-9.605e-04  -9.605e-04  -0.000e+00  1.000e+02
+-8.649e-04  -8.649e-04  -1.200e-04  8.612e+01
+-1.326e-03  -1.326e-03  -0.000e+00  1.000e+02
+-2.262e-03  -2.262e-03  -1.698e-04  9.250e+01
+-9.716e-04  -9.716e-04  -0.000e+00  1.000e+02
+-1.189e-03  -1.189e-03  -1.200e-04  8.991e+01
+-1.453e-03  -1.453e-03  -8.488e-05  9.416e+01
+-4.806e-04  -4.806e-04  -0.000e+00  1.000e+02
+-9.473e-04  -9.473e-04  -1.200e-04  8.733e+01
+-2.387e-03  -2.387e-03  -2.246e-04  9.059e+01
+-1.301e-03  -1.301e-03  -0.000e+00  1.000e+02
+-9.410e-04  -9.410e-04  -8.488e-05  9.098e+01
+-1.751e-03  -1.751e-03  -0.000e+00  1.000e+02
+========================================================================================
+
+step: 13/15 res:0.17438683823508283, res/res0:0.011000907605170257  dq_norm: [0.00016975 0.0002684  0.00037957]
+
+A info: before HHL prepare:
+Spectral radius (A): 5.047e+01, lambda_min:4.185010454333326
+condition number(A): 1.206e+01, norm2_cond:154.0053276561844
+det(A): 7.579e+39
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.08291984102557311
+condition number(A): 1.206e+01, norm2_cond:154.0053276561839
+det(A): 6.145e-12, nnz: 13 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 30 = 32
+Value to be padded = 2
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (30, 30)x(30, 30) -> (32, 32)x(32, 32)
+Padded shape of B: (30,) -> (32,)
+Determinant of padded matrix: 6.144653462815393e-12
+Condition # of padded matrix: 154.0053276561839
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 32x32 -> 64x64
+Shape of           B: 32 -> 64
+Determinant of Hermitian matrix: 3.7756766178089204e-23
+Condition # of Hermitian matrix: 154.00532765618394
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 52.22 sec
+
+Generated circuit: num_qubits=16, gates=21, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 9.28 sec
+Transpiled circuit, num_qubits: 16, (original: 16)
+Transpiled circuit depth: 103106 (original: 5)
+Transpiled circuit gates: 103233 (original: 21)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 19.15 sec
+total_qubits: 16, nq:6
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 0.1277833512894416
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.8683994469058426
+[HHL info]: L2 error (absolute): 0.004662681907430949
+[HHL info]: L2 error (relative): 0.7343268543482663
+[HHL info]: L2 error (normalized): 0.36910832064547316
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-1.843e-04  -1.843e-04  -0.000e+00  1.000e+02
+ 6.716e-04   6.716e-04   3.885e-04  4.216e+01
+ 2.527e-03   2.527e-03   7.268e-04  7.125e+01
+ 1.259e-03   1.259e-03   3.885e-04  6.915e+01
+-3.077e-04  -3.077e-04  -0.000e+00  1.000e+02
+ 8.872e-05   8.872e-05   0.000e+00  1.000e+02
+ 3.650e-04   3.650e-04   0.000e+00  1.000e+02
+ 1.194e-03   1.194e-03   2.747e-04  7.699e+01
+-2.601e-04  -2.601e-04  -0.000e+00  1.000e+02
+ 9.074e-04   9.074e-04   2.747e-04  6.973e+01
+-6.743e-04  -6.743e-04  -0.000e+00  1.000e+02
+-5.316e-04  -5.316e-04  -0.000e+00  1.000e+02
+-2.893e-04  -2.893e-04  -0.000e+00  1.000e+02
+-1.324e-03  -1.324e-03  -4.758e-04  6.408e+01
+-4.000e-04  -4.000e-04  -2.747e-04  3.132e+01
+-1.298e-03  -1.298e-03  -2.747e-04  7.883e+01
+-1.491e-03  -1.491e-03  -6.142e-04  5.882e+01
+-9.605e-04  -9.605e-04  -0.000e+00  1.000e+02
+-7.449e-04  -7.449e-04  -2.747e-04  6.312e+01
+-1.326e-03  -1.326e-03  -4.758e-04  6.413e+01
+-2.093e-03  -2.093e-03  -6.142e-04  7.065e+01
+-9.717e-04  -9.717e-04  -2.747e-04  7.173e+01
+-1.069e-03  -1.069e-03  -2.747e-04  7.431e+01
+-1.368e-03  -1.368e-03  -4.758e-04  6.523e+01
+-4.808e-04  -4.808e-04  -0.000e+00  1.000e+02
+-8.273e-04  -8.273e-04  -0.000e+00  1.000e+02
+-2.163e-03  -2.163e-03  -6.142e-04  7.160e+01
+-1.301e-03  -1.301e-03  -3.885e-04  7.014e+01
+-8.562e-04  -8.562e-04  -0.000e+00  1.000e+02
+-1.752e-03  -1.752e-03  -3.885e-04  7.782e+01
+========================================================================================
+
+step: 14/15 res:0.16511334575754918, res/res0:0.010415904545563974  dq_norm: [0.00077696 0.00106389 0.00131739]
+Completed: 14 steps in 1274.36s
+Saved metadata to /lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/output_parallel_shots/nelem10/statevector/shots_50000/trial_5/metadata_nelem10_HHL_statevector_nshots50000.pkl
+
+Solution summary:
+  x/L: [0.0500, 0.9500]
+  Mach: [1.4949, 2.1625]
+  p/p_in: [1.0047, 0.3631]
+  rho/rho_in: [1.0040, 0.4850]
+Saved combined plot to /lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/output_parallel_shots/nelem10/statevector/shots_50000/trial_5/solution_plot_nelem10_HHL_statevector_nshots50000.png

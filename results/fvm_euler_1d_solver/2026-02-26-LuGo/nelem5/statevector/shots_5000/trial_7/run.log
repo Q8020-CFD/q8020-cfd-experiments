@@ -1,0 +1,135 @@
+
+------------------------------------------------------------
+Using ideal local simulator with 'statevector' method
+Backend: aer_simulator_statevector
+Shots: 5000
+------------------------------------------------------------
+
+A info: before HHL prepare:
+Spectral radius (A): 2.241e+01, lambda_min:2.3074021727489433
+condition number(A): 9.710e+00, norm2_cond:95.97789014324577
+det(A): 9.333e+14
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.1029832130561069
+condition number(A): 9.710e+00, norm2_cond:95.9778901432457
+det(A): 5.184e-06, nnz: 10 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 15 = 16
+Value to be padded = 1
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (15, 15)x(15, 15) -> (16, 16)x(16, 16)
+Padded shape of B: (15,) -> (16,)
+Determinant of padded matrix: 5.183984510966138e-06
+Condition # of padded matrix: 95.9778901432457
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 16x16 -> 32x32
+Shape of           B: 16 -> 32
+Determinant of Hermitian matrix: 2.6873695409936828e-11
+Condition # of Hermitian matrix: 95.9778901432459
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 0 min 7.76 sec
+
+Generated circuit: num_qubits=14, gates=19, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+This is using the AerSimulator('aer_simulator_statevector') transpiler.
+Time elapsed for transpiling the circuit:  0 min 2.00 sec
+Transpiled circuit, num_qubits: 14, (original: 14)
+Transpiled circuit depth: 22395 (original: 5)
+Transpiled circuit gates: 22499 (original: 19)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  0 min 2.02 sec
+total_qubits: 14, nq:5
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/space_solvers.py:113: RuntimeWarning: invalid value encountered in sqrt
+  c = np.sqrt(self.gamma*p/rho)
+/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/space_solvers.py:171: RuntimeWarning: invalid value encountered in sqrt
+  Lmax = np.abs(u) + np.sqrt(self.gamma*p/rho)
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 3.6001583923011795
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9854600367992429
+[HHL info]: L2 error (absolute): 0.3551584717337096
+[HHL info]: L2 error (relative): 0.1313172305149588
+[HHL info]: L2 error (normalized): 0.12080233275303182
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-1.705e-02  -1.705e-02  -0.000e+00  1.000e+02
+-7.527e-03  -7.527e-03  -0.000e+00  1.000e+02
+-3.946e-02  -3.946e-02  -0.000e+00  1.000e+02
+-1.283e-01  -1.283e-01  -0.000e+00  1.000e+02
+-6.877e-02  -6.877e-02  -0.000e+00  1.000e+02
+-2.800e-01  -2.800e-01  -3.241e-01  1.575e+01
+-4.114e-01  -4.114e-01  -3.241e-01  2.123e+01
+-4.227e-01  -4.227e-01  -3.241e-01  2.333e+01
+-1.109e+00  -1.109e+00  -1.025e+00  7.618e+00
+-5.252e-01  -5.252e-01  -4.584e-01  1.273e+01
+-5.558e-01  -5.558e-01  -5.614e-01  1.009e+00
+-1.428e+00  -1.428e+00  -1.485e+00  4.029e+00
+-5.637e-01  -5.637e-01  -6.482e-01  1.499e+01
+-5.958e-01  -5.958e-01  -5.614e-01  5.773e+00
+-1.529e+00  -1.529e+00  -1.775e+00  1.608e+01
+========================================================================================
+
+step: 0/15 res:12.375368413827264, res/res0:1.0  dq_norm: [0.85750508 0.85750508 2.55201678]
+/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/space_solvers.py:265: RuntimeWarning: invalid value encountered in sqrt
+  c_avg = np.sqrt(self.gamma*(pl + pr)/(rhol + rhor))
+Traceback (most recent call last):
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/time_solvers.py", line 464, in lu_solve
+    dQ = scipy.linalg.solve(A, b, assume_a='banded', 
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/scipy/linalg/_basic.py", line 213, in solve
+    return solve0(
+           ^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/scipy/_lib/_util.py", line 1181, in wrapper
+    return f(*arrays, *other_args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/scipy/linalg/_basic.py", line 477, in solve0
+    anorm = _matrix_norm_banded(n_below, n_above, norm, ab, check_finite)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/scipy/linalg/_basic.py", line 599, in _matrix_norm_banded
+    ab = np.asarray_chkfinite(ab) if check_finite else ab
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 673, in asarray_chkfinite
+    raise ValueError(
+ValueError: array must not contain infs or NaNs
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/nozzle_1d_solver.py", line 196, in <module>
+    time_solver.solve_one_step(q)
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/time_solvers.py", line 201, in solve_one_step
+    self.linsys_solver.solve_one_step(q, self.resid, self.tsrc, step=self.iter)
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/time_solvers.py", line 321, in solve_one_step
+    dQ = self.linear_sys_solve(A, b, qold, step=step)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/time_solvers.py", line 412, in linear_sys_solve
+    dQ, metrics = self.hhl_solve(A, b, step=step)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/time_solvers.py", line 492, in hhl_solve
+    dq_lu = self.lu_solve(A, b)
+            ^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/stf006/scratch/4klornl/fvm_euler_1d_solver/time_solvers.py", line 467, in lu_solve
+    dQ = np.linalg.solve(A, b)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/numpy/linalg/_linalg.py", line 452, in solve
+    r = gufunc(a, b, signature=signature)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/ccs/home/4klornl/.conda/envs/GE_LuGo/lib/python3.12/site-packages/numpy/linalg/_linalg.py", line 145, in _raise_linalgerror_singular
+    raise LinAlgError("Singular matrix")
+numpy.linalg.LinAlgError: Singular matrix

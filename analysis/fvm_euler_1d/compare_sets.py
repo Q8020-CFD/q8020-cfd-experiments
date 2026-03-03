@@ -250,6 +250,28 @@ def build_circuit_df(trials: list[dict], label: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def build_timing_df(trials: list[dict], label: str) -> pd.DataFrame:
+    """Build per-iteration timing DataFrame from artifacts fragments."""
+    rows = []
+    for i, t in enumerate(trials):
+        art = t.get("artifacts")
+        if art is None:
+            continue
+        for rec in art.get("transpile_passes", []):
+            rows.append({
+                "trial": i,
+                "iter": int(rec["step"]),
+                "generate_s": rec.get("wall_time_generate_s", 0),
+                "transpile_s": rec.get("wall_time_transpile_s", 0),
+                "execute_s": rec.get("wall_time_execute_s", 0),
+                "set": label,
+            })
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df["gen_transpile_s"] = df["generate_s"] + df["transpile_s"]
+    return df
+
+
 # ---------------------------------------------------------------------------
 # 3. Plot helpers
 # ---------------------------------------------------------------------------
@@ -545,6 +567,39 @@ def plot_gate_count(df_circ: pd.DataFrame, labels: dict, outdir: Path, subtitle:
     )
 
 
+def plot_runtime(df_timing: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
+    """View 8: Runtime per iteration — generate+transpile vs execute."""
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5), sharey=False)
+
+    panels = [
+        ("gen_transpile_s", "Generate + Transpile (s)", "Generate + Transpile Time vs Iteration"),
+        ("execute_s", "Execute (s)", "Execute Time vs Iteration"),
+    ]
+
+    for ax, (col, ylabel, title) in zip(axes, panels):
+        for key, (label, color) in labels.items():
+            sub = df_timing[df_timing["set"] == label]
+            if sub.empty:
+                continue
+            stats = sub.groupby("iter")[col].agg(["mean", "std"]).reset_index()
+            ax.plot(stats["iter"], stats["mean"], "-o", color=color,
+                    label=label, markersize=4)
+            lo_band = (stats["mean"] - stats["std"]).clip(lower=stats["mean"] * 0.1)
+            ax.fill_between(
+                stats["iter"], lo_band, stats["mean"] + stats["std"],
+                color=color, alpha=ALPHA_BAND,
+            )
+        _style_ax(ax, "Iteration", ylabel, logy=True)
+        ax.set_title(title)
+
+    if subtitle:
+        fig.suptitle(subtitle, fontsize=9, color="0.4", y=1.01)
+    fig.tight_layout()
+    fig.savefig(outdir / "v8_runtime.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved {outdir / 'v8_runtime.png'}")
+
+
 # ---------------------------------------------------------------------------
 # 5. Summary table
 # ---------------------------------------------------------------------------
@@ -724,6 +779,11 @@ def main():
         build_circuit_df(trials_b, args.label_b),
     ], ignore_index=True)
 
+    df_timing = pd.concat([
+        build_timing_df(trials_a, args.label_a),
+        build_timing_df(trials_b, args.label_b),
+    ], ignore_index=True)
+
     # Build subtitle from trial metadata
     sub_a = _extract_subtitle(trials_a)
     sub_b = _extract_subtitle(trials_b)
@@ -743,6 +803,7 @@ def main():
     plot_final_solution(df_sol, labels, outdir, subtitle=subtitle)
     plot_circuit_depth(df_circ, labels, outdir, subtitle=subtitle)
     plot_gate_count(df_circ, labels, outdir, subtitle=subtitle)
+    plot_runtime(df_timing, labels, outdir, subtitle=subtitle)
 
     # Summary
     print("\nSummary:")

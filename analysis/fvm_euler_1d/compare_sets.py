@@ -29,6 +29,33 @@ COLORS = {"a": "#1f77b4", "b": "#d62728"}  # blue vs red
 ALPHA_BAND = 0.2
 
 
+def _extract_subtitle(trials: list[dict]) -> str:
+    """Extract nelem, shots, backend from the first trial's fragments."""
+    parts = []
+    for t in trials:
+        case = t.get("case")
+        if case:
+            nelem = case.get("nelem")
+            if nelem is not None:
+                parts.append(f"nelem={nelem}")
+            break
+    for t in trials:
+        ana = t.get("analysis")
+        if ana:
+            shots = ana.get("shots")
+            if shots is not None:
+                parts.append(f"shots={shots:,}")
+            break
+    for t in trials:
+        be = t.get("backend")
+        if be:
+            method = be.get("method", "")
+            if method:
+                parts.append(method)
+            break
+    return ", ".join(parts)
+
+
 def _style_ax(ax: plt.Axes, xlabel: str, ylabel: str, logy: bool = False):
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -36,6 +63,58 @@ def _style_ax(ax: plt.Axes, xlabel: str, ylabel: str, logy: bool = False):
         ax.set_yscale("log")
     ax.legend()
     ax.grid(True, alpha=0.3)
+
+
+def _add_subtitle(ax: plt.Axes, subtitle: str):
+    """Add a grey subtitle line below the title."""
+    if subtitle:
+        ax.text(
+            0.5, 1.0, subtitle,
+            transform=ax.transAxes, ha="center", va="top",
+            fontsize=9, color="0.4",
+        )
+
+
+def _annotate_uq(ax: plt.Axes, stats: pd.DataFrame, color: str, label: str):
+    """Annotate UQ band with CV% at iteration 0 and last high-variance iteration.
+
+    *stats* must have columns: iter, mean, std.
+    """
+    if stats.empty or stats["mean"].abs().max() == 0:
+        return
+    stats = stats.copy()
+    stats["cv"] = (stats["std"] / stats["mean"].abs() * 100).fillna(0)
+
+    # First iteration with meaningful CV (>= 1%)
+    for idx in range(len(stats)):
+        if stats["cv"].iloc[idx] >= 1.0:
+            row_first = stats.iloc[idx]
+            ax.annotate(
+                f"\u00b1{row_first['cv']:.0f}%",
+                xy=(row_first["iter"], row_first["mean"] + row_first["std"]),
+                xytext=(5, 6), textcoords="offset points",
+                fontsize=7, color=color, fontweight="bold",
+            )
+            break
+
+    # Find last iteration where CV is notably higher than the settled tail.
+    # "Settled" = median CV of the last 3 iterations.
+    if len(stats) >= 5:
+        tail_cv = stats["cv"].iloc[-3:].median()
+        # Walk backwards to find last iter with cv > 1.5x tail
+        settle_idx = len(stats) - 1
+        for i in range(len(stats) - 1, 0, -1):
+            if stats["cv"].iloc[i] > max(tail_cv * 1.5, tail_cv + 2):
+                settle_idx = i
+                break
+        if settle_idx > 0 and settle_idx < len(stats) - 1:
+            row_s = stats.iloc[settle_idx]
+            ax.annotate(
+                f"\u00b1{row_s['cv']:.0f}%",
+                xy=(row_s["iter"], row_s["mean"] + row_s["std"]),
+                xytext=(5, 6), textcoords="offset points",
+                fontsize=7, color=color, fontweight="bold",
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +262,8 @@ def _plot_convergence(
     labels: dict[str, str],
     outpath: Path,
     logy: bool = True,
+    subtitle: str = "",
+    show_uq_pct: bool = True,
 ):
     """Line plot with mean +/- std band for two sets."""
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -193,16 +274,124 @@ def _plot_convergence(
         stats = sub.groupby("iter")[ycol].agg(["mean", "std"]).reset_index()
         ax.plot(stats["iter"], stats["mean"], "-o", color=color,
                 label=label, markersize=4)
+        lo_band = stats["mean"] - stats["std"]
+        hi_band = stats["mean"] + stats["std"]
+        if logy:
+            # Clamp lower band to 10% of the mean so it doesn't plunge
+            # to the bottom of the log scale when std > mean.
+            lo_band = lo_band.clip(lower=stats["mean"] * 0.1)
         ax.fill_between(
-            stats["iter"],
-            stats["mean"] - stats["std"],
-            stats["mean"] + stats["std"],
+            stats["iter"], lo_band, hi_band,
             color=color, alpha=ALPHA_BAND,
         )
+        if show_uq_pct:
+            _annotate_uq(ax, stats, color, label)
     _style_ax(ax, "Iteration", ylabel, logy=logy)
-    ax.set_title(title)
+    ax.set_title(title, pad=16)
+    _add_subtitle(ax, subtitle)
     fig.tight_layout()
     fig.savefig(outpath, dpi=150)
+    plt.close(fig)
+    print(f"  Saved {outpath}")
+
+
+def _plot_broken_axis(
+    df: pd.DataFrame,
+    ycol: str,
+    ylabel: str,
+    title: str,
+    labels: dict[str, str],
+    outpath: Path,
+    pad: float = 0.15,
+    subtitle: str = "",
+):
+    """Broken y-axis plot: two subplots stacked vertically with a gap.
+
+    Automatically determines the break from the data — the top panel shows
+    the higher-valued series and the bottom panel shows the lower one,
+    each with comfortable margins.
+    """
+    # Compute per-set stats to figure out ranges
+    band_info: list[tuple[str, str, float, float]] = []  # (label, color, lo, hi)
+    stats_cache: dict[str, pd.DataFrame] = {}
+    for key, (label, color) in labels.items():
+        sub = df[df["set"] == label]
+        if sub.empty:
+            continue
+        stats = sub.groupby("iter")[ycol].agg(["mean", "std"]).reset_index()
+        lo = (stats["mean"] - stats["std"]).min()
+        hi = (stats["mean"] + stats["std"]).max()
+        band_info.append((label, color, lo, hi))
+        stats_cache[label] = stats
+
+    if len(band_info) < 2:
+        # Fallback to regular plot if only one set
+        return _plot_convergence(df, ycol, ylabel, title, labels, outpath)
+
+    # Sort by midpoint — bottom panel gets the lower series
+    band_info.sort(key=lambda x: (x[2] + x[3]) / 2)
+    lo_label, lo_color, lo_lo, lo_hi = band_info[0]
+    hi_label, hi_color, hi_lo, hi_hi = band_info[1]
+
+    lo_range = lo_hi - lo_lo if lo_hi != lo_lo else lo_hi * 0.1
+    hi_range = hi_hi - hi_lo if hi_hi != hi_lo else hi_hi * 0.1
+
+    bottom_ylim = (lo_lo - pad * lo_range, lo_hi + pad * lo_range)
+    top_ylim = (hi_lo - pad * hi_range, hi_hi + pad * hi_range)
+
+    fig, (ax_top, ax_bot) = plt.subplots(
+        2, 1, sharex=True, figsize=(8, 6),
+        gridspec_kw={"height_ratios": [1, 1], "hspace": 0.08},
+    )
+
+    # Draw both series on both axes (clipping handles visibility)
+    for ax in (ax_top, ax_bot):
+        for label, color, _, _ in band_info:
+            stats = stats_cache[label]
+            ax.plot(stats["iter"], stats["mean"], "-o", color=color,
+                    label=label, markersize=4)
+            ax.fill_between(
+                stats["iter"],
+                stats["mean"] - stats["std"],
+                stats["mean"] + stats["std"],
+                color=color, alpha=ALPHA_BAND,
+            )
+        ax.grid(True, alpha=0.3)
+
+    # Annotate UQ on the panel that shows each series
+    _annotate_uq(ax_top, stats_cache[hi_label], hi_color, hi_label)
+    _annotate_uq(ax_bot, stats_cache[lo_label], lo_color, lo_label)
+
+    ax_top.set_ylim(*top_ylim)
+    ax_bot.set_ylim(*bottom_ylim)
+
+    # Hide spines at the break
+    ax_top.spines["bottom"].set_visible(False)
+    ax_bot.spines["top"].set_visible(False)
+    ax_top.tick_params(bottom=False)
+
+    # Draw break marks
+    d = 0.012
+    kwargs = dict(transform=ax_top.transAxes, color="k", clip_on=False, linewidth=1)
+    ax_top.plot((-d, +d), (-d, +d), **kwargs)
+    ax_top.plot((1 - d, 1 + d), (-d, +d), **kwargs)
+    kwargs.update(transform=ax_bot.transAxes)
+    ax_bot.plot((-d, +d), (1 - d, 1 + d), **kwargs)
+    ax_bot.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)
+
+    ax_top.set_title(title, pad=16)
+    _add_subtitle(ax_top, subtitle)
+    ax_bot.set_xlabel("Iteration")
+    fig.text(0.02, 0.5, ylabel, va="center", rotation="vertical", fontsize=11)
+    ax_top.legend()
+
+    # Format y ticks with commas for large numbers
+    from matplotlib.ticker import FuncFormatter
+    comma_fmt = FuncFormatter(lambda x, _: f"{x:,.0f}")
+    ax_top.yaxis.set_major_formatter(comma_fmt)
+    ax_bot.yaxis.set_major_formatter(comma_fmt)
+
+    fig.savefig(outpath, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved {outpath}")
 
@@ -211,13 +400,14 @@ def _plot_convergence(
 # 4. View functions
 # ---------------------------------------------------------------------------
 
-def plot_residual(df_res: pd.DataFrame, labels: dict, outdir: Path):
+def plot_residual(df_res: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
     """View 1: Total residual + component subplots."""
     # Total residual
     _plot_convergence(
         df_res, "residual_total", "Total Residual",
         "Total Residual vs Iteration", labels,
-        outdir / "v1_residual_total.png",
+        outdir / "v1_residual_total.png", subtitle=subtitle,
+        show_uq_pct=False,
     )
     # Component subplots
     fig, axes = plt.subplots(1, 3, figsize=(16, 5), sharey=False)
@@ -229,40 +419,45 @@ def plot_residual(df_res: pd.DataFrame, labels: dict, outdir: Path):
             stats = sub.groupby("iter")[comp].agg(["mean", "std"]).reset_index()
             ax.plot(stats["iter"], stats["mean"], "-o", color=color,
                     label=label, markersize=3)
+            lo_band = (stats["mean"] - stats["std"]).clip(lower=stats["mean"] * 0.1)
             ax.fill_between(
                 stats["iter"],
-                stats["mean"] - stats["std"],
+                lo_band,
                 stats["mean"] + stats["std"],
                 color=color, alpha=ALPHA_BAND,
             )
         nice = comp.replace("residual_", "")
         _style_ax(ax, "Iteration", nice, logy=True)
         ax.set_title(f"Residual: {nice}")
+    if subtitle:
+        fig.suptitle(subtitle, fontsize=9, color="0.4", y=1.01)
     fig.tight_layout()
-    fig.savefig(outdir / "v1_residual_components.png", dpi=150)
+    fig.savefig(outdir / "v1_residual_components.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved {outdir / 'v1_residual_components.png'}")
 
 
-def plot_l2_error(df_hhl: pd.DataFrame, labels: dict, outdir: Path):
+def plot_l2_error(df_hhl: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
     """View 2: L2 absolute error vs iteration."""
     _plot_convergence(
         df_hhl, "l2_error_abs", "L2 Absolute Error",
         "L2 Absolute Error vs Iteration", labels,
-        outdir / "v2_l2_error_abs.png",
+        outdir / "v2_l2_error_abs.png", subtitle=subtitle,
+        show_uq_pct=False,
     )
 
 
-def plot_linsys_residual(df_hhl: pd.DataFrame, labels: dict, outdir: Path):
+def plot_linsys_residual(df_hhl: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
     """View 3: Linear system residual vs iteration."""
     _plot_convergence(
         df_hhl, "linsys_residual", "Linear System Residual",
         "Linear System Residual vs Iteration", labels,
-        outdir / "v3_linsys_residual.png",
+        outdir / "v3_linsys_residual.png", subtitle=subtitle,
+        show_uq_pct=False,
     )
 
 
-def plot_final_quality(df_hhl: pd.DataFrame, labels: dict, outdir: Path):
+def plot_final_quality(df_hhl: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
     """View 4: Box plots of final-iteration quality metrics."""
     # Extract last iteration per trial
     last_iter = df_hhl.groupby(["set", "trial"])["iter"].max().reset_index()
@@ -300,13 +495,15 @@ def plot_final_quality(df_hhl: pd.DataFrame, labels: dict, outdir: Path):
         if metric != "fidelity":
             ax.set_yscale("log")
 
+    if subtitle:
+        fig.suptitle(subtitle, fontsize=9, color="0.4", y=1.01)
     fig.tight_layout()
-    fig.savefig(outdir / "v4_final_quality.png", dpi=150)
+    fig.savefig(outdir / "v4_final_quality.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved {outdir / 'v4_final_quality.png'}")
 
 
-def plot_final_solution(df_sol: pd.DataFrame, labels: dict, outdir: Path):
+def plot_final_solution(df_sol: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
     """View 5: Raw final solution comparison across spatial points."""
     fields = ["rho", "u", "p", "Mach"]
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
@@ -322,27 +519,29 @@ def plot_final_solution(df_sol: pd.DataFrame, labels: dict, outdir: Path):
             )
         _style_ax(ax, "x", field, logy=False)
         ax.set_title(f"Final Solution: {field}")
+    if subtitle:
+        fig.suptitle(subtitle, fontsize=9, color="0.4", y=1.01)
     fig.tight_layout()
-    fig.savefig(outdir / "v5_final_solution.png", dpi=150)
+    fig.savefig(outdir / "v5_final_solution.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved {outdir / 'v5_final_solution.png'}")
 
 
-def plot_circuit_depth(df_circ: pd.DataFrame, labels: dict, outdir: Path):
-    """View 6: Transpiled circuit depth vs iteration."""
-    _plot_convergence(
+def plot_circuit_depth(df_circ: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
+    """View 6: Transpiled circuit depth vs iteration (broken y-axis)."""
+    _plot_broken_axis(
         df_circ, "depth_after", "Transpiled Depth",
         "Circuit Depth (After Transpile) vs Iteration", labels,
-        outdir / "v6_circuit_depth.png", logy=False,
+        outdir / "v6_circuit_depth.png", subtitle=subtitle,
     )
 
 
-def plot_gate_count(df_circ: pd.DataFrame, labels: dict, outdir: Path):
-    """View 7: Transpiled gate count vs iteration."""
-    _plot_convergence(
+def plot_gate_count(df_circ: pd.DataFrame, labels: dict, outdir: Path, subtitle: str = ""):
+    """View 7: Transpiled gate count vs iteration (broken y-axis)."""
+    _plot_broken_axis(
         df_circ, "gates_after", "Transpiled Gate Count",
         "Total Gate Count (After Transpile) vs Iteration", labels,
-        outdir / "v7_gate_count.png", logy=False,
+        outdir / "v7_gate_count.png", subtitle=subtitle,
     )
 
 
@@ -525,15 +724,25 @@ def main():
         build_circuit_df(trials_b, args.label_b),
     ], ignore_index=True)
 
+    # Build subtitle from trial metadata
+    sub_a = _extract_subtitle(trials_a)
+    sub_b = _extract_subtitle(trials_b)
+    if sub_a == sub_b:
+        subtitle = sub_a
+    else:
+        subtitle = f"A: {sub_a}  |  B: {sub_b}"
+    n_trials = max(len(trials_a), len(trials_b))
+    subtitle += f", {n_trials} trials"
+
     # Plot
     print(f"\nGenerating plots in {outdir}/")
-    plot_residual(df_res, labels, outdir)
-    plot_l2_error(df_hhl, labels, outdir)
-    plot_linsys_residual(df_hhl, labels, outdir)
-    plot_final_quality(df_hhl, labels, outdir)
-    plot_final_solution(df_sol, labels, outdir)
-    plot_circuit_depth(df_circ, labels, outdir)
-    plot_gate_count(df_circ, labels, outdir)
+    plot_residual(df_res, labels, outdir, subtitle=subtitle)
+    plot_l2_error(df_hhl, labels, outdir, subtitle=subtitle)
+    plot_linsys_residual(df_hhl, labels, outdir, subtitle=subtitle)
+    plot_final_quality(df_hhl, labels, outdir, subtitle=subtitle)
+    plot_final_solution(df_sol, labels, outdir, subtitle=subtitle)
+    plot_circuit_depth(df_circ, labels, outdir, subtitle=subtitle)
+    plot_gate_count(df_circ, labels, outdir, subtitle=subtitle)
 
     # Summary
     print("\nSummary:")

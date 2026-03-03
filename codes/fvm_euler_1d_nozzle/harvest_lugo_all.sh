@@ -18,8 +18,8 @@ set -euo pipefail
 
 # ── paths on the remote machine ──────────────────────────────
 SRC_ROOT="/ccs/home/agallojr/ard189-lustre/proj-shared/LuGo_rst/output_parallel_shots"
-DST_ROOT="/ccs/home/agallojr/proj/src/q8020-cfd/q8020-cfd-experiments/results/fvm_euler_1d_solver/2026-02-26-LuGo"
-HARVESTER_DIR="/ccs/home/agallojr/proj/src/q8020-cfd/q8020-cfd-experiments/codes/fvm_euler_1d_nozzle"
+DST_ROOT="/ccs/home/agallojr/proj/src/q8020/q8020-cfd-experiments/results/fvm_euler_1d_solver/2026-02-26-LuGo"
+HARVESTER_DIR="/ccs/home/agallojr/proj/src/q8020/q8020-cfd-experiments/codes/fvm_euler_1d_nozzle"
 HARVESTER="${HARVESTER_DIR}/fvm_euler_1d_solver_harvester.py"
 
 if [ ! -f "$HARVESTER" ]; then

@@ -68,11 +68,17 @@ for n in "${NELEMS[@]}"; do
             mkdir -p "$dst_trial"
 
             # Copy raw solver output (csv, pkl, log, png) — skip qpy files
+            n_copied=0
             for f in "${src_trial}"/*; do
                 [ -f "$f" ] || continue
                 case "$f" in *.qpy) continue ;; esac
-                cp -n "$f" "$dst_trial/" 2>/dev/null || true
+                base="$(basename "$f")"
+                if [ ! -f "${dst_trial}/${base}" ]; then
+                    cp "$f" "$dst_trial/"
+                    n_copied=$((n_copied + 1))
+                fi
             done
+            echo "    copied ${n_copied} files from src"
 
             echo "  Harvesting: nelem${n}/${s}/trial_${t}"
             # generate_metadata reads from dst (which now has the raw files), writes fragments there

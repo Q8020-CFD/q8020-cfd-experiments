@@ -81,12 +81,23 @@ for n in "${NELEMS[@]}"; do
             echo "    copied ${n_copied} files from src"
 
             echo "  Harvesting: nelem${n}/${s}/trial_${t}"
-            # generate_metadata reads from dst (which now has the raw files), writes fragments there
+            # 1) generate fragments from raw solver output
+            # 2) roll up fragments into q8020_metadata_trial_N.json
             if python -c "
 import sys; sys.path.insert(0, '${HARVESTER_DIR}')
-from fvm_euler_1d_solver_harvester import generate_metadata
 from pathlib import Path
-generate_metadata(Path('${dst_trial}'), write_dir=Path('${dst_trial}'))
+from fvm_euler_1d_solver_harvester import generate_metadata
+from q8020_cfd_metautil.harvest import harvest_metadata
+import json
+
+dst = Path('${dst_trial}')
+generate_metadata(dst, write_dir=dst)
+
+metadata, warnings, counts = harvest_metadata(dst, read_only=True)
+rollup = dst / 'q8020_metadata_trial_${t}.json'
+with open(rollup, 'w') as f:
+    json.dump(metadata, f, indent=2)
+print(f'  wrote {rollup}')
 " 2>&1; then
                 harvested=$((harvested + 1))
             else

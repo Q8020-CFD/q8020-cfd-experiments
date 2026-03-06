@@ -1,8 +1,8 @@
 [global]
 _output_dir = "~/q8020"
 _inject_outdir = "-outdir"
-_env = "./fvm_euler_1d_solver/.venv"
-_script = "python ./fvm_euler_1d_solver/nozzle_1d_solver.py"
+_env = "../fvm_euler_1d_solver/.venv"
+_script = "python ../fvm_euler_1d_solver/nozzle_1d_solver.py"
 _case_postproc = [
     "python q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
     "python q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/backend_meta_harvester.py"
@@ -19,14 +19,23 @@ _case_postproc = [
 "-initers" = 1
 
 
-[fvm_1d_nelem_2]
+[fvm_1d_nelem_5_smoke]
 "-linsolver" = "HHL"
-"-backend" = "fake fake_melbourne"
-"-nelem" = 2
+"-nelem" = 5
 "-localdt" = true
 "-noshow" = true
-"-shots" = 1024
-"-iters" = 4
+"-shots" = 150000
+"-iters" = 1
+"-initers" = 1
+
+
+[fvm_1d_nelem_5_15]
+"-linsolver" = "HHL"
+"-nelem" = 5
+"-localdt" = true
+"-noshow" = true
+"-shots" = 150000
+"-iters" = 15
 "-initers" = 1
 
 

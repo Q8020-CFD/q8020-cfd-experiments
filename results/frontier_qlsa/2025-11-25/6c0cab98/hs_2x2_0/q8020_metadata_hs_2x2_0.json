@@ -1,0 +1,161 @@
+{
+  "experiment": [
+    {
+      "name": "frontier-qlsa-6c0cab98",
+      "experiment_id": "5950cbe9",
+      "workflow_id": "6c0cab98",
+      "timestamp": "2026-02-07T00:44:06.326830Z",
+      "user": {
+        "username": "agallojr",
+        "hostname": "MH-DT9TLJQR2V"
+      },
+      "_source": "solver"
+    }
+  ],
+  "case": [
+    {
+      "case_id": "hs_2x2_0",
+      "nx": 2,
+      "ny": 2,
+      "mu": 1.0,
+      "NQ_MATRIX": 2,
+      "max_condition_number": null,
+      "matrix_size_original": 4,
+      "matrix_size_hermitian": 4,
+      "condition_number_original": 1.0,
+      "condition_number_hermitian": 1.0,
+      "name": "hele-shaw",
+      "_source": "harvester"
+    }
+  ],
+  "backend": [
+    {
+      "name": "matrix_product_state_sim_aer",
+      "vendor": "ibm",
+      "type": "simulator",
+      "noise": false,
+      "nshots": 100,
+      "_source": "harvester",
+      "num_qubits": 7
+    }
+  ],
+  "code": [
+    {
+      "algorithm": "hhl",
+      "entry_point": "circuit_HHL.py",
+      "run_args": {
+        "qc_shots": 100,
+        "qc_backend": "matrix_product_state_sim_aer"
+      },
+      "_source": "harvester"
+    }
+  ],
+  "exec_stats": [],
+  "artifacts": [
+    {
+      "transpile_passes": [
+        {
+          "step": 0,
+          "wall_time_generate_s": 6.725164,
+          "wall_time_transpile_s": 0.0,
+          "wall_time_execute_s": 1.033158,
+          "before": {
+            "depth": 953,
+            "num_qubits": 7,
+            "gate_count": 1263
+          },
+          "after": {
+            "depth": 953,
+            "num_qubits": 7,
+            "gate_count": 1263
+          }
+        }
+      ],
+      "circuit_timing_total_s": {
+        "generate": 6.725164,
+        "transpile": 0.0,
+        "execute": 1.033158,
+        "total": 7.758322
+      },
+      "linear_system": {
+        "matrix_size_original": 4,
+        "matrix_size_hermitian": 4,
+        "condition_number_range": [
+          1.0,
+          1.0
+        ]
+      },
+      "_source": "harvester",
+      "file_inventory": {
+        "qpy": [
+          {
+            "name": "hele-shaw_circ_nqmatrix2.qpy",
+            "size_bytes": 26476,
+            "modified": "2026-02-07T00:38:10.698650Z"
+          },
+          {
+            "name": "hele-shaw_circ_nqmatrix2_transpiled.qpy",
+            "size_bytes": 69563,
+            "modified": "2026-02-07T00:38:10.701282Z"
+          }
+        ],
+        "pkl": [
+          {
+            "name": "hele-shaw_metadata.pkl",
+            "size_bytes": 993,
+            "modified": "2026-02-07T00:38:10.697067Z"
+          },
+          {
+            "name": "hele-shaw_circ_nqmatrix2.pkl",
+            "size_bytes": 1031,
+            "modified": "2026-02-07T00:38:10.699570Z"
+          }
+        ],
+        "yaml": [
+          {
+            "name": "input_vars_hs_2x2_0.yaml",
+            "size_bytes": 585,
+            "modified": "2026-02-07T00:38:10.700367Z"
+          }
+        ],
+        "png": [],
+        "csv": [],
+        "other": [
+          {
+            "name": "results.out",
+            "size_bytes": 2212,
+            "modified": "2026-02-07T00:38:10.697853Z"
+          }
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "quantum_solution": [
+        0.7296124895162117,
+        0.11349527614696626,
+        0.6647580460036596,
+        0.11349527614696625
+      ],
+      "classical_solution": [
+        0.7055698197297996,
+        0.046596453582414196,
+        0.7055698197297996,
+        0.046596453582414196
+      ],
+      "_source": "harvester"
+    }
+  ],
+  "analysis": [
+    {
+      "iterations_completed": 1,
+      "converged": true,
+      "_source": "harvester",
+      "fidelity": 0.9944027221169105,
+      "shots": 100,
+      "l2_error_abs": 0.10580432772896836,
+      "l2_error_rel": 0.10580432772896836
+    }
+  ]
+}

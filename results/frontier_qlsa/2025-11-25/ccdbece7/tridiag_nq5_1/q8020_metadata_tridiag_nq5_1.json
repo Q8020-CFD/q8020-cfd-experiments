@@ -1,0 +1,191 @@
+{
+  "experiment": [
+    {
+      "name": "frontier-qlsa-ccdbece7",
+      "experiment_id": "a00b7683",
+      "workflow_id": "ccdbece7",
+      "timestamp": "2026-02-07T00:44:06.490048Z",
+      "user": {
+        "username": "agallojr",
+        "hostname": "MH-DT9TLJQR2V"
+      },
+      "_source": "solver"
+    }
+  ],
+  "case": [
+    {
+      "case_id": "tridiag_nq5_1",
+      "nx": null,
+      "ny": null,
+      "mu": null,
+      "NQ_MATRIX": 5,
+      "max_condition_number": 1000000.0,
+      "matrix_size_original": null,
+      "matrix_size_hermitian": 32,
+      "condition_number_original": null,
+      "condition_number_hermitian": 4.946150738131262,
+      "name": "sample-tridiag",
+      "_source": "harvester"
+    }
+  ],
+  "backend": [
+    {
+      "name": "matrix_product_state_sim_aer",
+      "vendor": "ibm",
+      "type": "simulator",
+      "noise": false,
+      "nshots": 1000,
+      "_source": "harvester",
+      "num_qubits": 13
+    }
+  ],
+  "code": [
+    {
+      "algorithm": "hhl",
+      "entry_point": "circuit_HHL.py",
+      "run_args": {
+        "qc_shots": 1000,
+        "qc_backend": "matrix_product_state_sim_aer"
+      },
+      "_source": "harvester"
+    }
+  ],
+  "exec_stats": [],
+  "artifacts": [
+    {
+      "transpile_passes": [
+        {
+          "step": 0,
+          "wall_time_generate_s": 36.148486,
+          "wall_time_transpile_s": 0.0,
+          "wall_time_execute_s": 93.862222,
+          "before": {
+            "depth": 2970897,
+            "num_qubits": 13,
+            "gate_count": 4104003
+          },
+          "after": {
+            "depth": 2970897,
+            "num_qubits": 13,
+            "gate_count": 4104003
+          }
+        }
+      ],
+      "circuit_timing_total_s": {
+        "generate": 36.148486,
+        "transpile": 0.0,
+        "execute": 93.862222,
+        "total": 130.010708
+      },
+      "linear_system": {
+        "matrix_size_original": 0,
+        "matrix_size_hermitian": 32
+      },
+      "_source": "harvester",
+      "file_inventory": {
+        "qpy": [],
+        "pkl": [],
+        "yaml": [
+          {
+            "name": "input_vars_tridiag_nq5_1.yaml",
+            "size_bytes": 595,
+            "modified": "2026-02-07T00:38:10.482973Z"
+          }
+        ],
+        "png": [],
+        "csv": [],
+        "other": [
+          {
+            "name": "results.out",
+            "size_bytes": 2343,
+            "modified": "2026-02-07T00:38:10.481996Z"
+          }
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "quantum_solution": [
+        1.2392960221521472,
+        0.03637346815540893,
+        0.012990524341217474,
+        0.0051962097364869906,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0025981048682434953,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0012990524341217476,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0012990524341217476,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "classical_solution": [
+        1.1458980337503155,
+        0.4376941012509464,
+        0.16718427000252364,
+        0.06385870875662455,
+        0.02439185626735004,
+        0.009316860045425573,
+        0.0035587238689266795,
+        0.001359311561354466,
+        0.000519210815136718,
+        0.0001983208840556879,
+        7.575183703034567e-05,
+        2.8934627035349148e-05,
+        1.1052044075701766e-05,
+        4.221505191756158e-06,
+        1.6124714995667087e-06,
+        6.159093069439681e-07,
+        2.352564212651957e-07,
+        8.985995685161903e-08,
+        3.432344928966143e-08,
+        1.3110391017365256e-08,
+        5.007723762434342e-09,
+        1.912780269937772e-09,
+        7.306170473789749e-10,
+        2.7907087219915313e-10,
+        1.0659556921848457e-10,
+        4.0715835456300584e-11,
+        1.5551937150417196e-11,
+        5.939975994951012e-12,
+        2.2679908344358403e-12,
+        8.639965083565106e-13,
+        3.239986906336914e-13,
+        1.0799956354456378e-13
+      ],
+      "_source": "harvester"
+    }
+  ],
+  "analysis": [
+    {
+      "iterations_completed": 1,
+      "converged": true,
+      "_source": "harvester",
+      "fidelity": 1.4385310375263403,
+      "shots": 1000,
+      "l2_error_abs": 0.44464030794135645,
+      "l2_error_rel": 0.3586061363749166
+    }
+  ]
+}

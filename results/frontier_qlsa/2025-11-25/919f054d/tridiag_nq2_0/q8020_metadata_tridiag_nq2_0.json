@@ -1,0 +1,152 @@
+{
+  "experiment": [
+    {
+      "name": "frontier-qlsa-919f054d",
+      "experiment_id": "ec8e928a",
+      "workflow_id": "919f054d",
+      "timestamp": "2026-02-07T00:44:06.385461Z",
+      "user": {
+        "username": "agallojr",
+        "hostname": "MH-DT9TLJQR2V"
+      },
+      "_source": "solver"
+    }
+  ],
+  "case": [
+    {
+      "case_id": "tridiag_nq2_0",
+      "nx": null,
+      "ny": null,
+      "mu": null,
+      "NQ_MATRIX": 2,
+      "max_condition_number": null,
+      "matrix_size_original": null,
+      "matrix_size_hermitian": 4,
+      "condition_number_original": null,
+      "condition_number_hermitian": 3.3416407864998736,
+      "name": "sample-tridiag",
+      "_source": "harvester"
+    }
+  ],
+  "backend": [
+    {
+      "name": "matrix_product_state_sim_aer",
+      "vendor": "ibm",
+      "type": "simulator",
+      "noise": false,
+      "nshots": 100,
+      "_source": "harvester",
+      "num_qubits": 7
+    }
+  ],
+  "code": [
+    {
+      "algorithm": "hhl",
+      "entry_point": "circuit_HHL.py",
+      "run_args": {
+        "qc_shots": 100,
+        "qc_backend": "matrix_product_state_sim_aer"
+      },
+      "_source": "harvester"
+    }
+  ],
+  "exec_stats": [],
+  "artifacts": [
+    {
+      "transpile_passes": [
+        {
+          "step": 0,
+          "wall_time_generate_s": 9.521151,
+          "wall_time_transpile_s": 0.0,
+          "wall_time_execute_s": 1.197029,
+          "before": {
+            "depth": 3417,
+            "num_qubits": 7,
+            "gate_count": 4643
+          },
+          "after": {
+            "depth": 3417,
+            "num_qubits": 7,
+            "gate_count": 4643
+          }
+        }
+      ],
+      "circuit_timing_total_s": {
+        "generate": 9.521151,
+        "transpile": 0.0,
+        "execute": 1.197029,
+        "total": 10.71818
+      },
+      "linear_system": {
+        "matrix_size_original": 0,
+        "matrix_size_hermitian": 4
+      },
+      "_source": "harvester",
+      "file_inventory": {
+        "qpy": [
+          {
+            "name": "sample-tridiag_circ_nqmatrix2.qpy",
+            "size_bytes": 138325,
+            "modified": "2026-02-07T00:38:10.622291Z"
+          },
+          {
+            "name": "sample-tridiag_circ_nqmatrix2_transpiled.qpy",
+            "size_bytes": 255651,
+            "modified": "2026-02-07T00:38:10.623647Z"
+          }
+        ],
+        "pkl": [
+          {
+            "name": "sample-tridiag_circ_nqmatrix2.pkl",
+            "size_bytes": 1152,
+            "modified": "2026-02-07T00:38:10.626304Z"
+          }
+        ],
+        "yaml": [
+          {
+            "name": "input_vars_tridiag_nq2_0.yaml",
+            "size_bytes": 595,
+            "modified": "2026-02-07T00:38:10.625464Z"
+          }
+        ],
+        "png": [],
+        "csv": [],
+        "other": [
+          {
+            "name": "results.out",
+            "size_bytes": 2838,
+            "modified": "2026-02-07T00:38:10.624564Z"
+          }
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "quantum_solution": [
+        0.7795321638845154,
+        0.5115679825492132,
+        0.6333698831561687,
+        0.5115679825492131
+      ],
+      "classical_solution": [
+        1.1454545454545455,
+        0.43636363636363634,
+        0.16363636363636364,
+        0.05454545454545454
+      ],
+      "_source": "harvester"
+    }
+  ],
+  "analysis": [
+    {
+      "iterations_completed": 1,
+      "converged": true,
+      "_source": "harvester",
+      "fidelity": 1.2476943782174317,
+      "shots": 100,
+      "l2_error_abs": 0.7543699712226701,
+      "l2_error_rel": 0.6094277315972865
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "experiment": [
+    {
+      "name": "frontier-qlsa-ea21306c",
+      "experiment_id": "d6f2bba7",
+      "workflow_id": "ea21306c",
+      "timestamp": "2026-02-07T00:44:06.518279Z",
+      "user": {
+        "username": "agallojr",
+        "hostname": "MH-DT9TLJQR2V"
+      },
+      "_source": "solver"
+    }
+  ],
+  "case": [
+    {
+      "case_id": "hs_torino_2x2_2",
+      "nx": 2,
+      "ny": 2,
+      "mu": 1.0,
+      "NQ_MATRIX": 2,
+      "max_condition_number": null,
+      "matrix_size_original": 4,
+      "matrix_size_hermitian": 4,
+      "condition_number_original": 1.0,
+      "condition_number_hermitian": 1.0,
+      "name": "hele-shaw",
+      "_source": "harvester"
+    }
+  ],
+  "backend": [
+    {
+      "name": "ibm_torino",
+      "vendor": "ibm",
+      "type": "hardware",
+      "noise": true,
+      "nshots": 10000,
+      "_source": "harvester",
+      "num_qubits": 133
+    }
+  ],
+  "code": [
+    {
+      "algorithm": "hhl",
+      "entry_point": "circuit_HHL.py",
+      "run_args": {
+        "qc_shots": 10000,
+        "qc_backend": "ibm_torino"
+      },
+      "_source": "harvester"
+    }
+  ],
+  "exec_stats": [],
+  "artifacts": [
+    {
+      "transpile_passes": [
+        {
+          "step": 0,
+          "wall_time_generate_s": 0.011658,
+          "wall_time_transpile_s": 0.0,
+          "wall_time_execute_s": 17.199327,
+          "before": {
+            "depth": 2610,
+            "num_qubits": 133,
+            "gate_count": 3582
+          },
+          "after": {
+            "depth": 2610,
+            "num_qubits": 133,
+            "gate_count": 3582
+          }
+        }
+      ],
+      "circuit_timing_total_s": {
+        "generate": 0.011658,
+        "transpile": 0.0,
+        "execute": 17.199327,
+        "total": 17.210985
+      },
+      "linear_system": {
+        "matrix_size_original": 4,
+        "matrix_size_hermitian": 4,
+        "condition_number_range": [
+          1.0,
+          1.0
+        ]
+      },
+      "_source": "harvester",
+      "file_inventory": {
+        "qpy": [],
+        "pkl": [],
+        "yaml": [
+          {
+            "name": "input_vars_hs_torino_2x2_2.yaml",
+            "size_bytes": 606,
+            "modified": "2026-02-07T00:38:11.071468Z"
+          }
+        ],
+        "png": [],
+        "csv": [],
+        "other": [
+          {
+            "name": "results.out",
+            "size_bytes": 655,
+            "modified": "2026-02-07T00:38:11.072287Z"
+          }
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "quantum_solution": [
+        0.8169017962344243,
+        0.334655514557442,
+        0.44521759217480167,
+        0.1498613943059944
+      ],
+      "classical_solution": [
+        0.7055698197297996,
+        0.046596453582414196,
+        0.7055698197297996,
+        0.046596453582414196
+      ],
+      "_source": "harvester"
+    }
+  ],
+  "analysis": [
+    {
+      "iterations_completed": 1,
+      "converged": true,
+      "_source": "harvester",
+      "fidelity": 0.9130901190111324,
+      "shots": 10000,
+      "l2_error_abs": 0.4169169725229893,
+      "l2_error_rel": 0.4169169725229893
+    }
+  ]
+}

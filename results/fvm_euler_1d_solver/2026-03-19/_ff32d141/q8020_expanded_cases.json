@@ -1,0 +1,46 @@
+{
+  "cases": {
+    "ideal": {
+      "_slurm": true,
+      "_run_mode": "parallel",
+      "_slurm_submit": true,
+      "_slurm_project": "ard189",
+      "_slurm_partition": "batch",
+      "_slurm_walltime": "02:00:00",
+      "_cores_per_task": 1,
+      "_output_dir": "~/base_test_env_fix",
+      "_env": "~/q8020/fvm_euler_1d_solver/.venv",
+      "_script": "source ~/q8020/fvm_euler_1d_solver/.venv/bin/activate && \npython3 ~/q8020/fvm_euler_1d_solver/nozzle_1d_solver.py",
+      "_case_postproc": [
+        "source ~/venvs/q8020-sweep/bin/activate && python3 ~/q8020/q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py"
+      ],
+      "_inject_outdir": "-outdir",
+      "-time_scheme": "BDF1",
+      "-cfl": "1e5",
+      "-localdt": true,
+      "-noshow": true,
+      "-nelem": 5,
+      "-shots": 150000
+    }
+  },
+  "global": {
+    "_slurm": true,
+    "_run_mode": "parallel",
+    "_slurm_submit": true,
+    "_slurm_project": "ard189",
+    "_slurm_partition": "batch",
+    "_slurm_walltime": "02:00:00",
+    "_cores_per_task": 1,
+    "_output_dir": "~/base_test_env_fix",
+    "_env": "~/q8020/fvm_euler_1d_solver/.venv",
+    "_script": "source ~/q8020/fvm_euler_1d_solver/.venv/bin/activate && \npython3 ~/q8020/fvm_euler_1d_solver/nozzle_1d_solver.py",
+    "_case_postproc": [
+      "source ~/venvs/q8020-sweep/bin/activate && python3 ~/q8020/q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py"
+    ],
+    "_inject_outdir": "-outdir",
+    "-time_scheme": "BDF1",
+    "-cfl": "1e5",
+    "-localdt": true,
+    "-noshow": true
+  }
+}

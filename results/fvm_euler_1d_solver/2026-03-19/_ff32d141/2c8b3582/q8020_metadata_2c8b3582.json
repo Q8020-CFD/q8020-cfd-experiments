@@ -1,0 +1,306 @@
+{
+  "analysis": [
+    {
+      "iterations_completed": 0,
+      "converged": false,
+      "_source": "solver",
+      "hhl_metrics": []
+    }
+  ],
+  "case": [
+    {
+      "_source": "sweep",
+      "name": "ideal",
+      "case_id": "ideal",
+      "params": {
+        "_slurm": true,
+        "_run_mode": "parallel",
+        "_slurm_submit": true,
+        "_slurm_project": "ard189",
+        "_slurm_partition": "batch",
+        "_slurm_walltime": "02:00:00",
+        "_cores_per_task": 1,
+        "_output_dir": "~/base_test_env_fix",
+        "_env": "~/q8020/fvm_euler_1d_solver/.venv",
+        "_script": "source ~/q8020/fvm_euler_1d_solver/.venv/bin/activate && \npython3 ~/q8020/fvm_euler_1d_solver/nozzle_1d_solver.py",
+        "_case_postproc": [
+          "source ~/venvs/q8020-sweep/bin/activate && python3 ~/q8020/q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py"
+        ],
+        "_inject_outdir": "-outdir",
+        "-time_scheme": "BDF1",
+        "-cfl": "1e5",
+        "-localdt": true,
+        "-noshow": true,
+        "-nelem": 5,
+        "-shots": 150000
+      },
+      "command": [
+        "bash",
+        "-c",
+        "source /ccs/home/ishangore/q8020/fvm_euler_1d_solver/.venv/bin/activate && source ~/q8020/fvm_euler_1d_solver/.venv/bin/activate && \npython3 ~/q8020/fvm_euler_1d_solver/nozzle_1d_solver.py -time_scheme BDF1 -cfl 1e5 -localdt -noshow -nelem 5 -shots 150000 -outdir /ccs/home/ishangore/base_test_env_fix/2026-03-19/_ff32d141/2c8b3582"
+      ],
+      "script": "-c",
+      "cwd": "/autofs/nccs-svm1_home1/ishangore"
+    },
+    {
+      "_source": "solver",
+      "name": "nozzle_1d",
+      "nelem": 5,
+      "time_scheme": "BDF1",
+      "cfl": 100000.0,
+      "max_iters": 2000,
+      "max_inner_iters": 10,
+      "conv_tol": 1e-12,
+      "res_tol": 0.01,
+      "localdt": true,
+      "nondim": true,
+      "area_equation": null,
+      "reference_values": {
+        "rho_ref": null,
+        "u_ref": null,
+        "p_ref": null
+      }
+    }
+  ],
+  "results": [
+    {
+      "final_solution": [],
+      "per_iteration": [],
+      "residual_history": [
+        {
+          "iters": 0.0,
+          "residual": 0.05820214236461219
+        },
+        {
+          "iters": 1.0,
+          "residual": 5.778820010376305e-07
+        },
+        {
+          "iters": 2.0,
+          "residual": 2.8519048396688534e-12
+        }
+      ],
+      "_source": "solver"
+    }
+  ],
+  "exec_stats": [
+    {
+      "_source": "sweep",
+      "start_time": "2026-03-20T05:50:19.307667Z",
+      "end_time": "2026-03-20T05:50:23.283364Z",
+      "duration_seconds": 3.975711,
+      "exit_code": 0,
+      "success": true
+    }
+  ],
+  "experiment": [
+    {
+      "_source": "sweep",
+      "name": "ideal",
+      "experiment_id": "2c8b3582",
+      "workflow_id": "_ff32d141",
+      "timestamp": "2026-03-20T05:50:19.307667Z",
+      "user": {
+        "username": "ishangore",
+        "hostname": "frontier09116"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "_source": "sweep",
+      "directory": "/autofs/nccs-svm1_home1/ishangore/base_test_env_fix/2026-03-19/_ff32d141/2c8b3582",
+      "files": [
+        {
+          "name": "pipeline_args.json",
+          "path": "pipeline_args.json",
+          "size_bytes": 1730,
+          "modified": "2026-03-19T18:59:03.860274Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_env_before_2c8b3582.json",
+          "path": "q8020_env_before_2c8b3582.json",
+          "size_bytes": 573,
+          "modified": "2026-03-20T05:50:19.305223Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_params_2c8b3582.json",
+          "path": "q8020_params_2c8b3582.json",
+          "size_bytes": 1049,
+          "modified": "2026-03-20T05:50:19.307221Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_stdout_2c8b3582.txt",
+          "path": "q8020_stdout_2c8b3582.txt",
+          "size_bytes": 1363,
+          "modified": "2026-03-20T05:50:23.233194Z",
+          "type": "txt"
+        },
+        {
+          "name": "q8020_stderr_2c8b3582.txt",
+          "path": "q8020_stderr_2c8b3582.txt",
+          "size_bytes": 0,
+          "modified": "2026-03-20T05:50:19.309225Z",
+          "type": "txt"
+        },
+        {
+          "name": "metadata_nelem5_nsteps2_LU.pkl",
+          "path": "metadata_nelem5_nsteps2_LU.pkl",
+          "size_bytes": 381,
+          "modified": "2026-03-20T05:50:22.051208Z",
+          "type": "pkl"
+        },
+        {
+          "name": "results_nelem5_nsteps2_LU.csv",
+          "path": "results_nelem5_nsteps2_LU.csv",
+          "size_bytes": 414,
+          "modified": "2026-03-20T05:50:22.053209Z",
+          "type": "csv"
+        },
+        {
+          "name": "residual_nelem5_nsteps2_LU.csv",
+          "path": "residual_nelem5_nsteps2_LU.csv",
+          "size_bytes": 93,
+          "modified": "2026-03-20T05:50:22.055208Z",
+          "type": "csv"
+        },
+        {
+          "name": "sol_plot_nelem5_nsteps2_LU.png",
+          "path": "sol_plot_nelem5_nsteps2_LU.png",
+          "size_bytes": 82712,
+          "modified": "2026-03-20T05:50:22.589204Z",
+          "type": "png"
+        },
+        {
+          "name": "residual_plot_nelem5_nsteps2_LU.png",
+          "path": "residual_plot_nelem5_nsteps2_LU.png",
+          "size_bytes": 30817,
+          "modified": "2026-03-20T05:50:23.079199Z",
+          "type": "png"
+        }
+      ]
+    },
+    {
+      "transpile_passes": [],
+      "circuit_timing_total_s": {
+        "generate": 0.0,
+        "transpile": 0.0,
+        "execute": 0.0,
+        "total": 0.0
+      },
+      "linear_system": {},
+      "file_inventory": {
+        "qpy_generated": [],
+        "qpy_transpiled": [],
+        "csv": [
+          {
+            "name": "results_nelem5_nsteps2_LU.csv",
+            "size_bytes": 414,
+            "modified": "2026-03-20T05:50:22.053209Z"
+          },
+          {
+            "name": "residual_nelem5_nsteps2_LU.csv",
+            "size_bytes": 93,
+            "modified": "2026-03-20T05:50:22.055208Z"
+          }
+        ],
+        "pkl": [
+          {
+            "name": "metadata_nelem5_nsteps2_LU.pkl",
+            "size_bytes": 381,
+            "modified": "2026-03-20T05:50:22.051208Z"
+          }
+        ],
+        "png": [
+          {
+            "name": "sol_plot_nelem5_nsteps2_LU.png",
+            "size_bytes": 82712,
+            "modified": "2026-03-20T05:50:22.589204Z"
+          },
+          {
+            "name": "residual_plot_nelem5_nsteps2_LU.png",
+            "size_bytes": 30817,
+            "modified": "2026-03-20T05:50:23.079199Z"
+          }
+        ],
+        "other": [
+          {
+            "name": "pipeline_args.json",
+            "size_bytes": 1730,
+            "modified": "2026-03-19T18:59:03.860274Z"
+          }
+        ]
+      },
+      "_source": "solver"
+    }
+  ],
+  "backend": [
+    {
+      "name": "unknown",
+      "type": "simulator",
+      "method": "statevector",
+      "noise": false,
+      "_source": "solver"
+    }
+  ],
+  "code": [
+    {
+      "_source": "sweep",
+      "entry_point": "-c",
+      "interpreter": "bash",
+      "library_versions_before": {
+        "type": "venv",
+        "path": "/autofs/nccs-svm1_home1/ishangore/q8020/fvm_euler_1d_solver/.venv",
+        "packages": {
+          "six": "1.17.0",
+          "PyYAML": "6.0.3",
+          "python-dotenv": "1.2.2",
+          "pyparsing": "3.3.2",
+          "pillow": "12.1.1",
+          "packaging": "26.0",
+          "numpy": "2.4.3",
+          "kiwisolver": "1.5.0",
+          "fonttools": "4.62.1",
+          "cycler": "0.12.1",
+          "scipy": "1.17.1",
+          "python-dateutil": "2.9.0.post0",
+          "contourpy": "1.3.3",
+          "matplotlib": "3.10.8",
+          "pip": "26.0.1"
+        },
+        "package_count": 15,
+        "timestamp": "2026-03-20T05:50:19.303689Z"
+      },
+      "library_versions_after": {
+        "type": "venv",
+        "path": "/autofs/nccs-svm1_home1/ishangore/q8020/fvm_euler_1d_solver/.venv",
+        "packages": {
+          "six": "1.17.0",
+          "PyYAML": "6.0.3",
+          "python-dotenv": "1.2.2",
+          "pyparsing": "3.3.2",
+          "pillow": "12.1.1",
+          "packaging": "26.0",
+          "numpy": "2.4.3",
+          "kiwisolver": "1.5.0",
+          "fonttools": "4.62.1",
+          "cycler": "0.12.1",
+          "scipy": "1.17.1",
+          "python-dateutil": "2.9.0.post0",
+          "contourpy": "1.3.3",
+          "matplotlib": "3.10.8",
+          "pip": "26.0.1"
+        },
+        "package_count": 15,
+        "timestamp": "2026-03-20T05:50:23.495628Z"
+      }
+    },
+    {
+      "_source": "solver",
+      "algorithm": "LU"
+    }
+  ]
+}

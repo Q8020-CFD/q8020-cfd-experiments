@@ -1,0 +1,123 @@
+
+==================================================================================================================================================================================================================
+HHL SCALING COMPARISON
+==================================================================================================================================================================================================================
+Metric                                        2x2                                 4x4                                 8x8                                32x32                               64x64                
+                                      Orig         D-1         D-2        Orig         D-1         D-2        Orig         D-1         D-2        Orig         D-1         D-2        Orig         D-1         D-2
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Condition number                       3.0         3.0         3.0         9.5         9.5         9.5        32.2        32.2        32.2       440.7       440.7       440.7      1711.7      1711.7      1711.7
+Num qubits                               5           5           5           8           8           8          11          11          11          16          16          16          19          19          19
+Clock qubits                             3           3           3           5           5           5           7           7           7          10          10          10          12          12          12
+CX count                               108          86          86        1801         393         393       44356        1914        1888     8242014       31615       31613   137823697      140596      140588
+Depth                                  241         179         179        3938         793         783       91178        3673        3632    16318766       60407       60383   271449158      270420      270384
+Total gates                            330         234         233        5336        1084        1058      124114        5094        5017    21885634       84639       84573   364230656      376557      376468
+Boundary SWAPs                         n/a           0           0         n/a           0           0         n/a           0           0         n/a           0           0         n/a           0           0
+
+sv_fidelity                            n/a      1.0000      1.0000         n/a      0.9243      0.9243         n/a      0.9862      0.9862         n/a      0.9518      0.9518         n/a      0.9946      0.9946
+sv_fidelity_transpiled                 n/a      1.0000      1.0000         n/a      0.9243      0.8709         n/a      0.9862      0.9797         n/a      0.9518      0.9491         n/a      0.9946      0.9936
+fidelity_shots                         n/a      1.0000      0.9025         n/a      0.9238      0.8629         n/a      0.9866      0.8965         n/a      0.9508      0.7590         n/a      0.9910      0.3545
+fidelity_noisy                         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a         n/a
+
+Circuit build (ms)                   364.1         1.2         1.3        49.7         2.0         2.1       390.1         4.9         4.9     85453.1       146.7       145.0   2666300.1       723.9       739.1
+Transpile time (ms)                   11.6        37.5        48.6         9.1        19.4        40.4        96.2        52.3        91.1     23547.7       789.1       858.1   1960362.4      3412.0      3530.8
+Transpile calls                          1           5          11           1           5          15           1           5          19           1           5          25           1           5          29
+
+Per-block transpile times (depth=1, ms):
+  Block                                2x2         4x4         8x8       32x32       64x64
+  state_prep                           0.6         0.8         1.3         4.1         7.2
+  qpe                                 13.7         0.4         1.2        27.4       113.4
+  controlled_rotations                 1.3         2.2         5.7        39.1       150.3
+  inverse_qpe                         12.6         0.4         1.1        26.4       114.7
+  measurement                          0.1         0.1         0.2         0.2         0.3
+  --- sum(blocks)                     28.3         3.9         9.4        97.3       385.9
+  --- total (w/ overhead)             37.5        19.4        52.3       789.1      3412.0
+  --- overhead                         9.2        15.4        42.8       691.7      3026.1
+
+Per-block transpile times (depth=2, ms):
+  Block                                2x2         4x4         8x8       32x32       64x64
+  state_prep                           0.5         0.8         1.3         4.2         7.1
+  controlled_u_1                       7.3         0.2         0.3         4.5        10.1
+  controlled_u_2                       3.9         0.2         0.3         2.8        10.0
+  controlled_u_4                       3.3         0.2         0.3         2.8        10.0
+  qft                                  0.3         0.3         0.3         0.5         0.6
+  controlled_rotations                 1.9         2.3         6.4        39.0       151.7
+  inverse_qft                          0.2         0.3         0.4         0.4         0.6
+  inverse_controlled_u_4               3.3         0.2         0.3         2.6        10.0
+  inverse_controlled_u_2               3.8         0.2         0.3         4.2        10.0
+  inverse_controlled_u_1               6.6         0.2         0.3         2.6        10.0
+  measurement                          0.1         0.1         0.2         0.2         0.2
+  controlled_u_8                       n/a         0.2         0.3         2.7        10.0
+  controlled_u_16                      n/a         0.2         0.3         2.6        10.0
+  inverse_controlled_u_16              n/a         0.2         0.3         2.5         9.9
+  inverse_controlled_u_8               n/a         0.2         0.3         2.6         9.9
+  controlled_u_32                      n/a         n/a         0.3         2.8        10.0
+  controlled_u_64                      n/a         n/a         0.3         2.7         9.8
+  inverse_controlled_u_64              n/a         n/a         0.3         2.6         9.8
+  inverse_controlled_u_32              n/a         n/a         0.3         2.6         9.9
+  controlled_u_128                     n/a         n/a         n/a         2.7         9.8
+  controlled_u_256                     n/a         n/a         n/a         2.7        10.0
+  controlled_u_512                     n/a         n/a         n/a         2.7        10.0
+  inverse_controlled_u_512             n/a         n/a         n/a         2.6        10.0
+  inverse_controlled_u_256             n/a         n/a         n/a         2.6         9.8
+  inverse_controlled_u_128             n/a         n/a         n/a         2.6         9.8
+  controlled_u_1024                    n/a         n/a         n/a         n/a        10.0
+  controlled_u_2048                    n/a         n/a         n/a         n/a        10.0
+  inverse_controlled_u_2048            n/a         n/a         n/a         n/a        10.0
+  inverse_controlled_u_1024            n/a         n/a         n/a         n/a         9.8
+  --- sum(blocks)                     31.2         5.5        12.9       101.1       398.7
+  --- total (w/ overhead)             48.6        40.4        91.1       858.1      3530.8
+  --- overhead                        17.4        34.9        78.2       757.1      3132.1
+
+D-2 blocks grouped by D-1 parent (ms):
+  D-1 parent / D-2 child               2x2         4x4         8x8       32x32       64x64
+
+    state_prep                         0.5         0.8         1.3         4.2         7.1
+                    sum(D-2)           0.5         0.8         1.3         4.2         7.1
+             D-1 parent time           0.6         0.8         1.3         4.1         7.2
+                       delta          -0.1         0.0        -0.0         0.0        -0.1
+
+    controlled_u_1                     7.3         0.2         0.3         4.5        10.1
+    controlled_u_2                     3.9         0.2         0.3         2.8        10.0
+    controlled_u_4                     3.3         0.2         0.3         2.8        10.0
+    qft                                0.3         0.3         0.3         0.5         0.6
+    controlled_u_8                     n/a         0.2         0.3         2.7        10.0
+    controlled_u_16                    n/a         0.2         0.3         2.6        10.0
+    controlled_u_32                    n/a         n/a         0.3         2.8        10.0
+    controlled_u_64                    n/a         n/a         0.3         2.7         9.8
+    controlled_u_128                   n/a         n/a         n/a         2.7         9.8
+    controlled_u_256                   n/a         n/a         n/a         2.7        10.0
+    controlled_u_512                   n/a         n/a         n/a         2.7        10.0
+    controlled_u_1024                  n/a         n/a         n/a         n/a        10.0
+    controlled_u_2048                  n/a         n/a         n/a         n/a        10.0
+                    sum(D-2)          14.8         1.2         2.5        29.6       120.3
+             D-1 parent time          13.7         0.4         1.2        27.4       113.4
+                       delta           1.1         0.8         1.3         2.2         6.8
+
+    controlled_rotations               1.9         2.3         6.4        39.0       151.7
+                    sum(D-2)           1.9         2.3         6.4        39.0       151.7
+             D-1 parent time           1.3         2.2         5.7        39.1       150.3
+                       delta           0.6         0.1         0.7        -0.2         1.4
+
+    inverse_qft                        0.2         0.3         0.4         0.4         0.6
+    inverse_controlled_u_4             3.3         0.2         0.3         2.6        10.0
+    inverse_controlled_u_2             3.8         0.2         0.3         4.2        10.0
+    inverse_controlled_u_1             6.6         0.2         0.3         2.6        10.0
+    inverse_controlled_u_16            n/a         0.2         0.3         2.5         9.9
+    inverse_controlled_u_8             n/a         0.2         0.3         2.6         9.9
+    inverse_controlled_u_64            n/a         n/a         0.3         2.6         9.8
+    inverse_controlled_u_32            n/a         n/a         0.3         2.6         9.9
+    inverse_controlled_u_512           n/a         n/a         n/a         2.6        10.0
+    inverse_controlled_u_256           n/a         n/a         n/a         2.6         9.8
+    inverse_controlled_u_128           n/a         n/a         n/a         2.6         9.8
+    inverse_controlled_u_2048          n/a         n/a         n/a         n/a        10.0
+    inverse_controlled_u_1024          n/a         n/a         n/a         n/a         9.8
+                    sum(D-2)          13.9         1.1         2.6        28.1       119.4
+             D-1 parent time          12.6         0.4         1.1        26.4       114.7
+                       delta           1.3         0.7         1.5         1.7         4.7
+
+    measurement                        0.1         0.1         0.2         0.2         0.2
+                    sum(D-2)           0.1         0.1         0.2         0.2         0.2
+             D-1 parent time           0.1         0.1         0.2         0.2         0.3
+                       delta          -0.0         0.0         0.0        -0.0        -0.1
+==================================================================================================================================================================================================================
+

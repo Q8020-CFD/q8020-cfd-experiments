@@ -1,0 +1,967 @@
+{
+  "code": [
+    {
+      "_source": "solver",
+      "algorithm": "HHL"
+    },
+    {
+      "_source": "sweep",
+      "entry_point": "-c",
+      "interpreter": "bash",
+      "library_versions_before": {
+        "type": "venv",
+        "path": "/autofs/nccs-svm1_home1/ishangore/q8020/fvm_euler_1d_solver/.venv-quantum",
+        "packages": {
+          "setuptools": "65.5.0",
+          "pip": "23.2.1",
+          "six": "1.17.0",
+          "PyYAML": "6.0.3",
+          "python-dotenv": "1.2.2",
+          "pyparsing": "3.3.2",
+          "pillow": "12.1.1",
+          "packaging": "24.1",
+          "numpy": "2.4.3",
+          "kiwisolver": "1.5.0",
+          "fonttools": "4.62.1",
+          "cycler": "0.12.1",
+          "scipy": "1.17.1",
+          "python-dateutil": "2.9.0.post0",
+          "contourpy": "1.3.3",
+          "matplotlib": "3.10.8",
+          "openqasm3": "1.0.1",
+          "mpmath": "1.3.0",
+          "antlr4-python3-runtime": "4.13.2",
+          "websocket-client": "1.9.0",
+          "urllib3": "2.6.3",
+          "typing_extensions": "4.15.0",
+          "sympy": "1.14.0",
+          "symengine": "0.13.0",
+          "stevedore": "5.7.0",
+          "rustworkx": "0.17.1",
+          "quantum-linear-solvers": "0.1.0",
+          "PyJWT": "2.12.1",
+          "pycparser": "3.0",
+          "psutil": "7.2.2",
+          "idna": "3.11",
+          "dill": "0.4.1",
+          "charset-normalizer": "3.4.6",
+          "certifi": "2026.2.25",
+          "annotated-types": "0.7.0",
+          "requests": "2.32.3",
+          "qiskit": "1.2.4",
+          "pydantic_core": "2.23.4",
+          "cffi": "2.0.0",
+          "qiskit-qasm3-import": "0.5.1",
+          "qiskit-algorithms": "0.3.1",
+          "qiskit-aer": "0.15.1",
+          "pydantic": "2.9.2",
+          "ibm-cloud-sdk-core": "3.24.1",
+          "cryptography": "46.0.5",
+          "pyspnego": "0.12.1",
+          "iqm-client": "22.16",
+          "ibm-platform-services": "0.66.1",
+          "requests_ntlm": "1.3.0",
+          "qiskit-iqm": "18.0",
+          "qiskit-ibm-runtime": "0.35.0"
+        },
+        "package_count": 51,
+        "timestamp": "2026-03-23T17:44:48.565310Z"
+      },
+      "library_versions_after": {
+        "type": "venv",
+        "path": "/autofs/nccs-svm1_home1/ishangore/q8020/fvm_euler_1d_solver/.venv-quantum",
+        "packages": {
+          "setuptools": "65.5.0",
+          "pip": "23.2.1",
+          "six": "1.17.0",
+          "PyYAML": "6.0.3",
+          "python-dotenv": "1.2.2",
+          "pyparsing": "3.3.2",
+          "pillow": "12.1.1",
+          "packaging": "24.1",
+          "numpy": "2.4.3",
+          "kiwisolver": "1.5.0",
+          "fonttools": "4.62.1",
+          "cycler": "0.12.1",
+          "scipy": "1.17.1",
+          "python-dateutil": "2.9.0.post0",
+          "contourpy": "1.3.3",
+          "matplotlib": "3.10.8",
+          "openqasm3": "1.0.1",
+          "mpmath": "1.3.0",
+          "antlr4-python3-runtime": "4.13.2",
+          "websocket-client": "1.9.0",
+          "urllib3": "2.6.3",
+          "typing_extensions": "4.15.0",
+          "sympy": "1.14.0",
+          "symengine": "0.13.0",
+          "stevedore": "5.7.0",
+          "rustworkx": "0.17.1",
+          "quantum-linear-solvers": "0.1.0",
+          "PyJWT": "2.12.1",
+          "pycparser": "3.0",
+          "psutil": "7.2.2",
+          "idna": "3.11",
+          "dill": "0.4.1",
+          "charset-normalizer": "3.4.6",
+          "certifi": "2026.2.25",
+          "annotated-types": "0.7.0",
+          "requests": "2.32.3",
+          "qiskit": "1.2.4",
+          "pydantic_core": "2.23.4",
+          "cffi": "2.0.0",
+          "qiskit-qasm3-import": "0.5.1",
+          "qiskit-algorithms": "0.3.1",
+          "qiskit-aer": "0.15.1",
+          "pydantic": "2.9.2",
+          "ibm-cloud-sdk-core": "3.24.1",
+          "cryptography": "46.0.5",
+          "pyspnego": "0.12.1",
+          "iqm-client": "22.16",
+          "ibm-platform-services": "0.66.1",
+          "requests_ntlm": "1.3.0",
+          "qiskit-iqm": "18.0",
+          "qiskit-ibm-runtime": "0.35.0"
+        },
+        "package_count": 51,
+        "timestamp": "2026-03-23T18:44:51.760854Z"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "_source": "sweep",
+      "directory": "/lustre/orion/ard189/scratch/ishangore/hhl_time_steps_with_trials/2026-03-23/_0e04603a/time_steps_0/trial_5_b624dee0",
+      "files": [
+        {
+          "name": "circuit_generated_statevector_nelem5_step4_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step4_iter0.qpy",
+          "size_bytes": 34778657,
+          "modified": "2026-03-23T18:05:07Z",
+          "type": "qpy"
+        },
+        {
+          "name": "q8020_params_b624dee0.json",
+          "path": "q8020_params_b624dee0.json",
+          "size_bytes": 1363,
+          "modified": "2026-03-23T17:44:48Z",
+          "type": "json"
+        },
+        {
+          "name": "dq_nelem5_nsteps11_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps11_iter0_statevector_shots150000.csv",
+          "size_bytes": 612,
+          "modified": "2026-03-23T18:37:54Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step5_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step5_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:09:28Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps12_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps12_iter0_statevector_shots150000.csv",
+          "size_bytes": 637,
+          "modified": "2026-03-23T18:42:18Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step6_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step6_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:13:51Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step7_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step7_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:18:13Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step0_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step0_iter0.qpy",
+          "size_bytes": 34777631,
+          "modified": "2026-03-23T17:47:34Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step1_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step1_iter0.qpy",
+          "size_bytes": 34778654,
+          "modified": "2026-03-23T17:51:54Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step2_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step2_iter0.qpy",
+          "size_bytes": 34778657,
+          "modified": "2026-03-23T17:56:21Z",
+          "type": "qpy"
+        },
+        {
+          "name": "q8020_stdout_b624dee0.txt",
+          "path": "q8020_stdout_b624dee0.txt",
+          "size_bytes": 46050,
+          "modified": "2026-03-23T18:42:18Z",
+          "type": "txt"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step3_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step3_iter0.qpy",
+          "size_bytes": 34778657,
+          "modified": "2026-03-23T18:00:43Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps2_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps2_iter0_statevector_shots150000.csv",
+          "size_bytes": 641,
+          "modified": "2026-03-23T17:58:26Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step11_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step11_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:36:24Z",
+          "type": "qpy"
+        },
+        {
+          "name": "matrix_A_nelem5_step11_iter0.pkl",
+          "path": "matrix_A_nelem5_step11_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:37:54Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step10_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step10_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:32:01Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps1_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps1_iter0_statevector_shots150000.csv",
+          "size_bytes": 620,
+          "modified": "2026-03-23T17:54:02Z",
+          "type": "csv"
+        },
+        {
+          "name": "matrix_A_nelem5_step10_iter0.pkl",
+          "path": "matrix_A_nelem5_step10_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:33:31Z",
+          "type": "pkl"
+        },
+        {
+          "name": "dq_nelem5_nsteps4_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps4_iter0_statevector_shots150000.csv",
+          "size_bytes": 659,
+          "modified": "2026-03-23T18:07:11Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step12_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step12_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:40:47Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps7_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps7_iter0_statevector_shots150000.csv",
+          "size_bytes": 652,
+          "modified": "2026-03-23T18:20:19Z",
+          "type": "csv"
+        },
+        {
+          "name": "matrix_A_nelem5_step12_iter0.pkl",
+          "path": "matrix_A_nelem5_step12_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:42:18Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step9_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step9_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:27:01Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step8_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step8_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:22:37Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps8_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps8_iter0_statevector_shots150000.csv",
+          "size_bytes": 664,
+          "modified": "2026-03-23T18:24:43Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step13_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step13_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:44:36Z",
+          "type": "qpy"
+        },
+        {
+          "name": "matrix_A_nelem5_step9_iter0.pkl",
+          "path": "matrix_A_nelem5_step9_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:29:07Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step12_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step12_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:40:11Z",
+          "type": "qpy"
+        },
+        {
+          "name": "matrix_A_nelem5_step8_iter0.pkl",
+          "path": "matrix_A_nelem5_step8_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:24:43Z",
+          "type": "pkl"
+        },
+        {
+          "name": "dq_nelem5_nsteps10_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps10_iter0_statevector_shots150000.csv",
+          "size_bytes": 625,
+          "modified": "2026-03-23T18:33:31Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step11_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step11_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:35:49Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step8_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step8_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:23:14Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_step10_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_step10_iter0.qpy",
+          "size_bytes": 34779507,
+          "modified": "2026-03-23T18:31:25Z",
+          "type": "qpy"
+        },
+        {
+          "name": "q8020_env_before_b624dee0.json",
+          "path": "q8020_env_before_b624dee0.json",
+          "size_bytes": 1612,
+          "modified": "2026-03-23T17:44:48Z",
+          "type": "json"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step9_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step9_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:27:37Z",
+          "type": "qpy"
+        },
+        {
+          "name": "pipeline_args.json",
+          "path": "pipeline_args.json",
+          "size_bytes": 2125,
+          "modified": "2026-03-23T14:38:25Z",
+          "type": "json"
+        },
+        {
+          "name": "matrix_A_nelem5_step0_iter0.pkl",
+          "path": "matrix_A_nelem5_step0_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T17:49:39Z",
+          "type": "pkl"
+        },
+        {
+          "name": "dq_nelem5_nsteps0_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps0_iter0_statevector_shots150000.csv",
+          "size_bytes": 617,
+          "modified": "2026-03-23T17:49:39Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step3_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step3_iter0.qpy",
+          "size_bytes": 30451172,
+          "modified": "2026-03-23T18:01:19Z",
+          "type": "qpy"
+        },
+        {
+          "name": "matrix_A_nelem5_step1_iter0.pkl",
+          "path": "matrix_A_nelem5_step1_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T17:54:02Z",
+          "type": "pkl"
+        },
+        {
+          "name": "dq_nelem5_nsteps3_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps3_iter0_statevector_shots150000.csv",
+          "size_bytes": 645,
+          "modified": "2026-03-23T18:02:49Z",
+          "type": "csv"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step2_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step2_iter0.qpy",
+          "size_bytes": 30451172,
+          "modified": "2026-03-23T17:56:56Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps6_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps6_iter0_statevector_shots150000.csv",
+          "size_bytes": 649,
+          "modified": "2026-03-23T18:15:56Z",
+          "type": "csv"
+        },
+        {
+          "name": "matrix_A_nelem5_step2_iter0.pkl",
+          "path": "matrix_A_nelem5_step2_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T17:58:26Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step1_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step1_iter0.qpy",
+          "size_bytes": 30451169,
+          "modified": "2026-03-23T17:52:29Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps5_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps5_iter0_statevector_shots150000.csv",
+          "size_bytes": 665,
+          "modified": "2026-03-23T18:11:33Z",
+          "type": "csv"
+        },
+        {
+          "name": "matrix_A_nelem5_step3_iter0.pkl",
+          "path": "matrix_A_nelem5_step3_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:02:49Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step0_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step0_iter0.qpy",
+          "size_bytes": 30451157,
+          "modified": "2026-03-23T17:48:10Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step7_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step7_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:18:49Z",
+          "type": "qpy"
+        },
+        {
+          "name": "matrix_A_nelem5_step4_iter0.pkl",
+          "path": "matrix_A_nelem5_step4_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:07:11Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step6_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step6_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:14:27Z",
+          "type": "qpy"
+        },
+        {
+          "name": "matrix_A_nelem5_step5_iter0.pkl",
+          "path": "matrix_A_nelem5_step5_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:11:33Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step5_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step5_iter0.qpy",
+          "size_bytes": 30451173,
+          "modified": "2026-03-23T18:10:04Z",
+          "type": "qpy"
+        },
+        {
+          "name": "q8020_stderr_b624dee0.txt",
+          "path": "q8020_stderr_b624dee0.txt",
+          "size_bytes": 0,
+          "modified": "2026-03-23T17:44:48Z",
+          "type": "txt"
+        },
+        {
+          "name": "matrix_A_nelem5_step6_iter0.pkl",
+          "path": "matrix_A_nelem5_step6_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:15:56Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots150000_nelem5_step4_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots150000_nelem5_step4_iter0.qpy",
+          "size_bytes": 30451172,
+          "modified": "2026-03-23T18:05:43Z",
+          "type": "qpy"
+        },
+        {
+          "name": "dq_nelem5_nsteps9_iter0_statevector_shots150000.csv",
+          "path": "dq_nelem5_nsteps9_iter0_statevector_shots150000.csv",
+          "size_bytes": 626,
+          "modified": "2026-03-23T18:29:07Z",
+          "type": "csv"
+        },
+        {
+          "name": "matrix_A_nelem5_step7_iter0.pkl",
+          "path": "matrix_A_nelem5_step7_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-03-23T18:20:19Z",
+          "type": "pkl"
+        }
+      ]
+    },
+    {
+      "transpile_passes": [],
+      "circuit_timing_total_s": {
+        "generate": 0.0,
+        "transpile": 0.0,
+        "execute": 0.0,
+        "total": 0.0
+      },
+      "linear_system": {},
+      "file_inventory": {
+        "qpy_generated": [
+          {
+            "name": "circuit_generated_statevector_nelem5_step4_iter0.qpy",
+            "size_bytes": 34778657,
+            "modified": "2026-03-23T18:05:07Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step5_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:09:28Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step6_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:13:51Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step7_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:18:13Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step0_iter0.qpy",
+            "size_bytes": 34777631,
+            "modified": "2026-03-23T17:47:34Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step1_iter0.qpy",
+            "size_bytes": 34778654,
+            "modified": "2026-03-23T17:51:54Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step2_iter0.qpy",
+            "size_bytes": 34778657,
+            "modified": "2026-03-23T17:56:21Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step3_iter0.qpy",
+            "size_bytes": 34778657,
+            "modified": "2026-03-23T18:00:43Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step9_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:27:01Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step8_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:22:37Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step13_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:44:36Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step12_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:40:11Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step11_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:35:49Z"
+          },
+          {
+            "name": "circuit_generated_statevector_nelem5_step10_iter0.qpy",
+            "size_bytes": 34779507,
+            "modified": "2026-03-23T18:31:25Z"
+          }
+        ],
+        "qpy_transpiled": [
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step11_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:36:24Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step10_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:32:01Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step12_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:40:47Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step8_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:23:14Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step9_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:27:37Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step3_iter0.qpy",
+            "size_bytes": 30451172,
+            "modified": "2026-03-23T18:01:19Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step2_iter0.qpy",
+            "size_bytes": 30451172,
+            "modified": "2026-03-23T17:56:56Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step1_iter0.qpy",
+            "size_bytes": 30451169,
+            "modified": "2026-03-23T17:52:29Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step0_iter0.qpy",
+            "size_bytes": 30451157,
+            "modified": "2026-03-23T17:48:10Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step7_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:18:49Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step6_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:14:27Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step5_iter0.qpy",
+            "size_bytes": 30451173,
+            "modified": "2026-03-23T18:10:04Z"
+          },
+          {
+            "name": "circuit_transpile_statevector_shots150000_nelem5_step4_iter0.qpy",
+            "size_bytes": 30451172,
+            "modified": "2026-03-23T18:05:43Z"
+          }
+        ],
+        "csv": [
+          {
+            "name": "dq_nelem5_nsteps11_iter0_statevector_shots150000.csv",
+            "size_bytes": 612,
+            "modified": "2026-03-23T18:37:54Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps12_iter0_statevector_shots150000.csv",
+            "size_bytes": 637,
+            "modified": "2026-03-23T18:42:18Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps2_iter0_statevector_shots150000.csv",
+            "size_bytes": 641,
+            "modified": "2026-03-23T17:58:26Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps1_iter0_statevector_shots150000.csv",
+            "size_bytes": 620,
+            "modified": "2026-03-23T17:54:02Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps4_iter0_statevector_shots150000.csv",
+            "size_bytes": 659,
+            "modified": "2026-03-23T18:07:11Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps7_iter0_statevector_shots150000.csv",
+            "size_bytes": 652,
+            "modified": "2026-03-23T18:20:19Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps8_iter0_statevector_shots150000.csv",
+            "size_bytes": 664,
+            "modified": "2026-03-23T18:24:43Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps10_iter0_statevector_shots150000.csv",
+            "size_bytes": 625,
+            "modified": "2026-03-23T18:33:31Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps0_iter0_statevector_shots150000.csv",
+            "size_bytes": 617,
+            "modified": "2026-03-23T17:49:39Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps3_iter0_statevector_shots150000.csv",
+            "size_bytes": 645,
+            "modified": "2026-03-23T18:02:49Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps6_iter0_statevector_shots150000.csv",
+            "size_bytes": 649,
+            "modified": "2026-03-23T18:15:56Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps5_iter0_statevector_shots150000.csv",
+            "size_bytes": 665,
+            "modified": "2026-03-23T18:11:33Z"
+          },
+          {
+            "name": "dq_nelem5_nsteps9_iter0_statevector_shots150000.csv",
+            "size_bytes": 626,
+            "modified": "2026-03-23T18:29:07Z"
+          }
+        ],
+        "pkl": [
+          {
+            "name": "matrix_A_nelem5_step11_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:37:54Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step10_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:33:31Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step12_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:42:18Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step9_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:29:07Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step8_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:24:43Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step0_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T17:49:39Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step1_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T17:54:02Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step2_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T17:58:26Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step3_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:02:49Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step4_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:07:11Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step5_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:11:33Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step6_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:15:56Z"
+          },
+          {
+            "name": "matrix_A_nelem5_step7_iter0.pkl",
+            "size_bytes": 2115,
+            "modified": "2026-03-23T18:20:19Z"
+          }
+        ],
+        "png": [],
+        "other": [
+          {
+            "name": "pipeline_args.json",
+            "size_bytes": 2125,
+            "modified": "2026-03-23T14:38:25Z"
+          }
+        ]
+      },
+      "_source": "solver"
+    }
+  ],
+  "backend": [
+    {
+      "name": "aer_simulator_statevector",
+      "type": "simulator",
+      "method": "statevector",
+      "noise": false,
+      "_source": "solver",
+      "nshots": 150000
+    }
+  ],
+  "analysis": [
+    {
+      "iterations_completed": 0,
+      "converged": false,
+      "_source": "solver",
+      "hhl_metrics": []
+    }
+  ],
+  "results": [
+    {
+      "final_solution": [],
+      "per_iteration": [],
+      "residual_history": [],
+      "_source": "solver",
+      "lu_reference_vector_final": [
+        -0.0001953,
+        -8.114e-06,
+        -0.0001564,
+        -0.000152,
+        0.0003877,
+        0.0001655,
+        -0.001353,
+        -0.001152,
+        -0.002634,
+        -0.008548,
+        -0.007675,
+        -0.01649,
+        -0.01785,
+        -0.01373,
+        -0.03451
+      ]
+    }
+  ],
+  "experiment": [
+    {
+      "_source": "sweep",
+      "name": "time_steps_0_trial_5",
+      "experiment_id": "b624dee0",
+      "workflow_id": "_0e04603a",
+      "timestamp": "2026-03-23T17:44:48.568304Z",
+      "user": {
+        "username": "ishangore",
+        "hostname": "frontier06226"
+      }
+    }
+  ],
+  "case": [
+    {
+      "_source": "solver",
+      "name": "nozzle_1d",
+      "nelem": null,
+      "time_scheme": null,
+      "cfl": null,
+      "max_iters": null,
+      "max_inner_iters": null,
+      "conv_tol": null,
+      "res_tol": null,
+      "localdt": null,
+      "nondim": null,
+      "area_equation": null,
+      "reference_values": {
+        "rho_ref": null,
+        "u_ref": null,
+        "p_ref": null
+      }
+    },
+    {
+      "_source": "sweep",
+      "name": "time_steps_0_trial_5",
+      "case_id": "time_steps_0_trial_5",
+      "params": {
+        "_slurm": true,
+        "_run_mode": "parallel",
+        "_slurm_submit": true,
+        "_slurm_project": "ard189",
+        "_slurm_partition": "batch",
+        "_slurm_walltime": "02:00:00",
+        "_cores_per_task": 1,
+        "_output_dir": "/lustre/orion/ard189/scratch/ishangore/hhl_time_steps_with_trials",
+        "_env": "~/q8020/fvm_euler_1d_solver/.venv-quantum",
+        "_script": "source ~/q8020/fvm_euler_1d_solver/.venv-quantum/bin/activate && python3 ~/q8020/fvm_euler_1d_solver/nozzle_1d_solver.py",
+        "_case_postproc": [
+          "source ~/venvs/q8020-sweep/bin/activate && python3 ~/q8020/q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py"
+        ],
+        "_inject_outdir": "-outdir",
+        "-time_scheme": "BDF1",
+        "-shots": 150000,
+        "-linsolver": "HHL",
+        "-localdt": true,
+        "-noshow": true,
+        "-nelem": 5,
+        "-iters": 15,
+        "-initers": 1,
+        "-backend": "ideal",
+        "-cfl": 1,
+        "_trial_index": 5,
+        "_parent_case_id": "time_steps_0"
+      },
+      "command": [
+        "bash",
+        "-c",
+        "source /ccs/home/ishangore/q8020/fvm_euler_1d_solver/.venv-quantum/bin/activate && source ~/q8020/fvm_euler_1d_solver/.venv-quantum/bin/activate && python3 ~/q8020/fvm_euler_1d_solver/nozzle_1d_solver.py -time_scheme BDF1 -shots 150000 -linsolver HHL -localdt -noshow -nelem 5 -iters 15 -initers 1 -backend ideal -cfl 1 -outdir /lustre/orion/ard189/scratch/ishangore/hhl_time_steps_with_trials/2026-03-23/_0e04603a/time_steps_0/trial_5_b624dee0"
+      ],
+      "script": "-c",
+      "cwd": "/autofs/nccs-svm1_home1/ishangore"
+    }
+  ],
+  "exec_stats": [
+    {
+      "_source": "sweep",
+      "start_time": "2026-03-23T17:44:48.568304Z",
+      "end_time": "2026-03-23T18:44:48.664104Z",
+      "duration_seconds": 3600.095814,
+      "exit_code": null,
+      "success": false,
+      "error": "timeout"
+    }
+  ]
+}

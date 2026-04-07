@@ -6,6 +6,27 @@
 **Problem:** Tridiagonal linear systems Ax=b at N = 2, 4, 8, 32, 64, where A has diagonal 2 and off-diagonals -1 (1D Laplacian)
 **Variants:** Original HHL, Modular D-1 (top-level blocks), Modular D-2 (QPE sub-blocks)
 
+
+---
+# DEBUNKING - March 23
+
+
+
+I need to better control my apples and oranges.
+
+Original frontier_qlsa / quantum_linear_solvers used UnitaryGate() (qc.unitary()), which when passed to the transpiler gets decomposed the way the transpiler wants do. In my results from the other day I used two codes - one with and one without UnitaryGate(), the one without did the decomposition manually, then passed it to the transpiler. It produced circuits which are much more shallow than the default cos/sin decomposition used by the transpiler on an opaque unitary. So circuit build time was much less, and transpilation time, modular or monolithic, was similarly much less. 
+
+This explained away all the advantages of modular transpilation, especially when its startup costs are added in. So I made improvements to it, caching stuff, and now modular transpile is faster at scale but not significantly (1.5x at 256x256). But circuit construction still dominates (confirming earlier results from Mohammad et al), and that has nothing to do with modular transpilation. 
+
+In an iterative HHL solver, there may be modular circuit pieces which are reusable across iterations. These are unfortunately small compared to the parts which change with matrix A. Further reuse on these parts might be possible if Kappa stays relatively fixed between iterations.
+
+“Further study is needed.”
+
+
+
+
+# OLDER ANALYSIS
+
 ---
 
 ## 1. Overview

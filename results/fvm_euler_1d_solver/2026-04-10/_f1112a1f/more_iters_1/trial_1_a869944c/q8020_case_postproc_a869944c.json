@@ -1,0 +1,37 @@
+{
+  "case_id": "more_iters_1_trial_1",
+  "experiment_id": "a869944c",
+  "workflow_id": "_f1112a1f",
+  "case_dir": "/lustre/orion/ard189/proj-shared/agallojr/q8020/2026-04-10/_f1112a1f/more_iters_1/trial_1_a869944c",
+  "params": {
+    "_output_dir": "/lustre/orion/ard189/proj-shared/agallojr/q8020",
+    "_solver_dir": "./fvm_euler_1d_solver",
+    "_metautil_dir": "./q8020-cfd-metautil",
+    "_experiment_dir": "./q8020-cfd-experiments",
+    "_postproc_venv": "./.venv",
+    "_slurm": true,
+    "_run_mode": "parallel",
+    "_slurm_project": "ard189",
+    "_slurm_partition": "batch",
+    "_slurm_walltime": "02:00:00",
+    "_slurm_exclusive_node": true,
+    "_slurm_pack_venvs": [
+      "./fvm_euler_1d_solver/.venv",
+      "./.venv"
+    ],
+    "_script": "source ./fvm_euler_1d_solver/.venv/bin/activate && python3 ./fvm_euler_1d_solver/nozzle_1d_solver.py",
+    "_case_postproc": "source ./.venv/bin/activate && python3 ./q8020-cfd-experiments/codes/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
+    "_inject_outdir": "-outdir",
+    "-nelem": 5,
+    "-time_scheme": "BDF1",
+    "-linsolver": "HHL",
+    "-localdt": true,
+    "-noshow": true,
+    "-shots": 150000,
+    "-iters": 120,
+    "-initers": 1,
+    "-cfl": 3,
+    "_trial_index": 1,
+    "_parent_case_id": "more_iters_1"
+  }
+}

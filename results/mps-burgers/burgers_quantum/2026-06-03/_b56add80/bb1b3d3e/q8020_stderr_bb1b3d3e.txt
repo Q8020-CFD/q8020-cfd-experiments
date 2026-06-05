@@ -1,0 +1,20 @@
+[burgers] q=4 N=16 nu=1.0e-04 cfl=0.1 dt=6.2500e-03 n_steps=4 method=cole_hopf_circuit
+[burgers] running classical FTCS baseline ...
+[burgers] classical done 0.00s
+[burgers] running method=cole_hopf_circuit ...
+Traceback (most recent call last):
+  File "/autofs/nccs-svm1_home1/ishangore/q8020/./q8020-mps-burgers/src/burgers_solver.py", line 535, in <module>
+    sols_method, step_metrics, genuine_steps = run_simulation_fw(
+                                               ^^^^^^^^^^^^^^^^^^
+  File "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers/src/burgers_fw.py", line 516, in run_simulation_fw
+    _, result_metrics = integrator.step(
+                        ^^^^^^^^^^^^^^^^
+  File "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers/src/burgers_fw.py", line 252, in step
+    result = self._run_all(state, grid, config, dt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers/src/burgers_fw.py", line 375, in _run_all
+    return run_cole_hopf_circuit_simulation(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers/src/burgers_cole_hopf_circuit.py", line 2028, in run_cole_hopf_circuit_simulation
+    raise NotImplementedError(
+NotImplementedError: Source forcing requires --propagator dense-block or lcu in this release. qft-diagonal+source is on the roadmap.

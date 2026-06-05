@@ -1,0 +1,43 @@
+{
+  "_source": "sweep",
+  "name": "qlbm_circuit",
+  "case_id": "qlbm_circuit",
+  "params": {
+    "_output_dir": "/lustre/orion/ard189/scratch/ishangore/burgers_gaussian",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_pack_venvs": [
+      "./.venv"
+    ],
+    "_slurm_walltime": "02:00:00",
+    "_run_mode": "parallel",
+    "_trials": 1,
+    "_script": "python ../q8020-mps-burgers/src/burgers_solver.py",
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--q": 4,
+    "--nu": 0.01,
+    "--cfl": 0.1,
+    "--shock-pct": 150.0,
+    "--bc": "dirichlet",
+    "--ic": "gaussian",
+    "--ic-amplitude": 0.4,
+    "--ic-center": 0.5,
+    "--ic-sigma": 0.1,
+    "--source": "none",
+    "--shots": 150000,
+    "--auto-cadence": true,
+    "--metric-transpile-timeout": 0,
+    "--method": "qlbm_circuit",
+    "--sign-recovery": "none"
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /mnt/bb/ishangore/venv_0/bin/activate && python ../q8020-mps-burgers/src/burgers_solver.py --noshow --no-classical-reference --q 4 --nu 0.01 --cfl 0.1 --shock-pct 150.0 --bc dirichlet --ic gaussian --ic-amplitude 0.4 --ic-center 0.5 --ic-sigma 0.1 --source none --shots 150000 --auto-cadence --metric-transpile-timeout 0 --method qlbm_circuit --sign-recovery none --outdir /lustre/orion/ard189/scratch/ishangore/burgers_gaussian/2026-06-02/_c8b768e9/5907c1fe"
+  ],
+  "script": "-c",
+  "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers"
+}

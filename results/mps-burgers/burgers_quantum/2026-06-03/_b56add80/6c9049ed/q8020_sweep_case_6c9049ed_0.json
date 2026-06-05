@@ -1,0 +1,42 @@
+{
+  "_source": "sweep",
+  "name": "cole_hopf_circuit_dense_q3",
+  "case_id": "cole_hopf_circuit_dense_q3",
+  "params": {
+    "_output_dir": "/lustre/orion/ard189/scratch/ishangore/burgers_quantum",
+    "_inject_outdir": "--outdir",
+    "_env": "./q8020-mps-burgers/.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_pack_venvs": [
+      "./q8020-mps-burgers/.venv"
+    ],
+    "_slurm_partition": "extended",
+    "_slurm_walltime": "24:00:00",
+    "_slurm_cores_per_task": 1,
+    "_slurm_cores_per_node": 64,
+    "_slurm_exclusive_node": false,
+    "_run_mode": "parallel",
+    "_trials": 1,
+    "_case_timeout": 82800,
+    "--noshow": true,
+    "--nu": 0.01,
+    "--cfl": 0.1,
+    "--ic": "sine",
+    "--source": "none",
+    "--q": 3,
+    "--shock-pct": 100.0,
+    "--method": "cole_hopf_circuit",
+    "--propagator": "dense-block",
+    "--bc": "periodic",
+    "--save-every": 2
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /mnt/bb/ishangore/venv_0/bin/activate && python ./q8020-mps-burgers/src/burgers_solver.py --noshow --nu 0.01 --cfl 0.1 --ic sine --source none --q 3 --shock-pct 100.0 --method cole_hopf_circuit --propagator dense-block --bc periodic --save-every 2 --outdir /lustre/orion/ard189/scratch/ishangore/burgers_quantum/2026-06-03/_b56add80/6c9049ed"
+  ],
+  "script": "-c",
+  "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020"
+}

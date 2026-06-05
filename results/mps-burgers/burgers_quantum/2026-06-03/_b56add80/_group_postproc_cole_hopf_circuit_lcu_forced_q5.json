@@ -1,0 +1,43 @@
+{
+  "group_id": "cole_hopf_circuit_lcu_forced_q5",
+  "workflow_id": "_b56add80",
+  "run_dir": "/lustre/orion/ard189/scratch/ishangore/burgers_quantum/2026-06-03/_b56add80",
+  "case_dirs": [
+    "/lustre/orion/ard189/scratch/ishangore/burgers_quantum/2026-06-03/_b56add80/99e11954"
+  ],
+  "params": {
+    "_output_dir": "/lustre/orion/ard189/scratch/ishangore/burgers_quantum",
+    "_inject_outdir": "--outdir",
+    "_env": "./q8020-mps-burgers/.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_pack_venvs": [
+      "./q8020-mps-burgers/.venv"
+    ],
+    "_slurm_partition": "extended",
+    "_slurm_walltime": "24:00:00",
+    "_slurm_cores_per_task": 1,
+    "_slurm_cores_per_node": 64,
+    "_slurm_exclusive_node": false,
+    "_run_mode": "parallel",
+    "_trials": 1,
+    "_case_timeout": 82800,
+    "--noshow": true,
+    "--nu": 0.1,
+    "--cfl": 0.1,
+    "--ic": "sine",
+    "--source": "sine",
+    "--method": "cole_hopf_circuit",
+    "--propagator": "lcu",
+    "--shock-pct": 100.0,
+    "--q": 5,
+    "--shots": 0,
+    "--bc": "periodic",
+    "--lcu-taylor-order": 4,
+    "--save-every": 1,
+    "_group_postproc": [
+      "python ./q8020-mps-burgers/postproc/plot_cole_hopf_circuit_evolution.py"
+    ]
+  }
+}

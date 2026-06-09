@@ -1,0 +1,836 @@
+{
+  "exec_stats": [
+    {
+      "_source": "sweep",
+      "start_time": "2026-06-06T00:13:16.811035Z",
+      "end_time": "2026-06-06T00:13:19.584020Z",
+      "duration_seconds": 2.773001,
+      "exit_code": 0,
+      "success": true
+    }
+  ],
+  "backend": [],
+  "results": [
+    {
+      "u_initial": [
+        0.0,
+        0.7071067811865475,
+        1.0,
+        0.7071067811865476,
+        1.2246467991473532e-16,
+        -0.7071067811865475,
+        -1.0,
+        -0.7071067811865477
+      ],
+      "u_final_classical": [
+        -1.1873530614610141e-19,
+        0.42394485050734104,
+        0.8148848087022884,
+        1.5239910592508712,
+        5.401146323870215e-16,
+        -1.5239910592508719,
+        -0.8148848087022885,
+        -0.4239448505073411
+      ],
+      "u_final_method": [
+        2.821694363077439e-16,
+        0.4240033785453642,
+        0.8150293469703206,
+        1.5238589177525514,
+        3.806660958358892e-15,
+        -1.5238589177525548,
+        -0.8150293469703215,
+        -0.4240033785453626
+      ],
+      "errors_by_step": {
+        "0": 0.0,
+        "2": 1.4147567635528764e-05,
+        "4": 2.8959535140645147e-05,
+        "6": 4.5654917161197575e-05,
+        "8": 6.443356952048395e-05,
+        "10": 8.403977983165947e-05,
+        "12": 0.00010188132958817408,
+        "14": 0.00011486768779569415
+      },
+      "final_error": 0.00011486768779569415,
+      "max_error": 0.00011486768779569415,
+      "_source": "solver"
+    },
+    {
+      "_source": "stdout",
+      "experiment_id": null,
+      "algorithm": "burgers_tebd",
+      "q": 3,
+      "N": 8,
+      "nu": 0.0001,
+      "n_steps": 14,
+      "shock_pct": 100.0,
+      "ic": "sine",
+      "ic_modes": null,
+      "ic_seed": null,
+      "ic_alpha": null,
+      "ic_center": null,
+      "ic_sigma": null,
+      "ic_cole_hopf_coeffs": null,
+      "classical_reference": true,
+      "analytic_reference": null,
+      "method": "tebd",
+      "bc": "periodic",
+      "trotter_order": 1,
+      "trotter_reps": 1,
+      "shots": 0,
+      "t1": null,
+      "t2": null,
+      "backend_name": null,
+      "final_error": 0.00011486768779569415,
+      "max_error": 0.00011486768779569415,
+      "classical_time_s": 0.0005664825439453125,
+      "method_time_s": 0.0714108943939209,
+      "exit_code": 0
+    }
+  ],
+  "code": [
+    {
+      "_source": "sweep",
+      "entry_point": "-c",
+      "interpreter": "bash",
+      "library_versions_before": {
+        "type": "venv",
+        "path": "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers/.venv",
+        "packages": {
+          "setuptools": "82.0.1",
+          "packaging": "26.2",
+          "pip": "26.1.2",
+          "wheel": "0.47.0",
+          "websockets": "16.0",
+          "watchdog": "6.0.0",
+          "urllib3": "2.7.0",
+          "typing_extensions": "4.15.0",
+          "toml": "0.10.2",
+          "tenacity": "9.1.4",
+          "subprocess-tee": "0.4.2",
+          "smmap": "5.0.3",
+          "six": "1.17.0",
+          "rpds-py": "2026.5.1",
+          "python-multipart": "0.0.30",
+          "pyparsing": "3.3.2",
+          "pyarrow": "24.0.0",
+          "protobuf": "7.35.0",
+          "pillow": "12.2.0",
+          "numpy": "2.4.6",
+          "narwhals": "2.22.0",
+          "MarkupSafe": "3.0.3",
+          "kiwisolver": "1.5.0",
+          "itsdangerous": "2.2.0",
+          "idna": "3.18",
+          "httptools": "0.8.0",
+          "h11": "0.16.0",
+          "fonttools": "4.63.0",
+          "duckdb": "1.5.3",
+          "cycler": "0.12.1",
+          "click": "8.4.1",
+          "charset-normalizer": "3.4.7",
+          "certifi": "2026.5.20",
+          "cachetools": "7.1.4",
+          "blinker": "1.9.0",
+          "attrs": "26.1.0",
+          "uvicorn": "0.48.0",
+          "requests": "2.34.2",
+          "referencing": "0.37.0",
+          "python-dateutil": "2.9.0.post0",
+          "plotly": "6.7.0",
+          "Jinja2": "3.1.6",
+          "gitdb": "4.0.12",
+          "contourpy": "1.3.3",
+          "anyio": "4.13.0",
+          "starlette": "1.2.1",
+          "pydeck": "0.9.2",
+          "pandas": "3.0.3",
+          "matplotlib": "3.10.9",
+          "jsonschema-specifications": "2025.9.1",
+          "GitPython": "3.1.50",
+          "jsonschema": "4.26.0",
+          "altair": "6.1.0",
+          "streamlit": "1.58.0",
+          "q8020-cfd-metautil": "0.1.0",
+          "typing-inspection": "0.4.2",
+          "stevedore": "5.8.0",
+          "scipy": "1.17.1",
+          "rustworkx": "0.17.1",
+          "PyJWT": "2.13.0",
+          "pydantic_core": "2.46.4",
+          "pycparser": "3.0",
+          "pybase64": "1.4.3",
+          "psutil": "7.2.2",
+          "orjson": "3.11.9",
+          "dill": "0.4.1",
+          "annotated-types": "0.7.0",
+          "qiskit": "2.4.1",
+          "pydantic": "2.13.4",
+          "ibm-cloud-sdk-core": "3.24.4",
+          "cffi": "2.0.0",
+          "samplomatic": "0.19.0",
+          "qiskit-aer": "0.17.2",
+          "ibm-platform-services": "0.75.0",
+          "cryptography": "48.0.0",
+          "pyspnego": "0.12.1",
+          "ibm-quantum-schemas": "0.7.20260419",
+          "requests_ntlm": "1.3.0",
+          "qiskit-ibm-runtime": "0.47.0",
+          "q8020-cfd-qutil": "0.1.0",
+          "tqdm": "4.67.3",
+          "toolz": "1.1.0",
+          "Pygments": "2.20.0",
+          "pluggy": "1.6.0",
+          "llvmlite": "0.47.0",
+          "iniconfig": "2.3.0",
+          "autoray": "0.8.10",
+          "pytest": "9.0.3",
+          "numba": "0.65.1",
+          "cytoolz": "1.1.0",
+          "cotengra": "0.8.0",
+          "quimb": "1.14.0",
+          "q8020-mps-burgers": "0.1.0"
+        },
+        "package_count": 93,
+        "timestamp": "2026-06-06T00:13:16.807779Z"
+      },
+      "library_versions_after": {
+        "type": "venv",
+        "path": "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-mps-burgers/.venv",
+        "packages": {
+          "setuptools": "82.0.1",
+          "packaging": "26.2",
+          "pip": "26.1.2",
+          "wheel": "0.47.0",
+          "websockets": "16.0",
+          "watchdog": "6.0.0",
+          "urllib3": "2.7.0",
+          "typing_extensions": "4.15.0",
+          "toml": "0.10.2",
+          "tenacity": "9.1.4",
+          "subprocess-tee": "0.4.2",
+          "smmap": "5.0.3",
+          "six": "1.17.0",
+          "rpds-py": "2026.5.1",
+          "python-multipart": "0.0.30",
+          "pyparsing": "3.3.2",
+          "pyarrow": "24.0.0",
+          "protobuf": "7.35.0",
+          "pillow": "12.2.0",
+          "numpy": "2.4.6",
+          "narwhals": "2.22.0",
+          "MarkupSafe": "3.0.3",
+          "kiwisolver": "1.5.0",
+          "itsdangerous": "2.2.0",
+          "idna": "3.18",
+          "httptools": "0.8.0",
+          "h11": "0.16.0",
+          "fonttools": "4.63.0",
+          "duckdb": "1.5.3",
+          "cycler": "0.12.1",
+          "click": "8.4.1",
+          "charset-normalizer": "3.4.7",
+          "certifi": "2026.5.20",
+          "cachetools": "7.1.4",
+          "blinker": "1.9.0",
+          "attrs": "26.1.0",
+          "uvicorn": "0.48.0",
+          "requests": "2.34.2",
+          "referencing": "0.37.0",
+          "python-dateutil": "2.9.0.post0",
+          "plotly": "6.7.0",
+          "Jinja2": "3.1.6",
+          "gitdb": "4.0.12",
+          "contourpy": "1.3.3",
+          "anyio": "4.13.0",
+          "starlette": "1.2.1",
+          "pydeck": "0.9.2",
+          "pandas": "3.0.3",
+          "matplotlib": "3.10.9",
+          "jsonschema-specifications": "2025.9.1",
+          "GitPython": "3.1.50",
+          "jsonschema": "4.26.0",
+          "altair": "6.1.0",
+          "streamlit": "1.58.0",
+          "q8020-cfd-metautil": "0.1.0",
+          "typing-inspection": "0.4.2",
+          "stevedore": "5.8.0",
+          "scipy": "1.17.1",
+          "rustworkx": "0.17.1",
+          "PyJWT": "2.13.0",
+          "pydantic_core": "2.46.4",
+          "pycparser": "3.0",
+          "pybase64": "1.4.3",
+          "psutil": "7.2.2",
+          "orjson": "3.11.9",
+          "dill": "0.4.1",
+          "annotated-types": "0.7.0",
+          "qiskit": "2.4.1",
+          "pydantic": "2.13.4",
+          "ibm-cloud-sdk-core": "3.24.4",
+          "cffi": "2.0.0",
+          "samplomatic": "0.19.0",
+          "qiskit-aer": "0.17.2",
+          "ibm-platform-services": "0.75.0",
+          "cryptography": "48.0.0",
+          "pyspnego": "0.12.1",
+          "ibm-quantum-schemas": "0.7.20260419",
+          "requests_ntlm": "1.3.0",
+          "qiskit-ibm-runtime": "0.47.0",
+          "q8020-cfd-qutil": "0.1.0",
+          "tqdm": "4.67.3",
+          "toolz": "1.1.0",
+          "Pygments": "2.20.0",
+          "pluggy": "1.6.0",
+          "llvmlite": "0.47.0",
+          "iniconfig": "2.3.0",
+          "autoray": "0.8.10",
+          "pytest": "9.0.3",
+          "numba": "0.65.1",
+          "cytoolz": "1.1.0",
+          "cotengra": "0.8.0",
+          "quimb": "1.14.0",
+          "q8020-mps-burgers": "0.1.0"
+        },
+        "package_count": 93,
+        "timestamp": "2026-06-06T00:13:20.262775Z"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "_source": "sweep",
+      "directory": "/lustre/orion/ard189/scratch/ishangore/burgers_quantum/2026-06-05/_e15fb147/e2881b38",
+      "files": [
+        {
+          "name": "q8020_stderr_e2881b38.txt",
+          "path": "q8020_stderr_e2881b38.txt",
+          "size_bytes": 267,
+          "modified": "2026-06-06T00:13:19Z",
+          "type": "txt"
+        },
+        {
+          "name": "q8020_results_0.json",
+          "path": "q8020_results_0.json",
+          "size_bytes": 1012,
+          "modified": "2026-06-06T00:13:19Z",
+          "type": "json"
+        },
+        {
+          "name": "pipeline_args.json",
+          "path": "pipeline_args.json",
+          "size_bytes": 1598,
+          "modified": "2026-06-05T18:03:35Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_analysis_0.json",
+          "path": "q8020_analysis_0.json",
+          "size_bytes": 4588,
+          "modified": "2026-06-06T00:13:19Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_params_e2881b38.json",
+          "path": "q8020_params_e2881b38.json",
+          "size_bytes": 1153,
+          "modified": "2026-06-06T00:13:16Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_env_before_e2881b38.json",
+          "path": "q8020_env_before_e2881b38.json",
+          "size_bytes": 2662,
+          "modified": "2026-06-06T00:13:16Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_case_0.json",
+          "path": "q8020_case_0.json",
+          "size_bytes": 714,
+          "modified": "2026-06-06T00:13:19Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_stdout_e2881b38.txt",
+          "path": "q8020_stdout_e2881b38.txt",
+          "size_bytes": 673,
+          "modified": "2026-06-06T00:13:19Z",
+          "type": "txt"
+        },
+        {
+          "name": "q8020_artifacts_0.json",
+          "path": "q8020_artifacts_0.json",
+          "size_bytes": 1979,
+          "modified": "2026-06-06T00:13:19Z",
+          "type": "json"
+        }
+      ]
+    },
+    {
+      "grid": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875
+      ],
+      "solution_steps": {
+        "0": [
+          0.0,
+          0.7071067811865475,
+          1.0,
+          0.7071067811865476,
+          1.2246467991473532e-16,
+          -0.7071067811865475,
+          -1.0,
+          -0.7071067811865477
+        ],
+        "2": [
+          1.749433867792871e-16,
+          0.6549034071925516,
+          1.0212897057107364,
+          0.7980566589775331,
+          1.8655407724911975e-16,
+          -0.7980566589775324,
+          -1.0212897057107366,
+          -0.6549034071925519
+        ],
+        "4": [
+          8.230665806991828e-16,
+          0.6064213292817631,
+          1.0272413669455196,
+          0.8995058776976562,
+          -3.2827476656782524e-16,
+          -0.899505877697656,
+          -1.0272413669455203,
+          -0.6064213292817633
+        ],
+        "6": [
+          9.175781209903054e-16,
+          0.5619493800921824,
+          1.0165861290009366,
+          1.0109763749218774,
+          7.537690894870124e-17,
+          -1.0109763749218774,
+          -1.016586129000937,
+          -0.5619493800921829
+        ],
+        "8": [
+          7.86467694242027e-16,
+          0.521602521072878,
+          0.9889312626078965,
+          1.1313514648686152,
+          4.734367289289718e-16,
+          -1.1313514648686156,
+          -0.9889312626078972,
+          -0.5216025210728781
+        ],
+        "10": [
+          4.516055666049557e-16,
+          0.4853243777117971,
+          0.9448821667137504,
+          1.2587853449982107,
+          1.7887624064511004e-15,
+          -1.2587853449982127,
+          -0.9448821667137519,
+          -0.48532437771179626
+        ],
+        "12": [
+          4.842272800800324e-17,
+          0.4529041264161934,
+          0.8860656807265441,
+          1.3906943033211618,
+          3.1410145440587967e-15,
+          -1.3906943033211643,
+          -0.8860656807265453,
+          -0.4529041264161917
+        ],
+        "14": [
+          2.821694363077439e-16,
+          0.4240033785453642,
+          0.8150293469703206,
+          1.5238589177525514,
+          3.806660958358892e-15,
+          -1.5238589177525548,
+          -0.8150293469703215,
+          -0.4240033785453626
+        ]
+      },
+      "_source": "solver"
+    }
+  ],
+  "analysis": [
+    {
+      "final_error_epsilon": 0.00011486768779569415,
+      "max_error_epsilon": 0.00011486768779569415,
+      "classical_wall_time_s": 0.0005664825439453125,
+      "method_wall_time_s": 0.0714108943939209,
+      "speedup_ratio": 0.007932718792463917,
+      "n_pauli_terms": 12,
+      "shots": 0,
+      "t1": null,
+      "t2": null,
+      "backend_name": null,
+      "backend_type": "sim",
+      "coupling_map": "default",
+      "optimization_level": 1,
+      "seed": null,
+      "total_pauli_decomp_time": 0,
+      "total_circuit_construction_time": 0,
+      "total_transpilation_time": 0,
+      "total_execution_time": 0,
+      "total_sign_recovery_time": 0,
+      "total_metric_transpile_time": 0,
+      "n_circuits_executed": 0,
+      "avg_circuit_depth": null,
+      "avg_gate_count": null,
+      "avg_cx_gates": null,
+      "avg_sign_recovery_depth_per_circuit": null,
+      "avg_sign_recovery_cx_per_circuit": null,
+      "total_sign_recovery_cx": 0,
+      "n_qubits": null,
+      "circuit_metrics_n_available": 0,
+      "circuit_metrics_n_total": 14,
+      "sign_recovery": "none",
+      "per_step_metrics": [
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            1,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        },
+        {
+          "method": "tebd",
+          "mpo_bond_dims": [
+            4,
+            4
+          ],
+          "mps_bond_dims_in": [
+            2,
+            2
+          ],
+          "mps_bond_dims_out": [
+            2,
+            2
+          ],
+          "max_bond": null,
+          "cutoff": 1e-14
+        }
+      ],
+      "_source": "solver"
+    }
+  ],
+  "experiment": [
+    {
+      "_source": "sweep",
+      "name": "tebd_q3",
+      "experiment_id": "e2881b38",
+      "workflow_id": "_e15fb147",
+      "timestamp": "2026-06-06T00:13:16.811035Z",
+      "user": {
+        "username": "ishangore",
+        "hostname": "frontier10365"
+      }
+    }
+  ],
+  "case": [
+    {
+      "_source": "sweep",
+      "name": "tebd_q3",
+      "case_id": "tebd_q3",
+      "params": {
+        "_output_dir": "/lustre/orion/ard189/scratch/ishangore/burgers_quantum",
+        "_inject_outdir": "--outdir",
+        "_env": "./q8020-mps-burgers/.venv",
+        "_script": "./q8020-mps-burgers/.venv/bin/python ./q8020-mps-burgers/src/burgers_solver.py",
+        "_slurm": true,
+        "_slurm_project": "ard189",
+        "_slurm_pack_venvs": [
+          "./q8020-mps-burgers/.venv"
+        ],
+        "_slurm_partition": "extended",
+        "_slurm_walltime": "24:00:00",
+        "_slurm_cores_per_task": 1,
+        "_slurm_cores_per_node": 64,
+        "_slurm_exclusive_node": false,
+        "_run_mode": "parallel",
+        "_trials": 1,
+        "_case_timeout": 82800,
+        "--noshow": true,
+        "--nu": 0.0001,
+        "--cfl": 0.1,
+        "--ic": "sine",
+        "--source": "sine",
+        "--q": 3,
+        "--shock-pct": 100.0,
+        "--method": "tebd",
+        "--bc": "periodic",
+        "--save-every": 2
+      },
+      "command": [
+        "bash",
+        "-c",
+        "source /mnt/bb/ishangore/venv_0/bin/activate && /mnt/bb/ishangore/venv_0/bin/python ./q8020-mps-burgers/src/burgers_solver.py --noshow --nu 0.0001 --cfl 0.1 --ic sine --source sine --q 3 --shock-pct 100.0 --method tebd --bc periodic --save-every 2 --outdir /lustre/orion/ard189/scratch/ishangore/burgers_quantum/2026-06-05/_e15fb147/e2881b38"
+      ],
+      "script": "-c",
+      "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020"
+    },
+    {
+      "q": 3,
+      "N": 8,
+      "nu": 0.0001,
+      "dx": 0.125,
+      "dt": 0.0125,
+      "cfl": 0.1,
+      "n_steps": 14,
+      "shock_pct": 100.0,
+      "ic": "sine",
+      "ic_modes": null,
+      "ic_seed": null,
+      "ic_alpha": null,
+      "ic_center": null,
+      "ic_sigma": null,
+      "ic_cole_hopf_coeffs": null,
+      "classical_reference": true,
+      "analytic_reference": null,
+      "source": "sine",
+      "method": "tebd",
+      "trotter_order": 1,
+      "trotter_reps": 1,
+      "bond_dim": null,
+      "mps_threshold": 0.0,
+      "shots": 0,
+      "backend_name": null,
+      "t1": null,
+      "t2": null,
+      "bc": "periodic",
+      "sign_recovery": "none",
+      "backend_type": "sim",
+      "coupling_map": "default",
+      "optimization_level": 1,
+      "seed": null,
+      "name": "burgers_1d",
+      "_source": "solver"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "_source": "sweep",
+  "name": "lbm_classical",
+  "case_id": "lbm_classical",
+  "params": {
+    "_output_dir": "~/q8020",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "--cfl": 0.1,
+    "--evolution-mode": "measure_reprepare",
+    "--segment-size": 10,
+    "--save-every": 10,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.4,
+    "--nu": 0.03,
+    "--seed": 1234,
+    "--shots": 150000,
+    "--metric-transpile-timeout": 0,
+    "--q": 7,
+    "--n-steps": 460,
+    "--method": "lbm"
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /Users/agallojr/proj/src/q8020/.venv/bin/activate && python ./q8020-mps-burgers/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --cfl 0.1 --evolution-mode measure_reprepare --segment-size 10 --save-every 10 --bc periodic --ic sine --source none --ic-amplitude 0.4 --nu 0.03 --seed 1234 --shots 150000 --metric-transpile-timeout 0 --q 7 --n-steps 460 --method lbm --outdir /Users/agallojr/q8020/2026-06-14/_5e42326c/6cc42f3d"
+  ],
+  "script": "-c",
+  "cwd": "/Users/agallojr/proj/src/q8020"
+}

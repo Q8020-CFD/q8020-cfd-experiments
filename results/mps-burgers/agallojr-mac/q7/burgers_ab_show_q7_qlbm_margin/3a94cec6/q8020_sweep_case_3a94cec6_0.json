@@ -1,0 +1,38 @@
+{
+  "_source": "sweep",
+  "name": "qlbm_circuit",
+  "case_id": "qlbm_circuit",
+  "params": {
+    "_output_dir": "~/q8020",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "--cfl": 0.1,
+    "--evolution-mode": "measure_reprepare",
+    "--segment-size": 5,
+    "--save-every": 10,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.5,
+    "--nu": 0.025,
+    "--seed": 1234,
+    "--shots": 150000,
+    "--metric-transpile-timeout": 0,
+    "--q": 7,
+    "--n-steps": 200,
+    "--method": "qlbm_circuit",
+    "--fock-qubits": 3,
+    "--qalb-collision-trotter-reps": 0
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /Users/agallojr/proj/src/q8020/.venv/bin/activate && python ./q8020-mps-burgers/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --cfl 0.1 --evolution-mode measure_reprepare --segment-size 5 --save-every 10 --bc periodic --ic sine --source none --ic-amplitude 0.5 --nu 0.025 --seed 1234 --shots 150000 --metric-transpile-timeout 0 --q 7 --n-steps 200 --method qlbm_circuit --fock-qubits 3 --qalb-collision-trotter-reps 0 --outdir /Users/agallojr/q8020/2026-06-15/_6f6dce13/3a94cec6"
+  ],
+  "script": "-c",
+  "cwd": "/Users/agallojr/proj/src/q8020"
+}

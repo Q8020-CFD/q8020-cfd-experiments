@@ -1,0 +1,27 @@
+{
+  "_source": "sweep",
+  "name": "run",
+  "case_id": "run",
+  "params": {
+    "_output_dir": "~/q8020",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_ch_hw_runner.py",
+    "--case": "smooth",
+    "--target": "hardware",
+    "--shots": 150000,
+    "--seed": 1234,
+    "_case_postproc": [
+      "./.venv/bin/python ./q8020-mps-burgers/postproc/plot_method_compare.py --reference ftcs_reference"
+    ],
+    "backend-name": "ibm_kingston",
+    "no-session": true
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /home/agallojr/proj/src/q8020/.venv/bin/activate && python ./q8020-mps-burgers/src/burgers_ch_hw_runner.py --case smooth --target hardware --shots 150000 --seed 1234 --backend-name ibm_kingston --no-session --outdir /home/agallojr/q8020/2026-06-15/_04b8d304/456c885d"
+  ],
+  "script": "-c",
+  "cwd": "/home/agallojr/proj/src/q8020"
+}

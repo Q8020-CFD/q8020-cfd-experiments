@@ -1,0 +1,36 @@
+{
+  "cases": {
+    "run": {
+      "_output_dir": "~/q8020",
+      "_inject_outdir": "--outdir",
+      "_env": "./.venv",
+      "_script": "python ./q8020-mps-burgers/src/burgers_ch_hw_runner.py",
+      "--case": "smooth_stunt",
+      "--target": "hardware",
+      "--backend-name": "ibm_kingston",
+      "--no-session": true,
+      "--shots": 150000,
+      "--seed": 1234,
+      "--initial-layout": "82,81,80,83,96",
+      "_case_postproc": [
+        "./.venv/bin/python ./q8020-mps-burgers/postproc/plot_method_compare.py --reference ftcs_reference"
+      ]
+    }
+  },
+  "global": {
+    "_output_dir": "~/q8020",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_ch_hw_runner.py",
+    "--case": "smooth_stunt",
+    "--target": "hardware",
+    "--backend-name": "ibm_kingston",
+    "--no-session": true,
+    "--shots": 150000,
+    "--seed": 1234,
+    "--initial-layout": "82,81,80,83,96",
+    "_case_postproc": [
+      "./.venv/bin/python ./q8020-mps-burgers/postproc/plot_method_compare.py --reference ftcs_reference"
+    ]
+  }
+}

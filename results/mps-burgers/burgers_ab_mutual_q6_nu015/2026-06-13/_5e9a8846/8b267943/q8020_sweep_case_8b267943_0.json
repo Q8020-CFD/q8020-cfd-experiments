@@ -1,0 +1,49 @@
+{
+  "_source": "sweep",
+  "name": "lbm_classical",
+  "case_id": "lbm_classical",
+  "params": {
+    "_output_dir": "/lustre/orion/ard189/scratch/ishangore/burgers_ab_mutual_q6_nu015",
+    "_inject_outdir": "--outdir",
+    "_env": "./q8020-mps-burgers/.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_pack_venvs": [
+      "./q8020-mps-burgers/.venv"
+    ],
+    "_slurm_partition": "batch",
+    "_slurm_walltime": "02:00:00",
+    "_slurm_cores_per_task": 1,
+    "_slurm_cores_per_node": 64,
+    "_slurm_exclusive_node": false,
+    "_run_mode": "parallel",
+    "_trials": 1,
+    "_case_timeout": 6300,
+    "--cfl": 0.1,
+    "--evolution-mode": "measure_reprepare",
+    "--segment-size": 10,
+    "--save-every": 10,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.3,
+    "--nu": 0.015,
+    "--seed": 1234,
+    "--shots": 150000,
+    "--metric-transpile-timeout": 0,
+    "--q": 6,
+    "--n-steps": 100,
+    "--method": "lbm"
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /mnt/bb/ishangore/venv_0/bin/activate && python ./q8020-mps-burgers/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --cfl 0.1 --evolution-mode measure_reprepare --segment-size 10 --save-every 10 --bc periodic --ic sine --source none --ic-amplitude 0.3 --nu 0.015 --seed 1234 --shots 150000 --metric-transpile-timeout 0 --q 6 --n-steps 100 --method lbm --outdir /lustre/orion/ard189/scratch/ishangore/burgers_ab_mutual_q6_nu015/2026-06-13/_5e9a8846/8b267943"
+  ],
+  "script": "-c",
+  "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020"
+}

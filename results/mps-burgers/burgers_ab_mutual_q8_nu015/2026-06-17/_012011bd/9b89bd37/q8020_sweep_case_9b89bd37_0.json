@@ -1,0 +1,39 @@
+{
+  "_source": "sweep",
+  "name": "cole_hopf_circuit",
+  "case_id": "cole_hopf_circuit",
+  "params": {
+    "_output_dir": "~/q8020",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "--cfl": 0.1,
+    "--evolution-mode": "measure_reprepare",
+    "--segment-size": 5,
+    "--save-every": 10,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.3,
+    "--nu": 0.015,
+    "--seed": 1234,
+    "--shots": 150000,
+    "--metric-transpile-timeout": 0,
+    "--q": 8,
+    "--n-steps": 400,
+    "--method": "cole_hopf_circuit",
+    "--propagator": "qft-diagonal",
+    "--bond-dim": 16,
+    "--phi-modes": 8
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /root/q8020/.venv/bin/activate && python ./q8020-mps-burgers/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --cfl 0.1 --evolution-mode measure_reprepare --segment-size 5 --save-every 10 --bc periodic --ic sine --source none --ic-amplitude 0.3 --nu 0.015 --seed 1234 --shots 150000 --metric-transpile-timeout 0 --q 8 --n-steps 400 --method cole_hopf_circuit --propagator qft-diagonal --bond-dim 16 --phi-modes 8 --outdir /root/q8020/2026-06-17/_012011bd/9b89bd37"
+  ],
+  "script": "-c",
+  "cwd": "/root/q8020"
+}

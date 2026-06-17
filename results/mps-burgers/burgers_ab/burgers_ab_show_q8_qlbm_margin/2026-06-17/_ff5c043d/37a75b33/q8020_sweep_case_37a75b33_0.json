@@ -1,0 +1,38 @@
+{
+  "_source": "sweep",
+  "name": "ftcs_ref_0",
+  "case_id": "ftcs_ref_0",
+  "params": {
+    "_output_dir": "~/q8020",
+    "_inject_outdir": "--outdir",
+    "_env": "./.venv",
+    "_script": "python ./q8020-mps-burgers/src/burgers_solver.py",
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "--cfl": 0.1,
+    "--evolution-mode": "measure_reprepare",
+    "--segment-size": 5,
+    "--save-every": 10,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.5,
+    "--nu": 0.025,
+    "--seed": 1234,
+    "--shots": 150000,
+    "--metric-transpile-timeout": 0,
+    "--q": 8,
+    "--n-steps": 400,
+    "--method": "ftcs_reference",
+    "--ref-points": 800,
+    "_group_postproc": "./.venv/bin/python ./q8020-mps-burgers/postproc/plot_method_compare.py --anchor qlbm_circuit --hide shift --no-ic"
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /root/q8020/.venv/bin/activate && python ./q8020-mps-burgers/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --cfl 0.1 --evolution-mode measure_reprepare --segment-size 5 --save-every 10 --bc periodic --ic sine --source none --ic-amplitude 0.5 --nu 0.025 --seed 1234 --shots 150000 --metric-transpile-timeout 0 --q 8 --n-steps 400 --method ftcs_reference --ref-points 800 --outdir /root/q8020/2026-06-17/_ff5c043d/37a75b33"
+  ],
+  "script": "-c",
+  "cwd": "/root/q8020"
+}

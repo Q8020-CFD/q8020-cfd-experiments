@@ -1,0 +1,98 @@
+{
+  "name": "bakeoff_diffusive_qubit_dialup",
+  "description": "Burgers DIFFUSIVE case (A=0.3, nu=0.05) -- the higher-viscosity regime that FAVORS QLBM/QALB.",
+  "global": {
+    "ic": "sine",
+    "ic_amplitude": 0.3,
+    "nu": 0.05,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal"
+  },
+  "runs": [
+    {
+      "label": "q4_ch",
+      "q": 4,
+      "method": "cole_hopf_circuit",
+      "n_steps": 30,
+      "segment_size": 5,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/local-mac/q4/burgers_ab_mutual_q4_nu050/dfa62e15"
+    },
+    {
+      "label": "q4_qlbm",
+      "q": 4,
+      "method": "qlbm_circuit",
+      "n_steps": 30,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/local-mac/q4/burgers_ab_mutual_q4_nu050/51871dc2"
+    },
+    {
+      "label": "q6_ch",
+      "q": 6,
+      "method": "cole_hopf_circuit",
+      "n_steps": 100,
+      "segment_size": 5,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/local-mac/q6/burgers_ab_mutual_q6_nu050/a6f52f58"
+    },
+    {
+      "label": "q6_qlbm",
+      "q": 6,
+      "method": "qlbm_circuit",
+      "n_steps": 100,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/local-mac/q6/burgers_ab_mutual_q6_nu050/2d2fbc7c"
+    },
+    {
+      "label": "q7_ch",
+      "q": 7,
+      "method": "cole_hopf_circuit",
+      "n_steps": 200,
+      "segment_size": 10,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/local-mac/q7/burgers_ab_mutual_q7_nu050/df3287ff"
+    },
+    {
+      "label": "q7_qlbm",
+      "q": 7,
+      "method": "qlbm_circuit",
+      "n_steps": 200,
+      "segment_size": 10,
+      "path": "../../results/mps-burgers/local-mac/q7/burgers_ab_mutual_q7_nu050/c01a0f5d"
+    },
+    {
+      "label": "q8_ch",
+      "q": 8,
+      "method": "cole_hopf_circuit",
+      "n_steps": 400,
+      "segment_size": 5,
+      "bond_dim": 16,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/burgers_ab/burgers_ab_mutual_q8_nu050/2026-06-17/_73b7dfdd/e98e677d"
+    },
+    {
+      "label": "q8_qlbm",
+      "q": 8,
+      "method": "qlbm_circuit",
+      "n_steps": 400,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/burgers_ab/burgers_ab_mutual_q8_nu050/2026-06-17/_73b7dfdd/37059952"
+    },
+    {
+      "label": "ftcs_reference",
+      "q": 8,
+      "method": "ftcs_reference",
+      "n_steps": 400,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/burgers_ab/burgers_ab_mutual_q8_nu050/2026-06-17/_73b7dfdd/0cfa724b"
+    }
+  ]
+}

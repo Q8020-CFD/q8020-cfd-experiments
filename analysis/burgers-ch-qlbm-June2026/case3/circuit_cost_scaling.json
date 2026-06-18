@@ -1,0 +1,42 @@
+{
+  "name": "circuit_cost_scaling",
+  "status": "complete",
+  "description": "Circuit-cost scaling of CH vs QLBM/QALB across the q-ladder -- the QALB story the accuracy figures miss. QLBM's defining property: cost is GRID-INDEPENDENT (flat ~119,440 CX on a fixed 9 qubits at every q), the price of a constant-size circuit. CH is the opposite: cheap at low q but cost grows with the grid. The two methods have mirror-image cost scaling, matching their mirror-image accuracy/stability. Costs read from q8020_analysis_0.json (cx, circuit_depth, n_qubits); transpiled at opt-level 1, all-to-all (real-device CX higher after routing).",
+  "global": {
+    "ic": "sine",
+    "nu": 0.05,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "shots": 150000,
+    "_source_cases": "mutual_q{4,6,7,8}_nu050 (cx/depth/n_qubits are physics-independent for QLBM and grid-driven for CH; the nu050 series is the representative dial-up)"
+  },
+  "series": [
+    {
+      "method": "cole_hopf_circuit",
+      "label": "CH",
+      "points": [
+        {"q": 4, "n_qubits": 10, "cx": 300,   "circuit_depth": 3079},
+        {"q": 6, "n_qubits": 14, "cx": 4030,  "circuit_depth": 16580},
+        {"q": 7, "n_qubits": 20, "cx": 24040, "circuit_depth": 69328},
+        {"q": 8, "n_qubits": 17, "cx": 33120, "circuit_depth": 83862}
+      ]
+    },
+    {
+      "method": "qlbm_circuit",
+      "label": "QLBM/QALB",
+      "points": [
+        {"q": 4, "n_qubits": 9, "cx": 119440, "circuit_depth": 432565},
+        {"q": 6, "n_qubits": 9, "cx": 119440, "circuit_depth": 432508},
+        {"q": 7, "n_qubits": 9, "cx": 119440, "circuit_depth": 432727},
+        {"q": 8, "n_qubits": 9, "cx": 119440, "circuit_depth": 432680}
+      ]
+    }
+  ],
+  "_takeaways": [
+    "QLBM CX is flat at 119,440 and qubits flat at 9 across q4-q8: grid handled by measure_reprepare, not more gates.",
+    "CH CX grows with the grid (300 -> 33,120) and qubits 10 -> 20: grid-dependent circuit.",
+    "Crossover: CH is far cheaper through q7-q8 in this range, but its cost trend is rising while QLBM is constant -- extrapolated, QLBM's flat cost wins at high enough q. The hardware-relevant point today (q4: CH ~300 CX vs QLBM 119k) favors CH; QLBM is sim-only at any q (119k CX -> ~0 fidelity).",
+    "Note q8 CH n_qubits (17) < q7 (20): the CH ancilla/bond-dim layout is not strictly monotonic in q; cx still rises."
+  ]
+}

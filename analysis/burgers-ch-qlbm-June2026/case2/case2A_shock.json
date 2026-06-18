@@ -1,0 +1,61 @@
+{
+  "name": "case2A_shock",
+  "status": "in-progress",
+  "description": "Case 2A -- SHOCK regime, CH-FAVORABLE. A=0.4, nu=0.03, cfl=0.1, run to ~90% inviscid shock time, dialing q = 4, 6, 8. CH stays crisp through the steepening front; QLBM over-diffuses. The CH-wins half of the complementarity pair (2A shock vs 2B margin).",
+  "global": {
+    "ic": "sine",
+    "ic_amplitude": 0.4,
+    "nu": 0.03,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal",
+    "shock_pct_effective": 90,
+    "ylim": 0.6,
+    "_note": "n_steps scales with grid (60/230/920 for q4/6/8) to hold ~90% t_shock; movie aligns on normalized time. q4 lands at ~92% (n_steps=60). ftcs_reference is the 256-pt q8 shock run. q8 CH/QLBM are FINAL-ONLY (no per-frame snapshots) -- see _todo; q4/q6 are full."
+  },
+  "runs": [
+    {
+      "label": "q4_ch", "q": 4, "method": "cole_hopf_circuit", "n_steps": 60,
+      "segment_size": 5, "bond_dim": 8, "phi_modes": 8, "data": "full",
+      "path": "../../../results/mps-burgers/local-mac/q4/burgers_ab_shock_q4/7ec8cce4"
+    },
+    {
+      "label": "q4_qlbm", "q": 4, "method": "qlbm_circuit", "n_steps": 60,
+      "segment_size": 5, "data": "full",
+      "path": "../../../results/mps-burgers/local-mac/q4/burgers_ab_shock_q4/550f8a22"
+    },
+    {
+      "label": "q6_ch", "q": 6, "method": "cole_hopf_circuit", "n_steps": 230,
+      "segment_size": 5, "bond_dim": 8, "phi_modes": 8, "data": "full",
+      "path": "../../../results/mps-burgers/local-mac/q6/burgers_ab_shock_q6/616e481d"
+    },
+    {
+      "label": "q6_qlbm", "q": 6, "method": "qlbm_circuit", "n_steps": 230,
+      "segment_size": 5, "data": "full",
+      "path": "../../../results/mps-burgers/local-mac/q6/burgers_ab_shock_q6/02c8c0a9"
+    },
+    {
+      "label": "q8_ch", "q": 8, "method": "cole_hopf_circuit", "n_steps": 920,
+      "segment_size": 10, "bond_dim": 8, "phi_modes": 8, "data": "final-only",
+      "path": "../../../results/mps-burgers/burgers_ab/burgers_ab_shock_q8/2026-06-11/_ba24bd17/cb483bb5"
+    },
+    {
+      "label": "q8_qlbm", "q": 8, "method": "qlbm_circuit", "n_steps": 920,
+      "segment_size": 10, "data": "final-only",
+      "path": "../../../results/mps-burgers/burgers_ab/burgers_ab_shock_q8/2026-06-11/_ba24bd17/9e8bcbc7"
+    },
+    {
+      "label": "ftcs_reference", "q": 8, "method": "ftcs_reference", "n_steps": 920,
+      "segment_size": 10, "data": "full",
+      "note": "256-pt / 93-frame classical reference for all q (interpolated down per grid)",
+      "path": "../../../results/mps-burgers/burgers_ab/burgers_ftcs_ref_shock_q8/cc60beea"
+    }
+  ],
+  "_todo": [
+    "q8 shock CH/QLBM are final-only (no solution_steps); re-run with snapshot output for a per-frame q8 movie row. q4/q6 are movie-ready now."
+  ]
+}

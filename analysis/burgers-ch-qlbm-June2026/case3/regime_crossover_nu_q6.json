@@ -1,0 +1,45 @@
+{
+  "name": "regime_crossover_nu_q6",
+  "status": "complete",
+  "description": "The keystone 'best tool for the job' figure: relative L2 error of CH vs QLBM as a function of viscosity nu, at fixed q=6. The two methods cross between nu=0.02 and nu=0.03 -- CH wins the low-nu / sharp regime, QLBM wins the high-nu / diffusive regime. Mirror failure modes: CH degrades monotonically as nu rises; QLBM collapses to signal-level error (relL2 ~ 1) at low nu then becomes accurate as diffusion grows. Fixed q isolates the REGIME axis (the cost-scaling and dial-up figures cover the q axis). Source: burgers_ab_mutual_q6_nu{015,020,030,050}; relL2 = RMS(method_final - ftcs_final)/RMS(ftcs_final), method grid interpolated onto the reference.",
+  "global": {
+    "q": 6,
+    "ic": "sine",
+    "ic_amplitude": 0.3,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "n_steps": 100,
+    "segment_size": 5,
+    "shots": 150000
+  },
+  "x_axis": {"key": "nu", "label": "viscosity nu"},
+  "y_axis": {"key": "rel_l2", "label": "relative L2 error vs FTCS", "log": true},
+  "series": [
+    {
+      "method": "cole_hopf_circuit",
+      "label": "CH",
+      "points": [
+        {"nu": 0.015, "rel_l2": 0.146},
+        {"nu": 0.02,  "rel_l2": 0.180},
+        {"nu": 0.03,  "rel_l2": 0.294},
+        {"nu": 0.05,  "rel_l2": 0.469}
+      ]
+    },
+    {
+      "method": "qlbm_circuit",
+      "label": "QLBM/QALB",
+      "points": [
+        {"nu": 0.015, "rel_l2": 0.999},
+        {"nu": 0.02,  "rel_l2": 0.803},
+        {"nu": 0.03,  "rel_l2": 0.098},
+        {"nu": 0.05,  "rel_l2": 0.185}
+      ]
+    }
+  ],
+  "_takeaways": [
+    "Crossover between nu=0.02 and nu=0.03: pick CH below it, QLBM above it.",
+    "CH error rises monotonically with nu (0.15 -> 0.47): the transform loses accuracy as diffusion grows.",
+    "QLBM is non-convergent at nu<=0.02 (relL2 ~ 0.8-1.0, error ~ signal) then snaps to single-digit-% error: it needs diffusion to be stable.",
+    "Complementary, not competitive: there is no nu where one method dominates the whole range -- the 'best tool' depends on the regime."
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "name": "bakeoff_margin_qubit_dialup",
+  "status": "complete",
+  "description": "Burgers QLBM-MARGIN case (A=0.5, nu=0.025) -- the operating point tuned to QLBM's stable edge, where QLBM is unambiguously the accurate method and CH is stressed. Dialing q = 4, 6, 7, 8, CH vs QLBM vs FTCS reference. The clean QLBM-wins counterpart to the shock dial-up (where CH wins).",
+  "global": {
+    "ic": "sine",
+    "ic_amplitude": 0.5,
+    "nu": 0.025,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal",
+    "_note": "n_steps scales with grid (30/100/200/400 for q4/6/7/8) to hold end-time fixed; movie aligns runs on normalized time. ftcs_reference is q8 (256-pt, finest) reused for all q."
+  },
+  "runs": [
+    {
+      "label": "q4_ch",
+      "q": 4,
+      "method": "cole_hopf_circuit",
+      "n_steps": 30,
+      "segment_size": 5,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/local-mac/q4/burgers_ab_show_q4_qlbm_margin/3d09f09b"
+    },
+    {
+      "label": "q4_qlbm",
+      "q": 4,
+      "method": "qlbm_circuit",
+      "n_steps": 30,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/local-mac/q4/burgers_ab_show_q4_qlbm_margin/fa54540f"
+    },
+    {
+      "label": "q6_ch",
+      "q": 6,
+      "method": "cole_hopf_circuit",
+      "n_steps": 100,
+      "segment_size": 5,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/local-mac/q6/burgers_ab_show_q6_qlbm_margin/7b4868ec"
+    },
+    {
+      "label": "q6_qlbm",
+      "q": 6,
+      "method": "qlbm_circuit",
+      "n_steps": 100,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/local-mac/q6/burgers_ab_show_q6_qlbm_margin/19c4e1f5"
+    },
+    {
+      "label": "q7_ch",
+      "q": 7,
+      "method": "cole_hopf_circuit",
+      "n_steps": 200,
+      "segment_size": 5,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/local-mac/q7/burgers_ab_show_q7_qlbm_margin/de9fef7e"
+    },
+    {
+      "label": "q7_qlbm",
+      "q": 7,
+      "method": "qlbm_circuit",
+      "n_steps": 200,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/local-mac/q7/burgers_ab_show_q7_qlbm_margin/3a94cec6"
+    },
+    {
+      "label": "q8_ch",
+      "q": 8,
+      "method": "cole_hopf_circuit",
+      "n_steps": 400,
+      "segment_size": 5,
+      "bond_dim": 16,
+      "phi_modes": 8,
+      "path": "../../results/mps-burgers/burgers_ab/burgers_ab_show_q8_qlbm_margin/2026-06-17/_ff5c043d/5d2b518c"
+    },
+    {
+      "label": "q8_qlbm",
+      "q": 8,
+      "method": "qlbm_circuit",
+      "n_steps": 400,
+      "segment_size": 5,
+      "path": "../../results/mps-burgers/burgers_ab/burgers_ab_show_q8_qlbm_margin/2026-06-17/_ff5c043d/b746c4ef"
+    },
+    {
+      "label": "ftcs_reference",
+      "q": 8,
+      "method": "ftcs_reference",
+      "n_steps": 400,
+      "segment_size": 5,
+      "note": "256-pt classical reference for all q (interpolated down per grid)",
+      "path": "../../results/mps-burgers/burgers_ab/burgers_ab_show_q8_qlbm_margin/2026-06-17/_ff5c043d/37a75b33"
+    }
+  ]
+}

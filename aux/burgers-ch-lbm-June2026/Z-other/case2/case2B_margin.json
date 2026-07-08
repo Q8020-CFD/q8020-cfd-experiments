@@ -1,0 +1,59 @@
+{
+  "name": "case2B_margin",
+  "status": "complete",
+  "description": "Case 2B -- QLBM-MARGIN regime, QLBM-FAVORABLE. A=0.5, nu=0.025, cfl=0.1, run to ~50% inviscid shock time, dialing q = 4, 6, 8. The operating point tuned to QLBM's stable edge: QLBM tracks while CH is stressed and detonates at q8. The QLBM-wins half of the complementarity pair (2A shock vs 2B margin).",
+  "global": {
+    "ic": "sine",
+    "ic_amplitude": 0.5,
+    "nu": 0.025,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "segment_size": 5,
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal",
+    "shock_pct_effective": 49,
+    "ylim": 0.8,
+    "_note": "n_steps scales with grid (30/100/400 for q4/6/8) to hold end-time fixed (~49% t_shock; q4 ~57%). All runs full per-frame data. ftcs_reference is q8 (256-pt). q8 CH detonates here -- use --ylim when rendering. Two-thirds the cfl-step budget of 2A by design: margin is a less-steepened state where QLBM's diffusion-stable scheme is at its best and CH has not yet shed its low-nu accuracy edge."
+  },
+  "runs": [
+    {
+      "label": "q4_ch", "q": 4, "method": "cole_hopf_circuit", "n_steps": 30,
+      "segment_size": 5, "bond_dim": 8, "phi_modes": 8, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q4/burgers_ab_show_q4_qlbm_margin/3d09f09b"
+    },
+    {
+      "label": "q4_qlbm", "q": 4, "method": "qlbm_circuit", "n_steps": 30,
+      "segment_size": 5, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q4/burgers_ab_show_q4_qlbm_margin/fa54540f"
+    },
+    {
+      "label": "q6_ch", "q": 6, "method": "cole_hopf_circuit", "n_steps": 100,
+      "segment_size": 5, "bond_dim": 8, "phi_modes": 8, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_show_q6_qlbm_margin/7b4868ec"
+    },
+    {
+      "label": "q6_qlbm", "q": 6, "method": "qlbm_circuit", "n_steps": 100,
+      "segment_size": 5, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_show_q6_qlbm_margin/19c4e1f5"
+    },
+    {
+      "label": "q8_ch", "q": 8, "method": "cole_hopf_circuit", "n_steps": 400,
+      "segment_size": 5, "bond_dim": 16, "phi_modes": 8, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_show_q8_qlbm_margin/2026-06-17/_ff5c043d/5d2b518c"
+    },
+    {
+      "label": "q8_qlbm", "q": 8, "method": "qlbm_circuit", "n_steps": 400,
+      "segment_size": 5, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_show_q8_qlbm_margin/2026-06-17/_ff5c043d/b746c4ef"
+    },
+    {
+      "label": "ftcs_reference", "q": 8, "method": "ftcs_reference", "n_steps": 400,
+      "segment_size": 5, "data": "full",
+      "note": "256-pt classical reference for all q (interpolated down per grid)",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_show_q8_qlbm_margin/2026-06-17/_ff5c043d/37a75b33"
+    }
+  ]
+}

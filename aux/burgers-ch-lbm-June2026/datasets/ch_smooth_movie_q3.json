@@ -1,0 +1,94 @@
+{
+  "name": "smooth_movie_q3",
+  "description": "Cole-Hopf circuit Burgers 'smooth_movie' case at q=3. Identical physics across every run; the runs differ only in runtime params (execution target, backend, shot count). Real IBM hardware (4 backends) vs noiseless local-mac sim at 150k shots, 0 shots (idealized statevector), plus the FTCS classical reference.",
+  "global": {
+    "q": 3,
+    "nu": 0.08,
+    "ic": "sine",
+    "ic_amplitude": 0.3,
+    "cfl": 0.3,
+    "n_steps": 6,
+    "segment_size": 1,
+    "save_every": 1,
+    "bc": "periodic",
+    "propagator": "qft-diagonal",
+    "bond_dim": 8,
+    "phi_modes": 8,
+    "evolution_mode": "measure_reprepare",
+    "shock_pct_effective": 38.2,
+    "_shock_pct_note": "fraction of inviscid shock time reached: t_end/t_shock, t_shock=1/max|du0/dx| on the N=8 grid (continuum 1/(2*pi*A) gives ~42%). Smooth case: nu=0.08 keeps it from actually shocking."
+  },
+  "runs": [
+    {
+      "label": "hw_ibm_fez",
+      "platform": "real-qc",
+      "method": "cole_hopf_circuit",
+      "target": "hardware",
+      "backend": "ibm_fez",
+      "shots": 150000,
+      "measure_mitigation": true,
+      "dynamical_decoupling": true,
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/real-qc/hardware_runs/smooth_movie_fez"
+    },
+    {
+      "label": "hw_ibm_kingston",
+      "platform": "real-qc",
+      "method": "cole_hopf_circuit",
+      "target": "hardware",
+      "backend": "ibm_kingston",
+      "shots": 150000,
+      "measure_mitigation": true,
+      "dynamical_decoupling": true,
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/real-qc/hardware_runs/smooth_movie_kingston"
+    },
+    {
+      "label": "hw_ibm_boston",
+      "platform": "real-qc",
+      "method": "cole_hopf_circuit",
+      "target": "hardware",
+      "backend": "ibm_boston",
+      "shots": 150000,
+      "measure_mitigation": true,
+      "dynamical_decoupling": true,
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/real-qc/hardware_runs/smooth_movie_boston"
+    },
+    {
+      "label": "hw_ibm_miami",
+      "platform": "real-qc",
+      "method": "cole_hopf_circuit",
+      "target": "hardware",
+      "backend": "ibm_miami",
+      "shots": 150000,
+      "measure_mitigation": true,
+      "dynamical_decoupling": true,
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/real-qc/hardware_runs/smooth_movie_miami"
+    },
+    {
+      "label": "sim_shots_150k",
+      "platform": "local-mac",
+      "method": "cole_hopf_circuit",
+      "target": "sim",
+      "shots": 150000,
+      "comment": "noiseless sim at the hardware shot budget (sampling noise only)",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q3/burgers_smooth_movie_sim/d2ec49ec"
+    },
+    {
+      "label": "sim_shots_0_ideal",
+      "platform": "local-mac",
+      "method": "cole_hopf_circuit",
+      "target": "sim",
+      "shots": 0,
+      "comment": "idealized statevector, no sampling",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q3/burgers_smooth_movie_sim/cd872d62"
+    },
+    {
+      "label": "ftcs_reference",
+      "platform": "local-mac",
+      "method": "ftcs_reference",
+      "target": "reference",
+      "ref_points": 800,
+      "comment": "classical FTCS reference / error baseline",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q3/burgers_smooth_movie_sim/4a0df5c3"
+    }
+  ]
+}

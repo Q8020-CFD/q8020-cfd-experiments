@@ -1,0 +1,66 @@
+{
+  "name": "regime_crossover_nu_q6_runs",
+  "status": "complete",
+  "description": "Provenance for regime_crossover_nu_q6: every q6 run that produced a crossover point. Fixed q=6, A=0.3, cfl=0.1, n_steps=100, segment_size=5, sweeping nu in {0.015, 0.02, 0.03, 0.05}. Each nu has a CH, a QLBM, and an FTCS reference run; the plotted relL2 = RMS(method_final - ftcs_final)/RMS(ftcs_final) with the method grid interpolated onto the reference. Source family: burgers_ab_mutual_q6_nu*.",
+  "global": {
+    "q": 6,
+    "ic": "sine",
+    "ic_amplitude": 0.3,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "n_steps": 100,
+    "segment_size": 5,
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal"
+  },
+  "points": [
+    {
+      "nu": 0.015,
+      "ch_rel_l2": 0.146,
+      "qlbm_rel_l2": 0.999,
+      "winner": "CH",
+      "runs": {
+        "cole_hopf_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu015/0b46a414",
+        "qlbm_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu015/6991741a",
+        "ftcs_reference": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu015/6eda82f3"
+      }
+    },
+    {
+      "nu": 0.02,
+      "ch_rel_l2": 0.180,
+      "qlbm_rel_l2": 0.803,
+      "winner": "CH",
+      "runs": {
+        "cole_hopf_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu020/934fb39a",
+        "qlbm_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu020/360b8b16",
+        "ftcs_reference": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu020/ba264976"
+      }
+    },
+    {
+      "nu": 0.03,
+      "ch_rel_l2": 0.294,
+      "qlbm_rel_l2": 0.098,
+      "winner": "QLBM",
+      "runs": {
+        "cole_hopf_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu030/92fc1ac8",
+        "qlbm_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu030/ce29cbe4",
+        "ftcs_reference": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu030/85204e38"
+      }
+    },
+    {
+      "nu": 0.05,
+      "ch_rel_l2": 0.469,
+      "qlbm_rel_l2": 0.185,
+      "winner": "QLBM",
+      "runs": {
+        "cole_hopf_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu050/a6f52f58",
+        "qlbm_circuit": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu050/2d2fbc7c",
+        "ftcs_reference": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_mutual_q6_nu050/39f27fcb"
+      }
+    }
+  ],
+  "_takeaway": "Crossover between nu=0.02 and nu=0.03: CH wins low-nu/sharp, QLBM wins high-nu/diffusive. nu=0.03 is the case1 mutual point -- right at the edge where QLBM just takes the lead."
+}

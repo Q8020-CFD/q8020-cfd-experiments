@@ -1,0 +1,64 @@
+{
+  "name": "case2A_shock",
+  "status": "complete",
+  "description": "Case 2A -- SHOCK regime, CH-FAVORABLE. A=0.4, nu=0.03, cfl=0.1, run to ~90% inviscid shock time, dialing q = 4, 6, 8. CH stays crisp through the steepening front; QLBM over-diffuses. The CH-wins half of the complementarity pair (2A shock vs 2B margin).",
+  "global": {
+    "ic": "sine",
+    "ic_amplitude": 0.4,
+    "nu": 0.03,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal",
+    "shock_pct_effective": 90,
+    "ylim": 0.6,
+    "_note": "n_steps scales with grid (60/230/920 for q4/6/8) to hold ~90% t_shock; movie aligns on normalized time. q4 lands at ~92% (n_steps=60). ftcs_reference is the 256-pt q8 shock run. All rows now full per-frame snapshots (q8 re-run _9591f865 on 2026-06-17 with save-every=10 -> 93 frames). q8 CH bond_dim=16, segment_size=5."
+  },
+  "runs": [
+    {
+      "label": "q4_ch", "q": 4, "method": "cole_hopf_circuit", "n_steps": 60,
+      "segment_size": 5, "bond_dim": 8, "phi_modes": 8, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q4/burgers_ab_shock_q4/7ec8cce4"
+    },
+    {
+      "label": "q4_qlbm", "q": 4, "method": "qlbm_circuit", "n_steps": 60,
+      "segment_size": 5, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q4/burgers_ab_shock_q4/550f8a22"
+    },
+    {
+      "label": "q6_ch", "q": 6, "method": "cole_hopf_circuit", "n_steps": 230,
+      "segment_size": 5, "bond_dim": 8, "phi_modes": 8, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_shock_q6/616e481d"
+    },
+    {
+      "label": "q6_qlbm", "q": 6, "method": "qlbm_circuit", "n_steps": 230,
+      "segment_size": 5, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q6/burgers_ab_shock_q6/02c8c0a9"
+    },
+    {
+      "label": "q8_ch", "q": 8, "method": "cole_hopf_circuit", "n_steps": 920,
+      "segment_size": 5, "bond_dim": 16, "phi_modes": 8, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_shock_q8/2026-06-17/_9591f865/0dbb1eac"
+    },
+    {
+      "label": "q8_qlbm", "q": 8, "method": "qlbm_circuit", "n_steps": 920,
+      "segment_size": 5, "fock_qubits": 3, "collision_trotter_reps": 0, "data": "full",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_shock_q8/2026-06-17/_9591f865/d0db29d8"
+    },
+    {
+      "label": "q8_lbm", "q": 8, "method": "lbm", "n_steps": 920,
+      "segment_size": 5, "data": "full",
+      "note": "classical LBM (N=256, tau=8.18); added in _9591f865 re-run",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_shock_q8/2026-06-17/_9591f865/648364b4"
+    },
+    {
+      "label": "ftcs_reference", "q": 8, "method": "ftcs_reference", "n_steps": 920,
+      "segment_size": 5, "data": "full",
+      "note": "256-pt / 93-frame classical reference for all q (interpolated down per grid); _9591f865 re-run, ref-points=800",
+      "path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_shock_q8/2026-06-17/_9591f865/706ebf43"
+    }
+  ]
+}

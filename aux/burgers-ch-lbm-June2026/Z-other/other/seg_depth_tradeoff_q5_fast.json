@@ -1,0 +1,38 @@
+{
+  "name": "seg_depth_tradeoff_q5_fast",
+  "status": "noisy-done-awaiting-noiseless-and-reference",
+  "description": "CH segment-size <-> circuit-depth tradeoff, fast q5 variant (A=0.4, nu=0.03, n_steps=40, T1=35/T2=25us stronger noise so the shallow circuits still decohere). Two relL2-vs-segment curves: NOISELESS (seam error only -> monotonically falling) and NOISY sim (seam + depth decoherence -> U-shaped optimum), with depth-per-circuit overlaid. Noisy paths are the completed run (curated from ~/q8020/2026-06-18/_325e9961); noiseless_path and reference are filled from burgers_ch_segdepth_noiseless_q5_fast.toml once it runs.",
+  "global": {
+    "q": 5,
+    "ic_amplitude": 0.4,
+    "nu": 0.03,
+    "cfl": 0.1,
+    "n_steps": 40,
+    "bond_dim": 8,
+    "phi_modes": 8,
+    "noise_model": "thermal T1=35us T2=25us (AerSimulator)"
+  },
+  "reference": "FILL_ME: any one case dir from the noiseless run (carries the FTCS q5 final)",
+  "depth_key": "circuit_depth",
+  "points": [
+    {
+      "segment_size": 2,
+      "cycles": 20,
+      "noiseless_path": null,
+      "noisy_path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q5/burgers_ch_segdepth_noisy_q5/6f27ac31"
+    },
+    {
+      "segment_size": 5,
+      "cycles": 8,
+      "noiseless_path": null,
+      "noisy_path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q5/burgers_ch_segdepth_noisy_q5/fa76d720"
+    },
+    {
+      "segment_size": 10,
+      "cycles": 4,
+      "noiseless_path": null,
+      "noisy_path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q5/burgers_ch_segdepth_noisy_q5/09783075"
+    }
+  ],
+  "_todo": "Run burgers_ch_segdepth_noiseless_q5_fast.toml, curate its 3 case dirs into results/, then set each point's noiseless_path and the top-level reference (the noiseless run's FTCS final)."
+}

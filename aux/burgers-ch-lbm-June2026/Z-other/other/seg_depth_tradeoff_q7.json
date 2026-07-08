@@ -1,0 +1,38 @@
+{
+  "name": "seg_depth_tradeoff_q7",
+  "status": "awaiting-noisy-runs",
+  "description": "CH segment-size <-> circuit-depth tradeoff at q7 shock (A=0.4, nu=0.03). Two relL2-vs-segment curves: NOISELESS (only seam error -> monotonically falling as segments lengthen) and NOISY sim (seam error + depth decoherence -> U-shaped, an optimum segment-size). Depth-per-circuit (rising with segment-size) is overlaid to explain the noisy curve's upturn. Noisy paths are filled after running burgers_ch_segdepth_noisy_q7.toml (T1=150,T2=100 thermal sim).",
+  "global": {
+    "q": 7,
+    "ic_amplitude": 0.4,
+    "nu": 0.03,
+    "cfl": 0.1,
+    "n_steps": 460,
+    "bond_dim": 8,
+    "phi_modes": 8,
+    "noise_model": "thermal T1=150us T2=100us (AerSimulator)"
+  },
+  "reference": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q7/burgers_ab_shock_q7/9a26edaa",
+  "depth_key": "circuit_depth",
+  "points": [
+    {
+      "segment_size": 2,
+      "cycles": 230,
+      "noiseless_path": null,
+      "noisy_path": null
+    },
+    {
+      "segment_size": 5,
+      "cycles": 92,
+      "noiseless_path": "../../../../../../results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_shock_q7/2026-06-17/_d99009e5/6d031c4f",
+      "noisy_path": null
+    },
+    {
+      "segment_size": 10,
+      "cycles": 46,
+      "noiseless_path": "../../../../../../results/burgers-ch-lbm-June2026/local-mac/q7/burgers_ab_shock_q7/e573bce6",
+      "noisy_path": null
+    }
+  ],
+  "_todo": "After running burgers_ch_segdepth_noisy_q7.toml, set each point's noisy_path (and the seg=2 noiseless_path if that run is added)."
+}

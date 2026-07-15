@@ -13,8 +13,9 @@ import json
 import sys
 from pathlib import Path
 
-from q8020_cfd_metautil.meta_fragment import make_backend_meta, write_backend
-from q8020_cfd_qutil.backend import get_backend
+from q8020_cfd_metautil.meta_fragment import write_backend
+from q8020_backend_utils.ibm.backend import get_backend
+from q8020_backend_utils.ibm.backend_meta import make_backend_meta
 
 
 def main() -> None:

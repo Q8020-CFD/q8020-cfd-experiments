@@ -58,6 +58,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--method", type=str, default="statevector",
                         choices=["statevector", "density_matrix"],
                         help="Aer simulation method (default: statevector)")
+    parser.add_argument("--repeats", type=int, default=1,
+                        help="Timed runs of the same circuit. The first is "
+                             "'cold' (includes one-time GPU/runtime init); "
+                             "the min of the rest is the 'warm' time, i.e. "
+                             "pure simulation cost (default: 1)")
     args = parser.parse_args()
     if not 2 <= args.qubits <= MAX_QUBITS:
         parser.error(f"--qubits must be in [2, {MAX_QUBITS}]")
@@ -79,10 +84,17 @@ def main() -> int:
         return 1
 
     circuit = transpile(build_ghz(args.qubits), simulator)
-    t_start = time.perf_counter()
-    result = simulator.run(circuit, shots=shots,
-                           seed_simulator=args.seed).result()
-    run_seconds = time.perf_counter() - t_start
+    run_times = []
+    for _ in range(max(1, args.repeats)):
+        t_start = time.perf_counter()
+        result = simulator.run(circuit, shots=shots,
+                               seed_simulator=args.seed).result()
+        run_times.append(time.perf_counter() - t_start)
+    cold_seconds = run_times[0]
+    # min of the warm runs isolates steady-state simulation cost from
+    # one-time init (HIP runtime, context, memory pools) and OS jitter
+    warm_seconds = min(run_times[1:]) if len(run_times) > 1 else None
+    run_seconds = cold_seconds
 
     counts = result.get_counts()
     all_zero = "0" * args.qubits
@@ -91,7 +103,10 @@ def main() -> int:
     device_executed = result.results[0].metadata.get("device", "unknown")
 
     print(f"qubits={args.qubits} shots={shots} method={args.method}")
-    print(f"executed on: {device_executed} in {run_seconds:.3f}s")
+    print(f"executed on: {device_executed} in {run_seconds:.3f}s (cold)")
+    if warm_seconds is not None:
+        print(f"warm time: {warm_seconds:.3f}s (min of {len(run_times) - 1} "
+              f"repeats; overhead {cold_seconds - warm_seconds:.3f}s)")
     print(f"GHZ fraction: {ghz_fraction:.4f} "
           f"(|0..0>={counts.get(all_zero, 0)}, |1..1>={counts.get(all_one, 0)})")
 
@@ -136,6 +151,9 @@ def main() -> int:
     results_meta = {
         "ghz_fraction": ghz_fraction,
         "run_seconds": run_seconds,
+        "cold_seconds": cold_seconds,
+        "warm_seconds": warm_seconds,
+        "n_repeats": len(run_times),
         "device_executed": device_executed,
         "counts_top": top_counts,
         "n_outcomes": len(counts),

@@ -22,6 +22,7 @@ Exit codes: 0 = success, 1 = ran but wrong device or bad distribution,
 import argparse
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from qiskit import QuantumCircuit, transpile
@@ -113,12 +114,20 @@ def main() -> int:
     )
     meta_fragment.write_code(outdir, code, experiment_id=exp_id)
 
-    backend = meta_fragment.make_backend_meta(
-        simulator,
-        requested_device=args.device,
-        requested_method=args.method,
-        executed_device=device_executed,
-    )
+    # Hand-built dict conforming to metautil's BackendMeta contract
+    # (metautil is a pure core now; extraction from live backend objects
+    # lives in q8020_backend_utils.ibm.backend_meta.make_backend_meta,
+    # which this smoke test skips to avoid the extra dependency).
+    backend = {
+        "name": simulator.name,
+        "vendor": "ibm",
+        "type": "simulator",
+        "noise": False,
+        "captured_at": datetime.now(timezone.utc).isoformat(),
+        "requested_device": args.device,
+        "requested_method": args.method,
+        "executed_device": device_executed,
+    }
     meta_fragment.write_backend(outdir, backend, experiment_id=exp_id)
 
     top_counts = dict(

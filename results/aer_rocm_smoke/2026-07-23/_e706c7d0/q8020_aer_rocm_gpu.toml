@@ -1,0 +1,53 @@
+# Smoke test: qiskit-aer ROCm GPU build on Frontier, submitted as a SLURM
+# batch job by the sweeper (_slurm = true generates + sbatches one job for
+# all cases; use --dry-run to inspect the .sbatch without submitting).
+#
+# One-time setup on a Frontier LOGIN node (network + shared NFS home):
+#   ~/aer-rocm-env/bin/pip install -e ./q8020-cfd-metautil
+#
+# Submit from the q8020-cfd-experiments repo root — the _script path below
+# is relative to the submit CWD (the sbatch does `cd $SLURM_SUBMIT_DIR`).
+# $MEMBERWORK goes through --set because the sweeper's ${VAR} templating
+# reads [global] keys, NOT the environment — the login shell expands it:
+#   source ~/aer-rocm-env/bin/activate     # sbatch inherits this environment,
+#                                          # so the worker's `python3` is the venv
+#   cd q8020-cfd-experiments
+#   q8020-sweep aux/Z-Keep/input/cases/_smoke_tests/aer_rocm_gpu.toml \
+#       --set _slurm_project=ABC123 \
+#       --set _output_dir=$MEMBERWORK/abc123/q8020_runs --dry-run   # inspect
+#   q8020-sweep aux/Z-Keep/input/cases/_smoke_tests/aer_rocm_gpu.toml \
+#       --set _slurm_project=ABC123 \
+#       --set _output_dir=$MEMBERWORK/abc123/q8020_runs             # submit
+#
+# The _script sets the GPU runtime env inline (&& forces bash -c execution)
+# because the generated sbatch loads no modules: MPICH_GPU_SUPPORT_ENABLED
+# is required by the GTL-linked Aer .so, and the ROCm lib dirs cover the
+# libamdhip64/libomp lookups that rpath doesn't. $LD_LIBRARY_PATH is single-
+# dollar on purpose — the sweeper only expands ${VAR}, bash expands $VAR.
+#
+# Note: all cases in this file share one node's 8 GCDs and Aer defaults to
+# GPU 0 — fine for a smoke test, serialize or GPU-bind for real sweeps.
+
+[global]
+_output_dir = "~/q8020_aer_rocm_smoke"   # override via --set to Lustre (see header)
+_run_mode = "parallel"
+_slurm = true
+_slurm_project = "ard189"
+_slurm_walltime = "00:20:00"
+_slurm_partition = "batch"
+_slurm_cores_per_task = 7      # 56 allocatable cores / 8 GCDs per node
+_slurm_cores_per_node = 56
+_env = "~/aer-rocm-env"        # snapshotted into metadata for provenance
+_inject_outdir = "--outdir"
+_inject_experiment_id = "--experiment-id"
+_inject_workflow_id = "--workflow-id"
+_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+shots = 4096
+
+[gpu]
+device = "GPU"
+qubits = [20, 26]              # list cross-products into one case each
+
+[cpu_reference]
+device = "CPU"
+qubits = 20

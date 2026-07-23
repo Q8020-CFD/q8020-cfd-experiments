@@ -1,0 +1,31 @@
+{
+  "_source": "sweep",
+  "name": "cpu_0",
+  "case_id": "cpu_0",
+  "params": {
+    "_output_dir": "~/q8020_aer_rocm_smoke",
+    "_run_mode": "parallel",
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_walltime": "00:30:00",
+    "_slurm_partition": "batch",
+    "_slurm_exclusive_node": true,
+    "_slurm_cores_per_task": 56,
+    "_env": "~/aer-rocm-env",
+    "_inject_outdir": "--outdir",
+    "_inject_experiment_id": "--experiment-id",
+    "_inject_workflow_id": "--workflow-id",
+    "_script": "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK && ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py",
+    "shots": 4096,
+    "repeats": 4,
+    "device": "CPU",
+    "qubits": 20
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /ccs/home/ishangore/aer-rocm-env/bin/activate && export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK && ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py --shots 4096 --repeats 4 --device CPU --qubits 20 --outdir /ccs/home/ishangore/q8020_aer_rocm_smoke/2026-07-23/_e9df3f91/70112991 --experiment-id 70112991 --workflow-id _e9df3f91"
+  ],
+  "script": "-c",
+  "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-cfd-experiments"
+}

@@ -43,7 +43,13 @@ _env = "~/aer-rocm-env"        # snapshotted into metadata for provenance
 _inject_outdir = "--outdir"
 _inject_experiment_id = "--experiment-id"
 _inject_workflow_id = "--workflow-id"
-_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+# LD_PRELOAD of the GTL is required for GPU-aware MPI from Python: mpi4py
+# calls MPI_Init, and Python's RTLD_LOCAL extension loading means the GTL
+# linked into Aer's .so is not globally visible — Cray MPICH's init check
+# then aborts with "GTL library is not linked". Preloading puts it in the
+# global namespace before anything initializes. Path pins cray-mpich 8.1.30
+# (the version the Aer build used).
+_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_PRELOAD=/opt/cray/pe/mpich/8.1.30/gtl/lib/libmpi_gtl_hsa.so && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
 device = "GPU"
 shots = 4096
 repeats = 4

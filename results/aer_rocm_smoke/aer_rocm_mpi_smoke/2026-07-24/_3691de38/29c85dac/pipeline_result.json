@@ -1,0 +1,19 @@
+{
+  "case_id": "mpi_fits_one_gpu",
+  "experiment_id": "29c85dac",
+  "status": "error",
+  "returncode": 143,
+  "output_dir": "/ccs/home/ishangore/aer_rocm_mpi_smoke/2026-07-24/_3691de38/29c85dac",
+  "command": [
+    "bash",
+    "-c",
+    "source /ccs/home/ishangore/aer-rocm-env/bin/activate && export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py --device GPU --shots 4096 --repeats 4 --blocking-qubits 23 --qubits 28 --outdir /ccs/home/ishangore/aer_rocm_mpi_smoke/2026-07-24/_3691de38/29c85dac --experiment-id 29c85dac --workflow-id _3691de38"
+  ],
+  "overhead": {
+    "pre_seconds": 1.011788,
+    "post_seconds": 0.265653,
+    "preproc_seconds": 0.0,
+    "postproc_seconds": 0.0,
+    "harvest_seconds": 0.013069
+  }
+}

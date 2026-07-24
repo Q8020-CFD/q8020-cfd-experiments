@@ -1,0 +1,56 @@
+# Distributed-MPI smoke test: ONE simulation partitioned across many
+# GPUs/nodes via Aer statevector chunking + GPU-aware Cray MPICH.
+#
+# Contrast with aer_rocm_gpu.toml (independent single-GPU cases):
+# here _slurm_tasks_per_case > 1 tells the sweeper each case IS a
+# multi-task MPI run. The sweeper then (a) sizes the job at
+# ceil(tasks/_slurm_tasks_per_node) nodes per case and (b) launches the
+# worker WITHOUT an srun wrapper — the `srun -n ...` inside _script below
+# creates the multi-task job step itself (a nested srun inside a 1-task
+# step would deadlock).
+#
+# One-time setup on a Frontier LOGIN node (network + shared NFS home):
+#   ~/aer-rocm-env/bin/pip install -e ./q8020-cfd-metautil
+#   ~/aer-rocm-env/bin/pip install mpi4py   # MUST build against cray-mpich:
+#     MPICC="cc -shared" ~/aer-rocm-env/bin/pip install --no-binary=mpi4py mpi4py
+#
+# Submit (login node, from the q8020-cfd-experiments repo root):
+#   source ~/aer-rocm-env/bin/activate
+#   q8020-sweep aux/Z-Keep/input/cases/_smoke_tests/aer_rocm_gpu_mpi.toml \
+#       --set _output_dir=$MEMBERWORK/ard189/q8020_runs --dry-run   # inspect
+#   (drop --dry-run to submit)
+#
+# Sizing: 16 ranks x 1 GCD = 2 nodes per case (8 GCDs/node). At 33 qubits
+# the statevector is 128 GiB — bigger than any single GCD's 64 GiB HBM, so
+# a correct answer at 33q is PROOF the distribution works: no single GPU
+# could have produced it alone. blocking_qubits=23 => 8 MiB chunks (2^23
+# complex128 amplitudes), the recommended Frontier value.
+#
+# The GHZ check is unchanged and scale-invariant: at any width the only
+# legal outcomes are |0...0> and |1...1>, so ghz_fraction=1.0 across ranks
+# also validates the MPI reduction of measurement samples.
+
+[global]
+_output_dir = "~/aer_rocm_mpi_smoke"   # override via --set to Lustre
+_run_mode = "parallel"
+_slurm = true
+_slurm_project = "ard189"
+_slurm_walltime = "00:30:00"
+_slurm_partition = "batch"
+_slurm_tasks_per_case = 16     # MPI ranks per case (one GCD each)
+_slurm_tasks_per_node = 8      # Frontier: 8 GCDs per node -> 2 nodes/case
+_env = "~/aer-rocm-env"        # snapshotted into metadata for provenance
+_inject_outdir = "--outdir"
+_inject_experiment_id = "--experiment-id"
+_inject_workflow_id = "--workflow-id"
+_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+device = "GPU"
+shots = 4096
+repeats = 4
+blocking-qubits = 23
+
+[mpi_fits_one_gpu]
+qubits = 28                    # 4 GiB — sanity: distributed == single-GPU able
+
+[mpi_exceeds_one_gpu]
+qubits = 33                    # 128 GiB — impossible on one GCD; proves MPI

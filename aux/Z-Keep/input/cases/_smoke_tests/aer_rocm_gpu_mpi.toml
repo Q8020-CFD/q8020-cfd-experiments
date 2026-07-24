@@ -3,11 +3,14 @@
 #
 # Contrast with aer_rocm_gpu.toml (independent single-GPU cases):
 # here _slurm_tasks_per_case > 1 tells the sweeper each case IS a
-# multi-task MPI run. The sweeper then (a) sizes the job at
-# ceil(tasks/_slurm_tasks_per_node) nodes per case and (b) launches the
-# worker WITHOUT an srun wrapper — the `srun -n ...` inside _script below
-# creates the multi-task job step itself (a nested srun inside a 1-task
-# step would deadlock).
+# multi-task MPI run. The sweeper then (a) sizes the job for ONE case —
+# ceil(tasks/_slurm_tasks_per_node) nodes — with cases running
+# SEQUENTIALLY on that node pool (concurrent multi-rank job steps race in
+# Cray MPICH's PMI/shm init: "MPIDU_Init_shm_init: unable to attach to
+# shared memory"), and (b) launches the worker WITHOUT an srun wrapper —
+# the `srun -n ...` inside _script below creates the multi-task job step
+# itself (a nested srun inside a 1-task step would deadlock). Walltime
+# must therefore cover the SUM of all cases, not the max.
 #
 # One-time setup on a Frontier LOGIN node (network + shared NFS home):
 #   ~/aer-rocm-env/bin/pip install -e ./q8020-cfd-metautil

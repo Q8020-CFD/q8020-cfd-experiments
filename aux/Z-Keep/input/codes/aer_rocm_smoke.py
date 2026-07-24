@@ -46,6 +46,23 @@ MAX_QUBITS = 30       # single-GCD memory guard (~16 GB complex128 at 30)
 MAX_QUBITS_MPI = 36   # distributed guard (1 TiB across >= 16 GCDs)
 
 
+def _hip_init_early() -> None:
+    """Initialize the HIP runtime BEFORE MPI_Init.
+
+    OLCF Frontier known issue: with MPICH_GPU_SUPPORT_ENABLED=1, MPI_Init
+    can die in MPIDU_Init_shm ("unable to attach to shared memory" /
+    Init_shm_barrier crash) unless the HIP runtime is already up. The
+    documented workaround is `hipInit(0);` prior to MPI_Init — done here
+    via ctypes since mpi4py calls MPI_Init at import. No-op on machines
+    without ROCm (local CPU runs).
+    """
+    import ctypes
+    try:
+        ctypes.CDLL("libamdhip64.so").hipInit(0)
+    except OSError:
+        pass
+
+
 def get_mpi_context() -> tuple[int, int, "object | None"]:
     """Return (rank, world_size, comm).
 
@@ -57,6 +74,7 @@ def get_mpi_context() -> tuple[int, int, "object | None"]:
         os.environ.get("SLURM_NTASKS", os.environ.get("OMPI_COMM_WORLD_SIZE", "1"))
     ) > 1
     try:
+        _hip_init_early()
         from mpi4py import MPI
         comm = MPI.COMM_WORLD
         return comm.Get_rank(), comm.Get_size(), comm

@@ -73,19 +73,22 @@ def get_mpi_context() -> tuple[int, int, "object | None"]:
     launched_under_mpi = int(
         os.environ.get("SLURM_NTASKS", os.environ.get("OMPI_COMM_WORLD_SIZE", "1"))
     ) > 1
+    if not launched_under_mpi:
+        # Single-task launch: never import mpi4py. Its import calls
+        # MPI_Init, which with MPICH_GPU_SUPPORT_ENABLED=1 requires the
+        # GTL preload — a requirement single-task cases shouldn't have.
+        return 0, 1, None
     try:
         _hip_init_early()
         from mpi4py import MPI
         comm = MPI.COMM_WORLD
         return comm.Get_rank(), comm.Get_size(), comm
     except ImportError:
-        if launched_under_mpi:
-            # Multi-task launch but no mpi4py: every rank would run an
-            # independent duplicate simulation. Fail loudly instead.
-            print("ERROR: launched with multiple tasks but mpi4py is not "
-                  "installed in this environment", file=sys.stderr)
-            sys.exit(2)
-        return 0, 1, None
+        # Multi-task launch but no mpi4py: every rank would run an
+        # independent duplicate simulation. Fail loudly instead.
+        print("ERROR: launched with multiple tasks but mpi4py is not "
+              "installed in this environment", file=sys.stderr)
+        sys.exit(2)
 
 
 def build_ghz(n_qubits: int) -> QuantumCircuit:

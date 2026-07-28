@@ -1,0 +1,63 @@
+{
+  "cases": {
+    "mpi_fits_one_gpu": {
+      "_output_dir": "~/aer_rocm_mpi_smoke",
+      "_run_mode": "parallel",
+      "_slurm": true,
+      "_slurm_project": "ard189",
+      "_slurm_walltime": "00:30:00",
+      "_slurm_partition": "batch",
+      "_slurm_tasks_per_case": 16,
+      "_slurm_tasks_per_node": 8,
+      "_env": "~/aer-rocm-env",
+      "_inject_outdir": "--outdir",
+      "_inject_experiment_id": "--experiment-id",
+      "_inject_workflow_id": "--workflow-id",
+      "_script": "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py",
+      "device": "GPU",
+      "shots": 4096,
+      "repeats": 4,
+      "blocking-qubits": 23,
+      "qubits": 28
+    },
+    "mpi_exceeds_one_gpu": {
+      "_output_dir": "~/aer_rocm_mpi_smoke",
+      "_run_mode": "parallel",
+      "_slurm": true,
+      "_slurm_project": "ard189",
+      "_slurm_walltime": "00:30:00",
+      "_slurm_partition": "batch",
+      "_slurm_tasks_per_case": 16,
+      "_slurm_tasks_per_node": 8,
+      "_env": "~/aer-rocm-env",
+      "_inject_outdir": "--outdir",
+      "_inject_experiment_id": "--experiment-id",
+      "_inject_workflow_id": "--workflow-id",
+      "_script": "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py",
+      "device": "GPU",
+      "shots": 4096,
+      "repeats": 4,
+      "blocking-qubits": 23,
+      "qubits": 33
+    }
+  },
+  "global": {
+    "_output_dir": "~/aer_rocm_mpi_smoke",
+    "_run_mode": "parallel",
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_walltime": "00:30:00",
+    "_slurm_partition": "batch",
+    "_slurm_tasks_per_case": 16,
+    "_slurm_tasks_per_node": 8,
+    "_env": "~/aer-rocm-env",
+    "_inject_outdir": "--outdir",
+    "_inject_experiment_id": "--experiment-id",
+    "_inject_workflow_id": "--workflow-id",
+    "_script": "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py",
+    "device": "GPU",
+    "shots": 4096,
+    "repeats": 4,
+    "blocking-qubits": 23
+  }
+}

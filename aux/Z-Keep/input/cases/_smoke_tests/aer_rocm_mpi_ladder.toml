@@ -52,6 +52,14 @@ _mpi_nodes = 1                 # nodes per case  (--set per rung)
 _slurm_tasks_per_case = 8      # MPI ranks per case, 8 per node (--set per rung)
 _slurm_tasks_per_node = 8      # Frontier: one rank per GCD
 _env = "~/aer-rocm-env"
+# Pack the venv to node-local NVMe (sbcast + untar on every node) so 128
+# ranks import qiskit from local flash instead of NFS home — startup drops
+# from ~10-25 min/case to seconds, which is what keeps 3 sequential cases
+# inside bin-5's hard 2 h walltime cap. MUST be spelled EXACTLY as in
+# _script ("~/aer-rocm-env"): the NVMe rewrite is string replacement.
+# Caveat: editable installs (pip install -e q8020-cfd-metautil) still
+# resolve to NFS via their .pth — fine, that package is tiny.
+_slurm_pack_venvs = "~/aer-rocm-env"
 _inject_outdir = "--outdir"
 _inject_experiment_id = "--experiment-id"
 _inject_workflow_id = "--workflow-id"

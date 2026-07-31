@@ -163,7 +163,13 @@ def main() -> int:
                   file=sys.stderr)
         return 1
 
-    circuit = transpile(build_ghz(args.qubits), simulator)
+    # Transpile WITHOUT the backend target: AerSimulator advertises an
+    # n_qubits derived from single-node host RAM (34 on Frontier), so
+    # target-aware transpilation raises CircuitTooWideForTarget for wider
+    # circuits even when the aggregate multi-node memory fits them. The
+    # GHZ circuit is already pure H/CX/measure (natively supported by
+    # Aer), so backend-agnostic transpilation loses nothing.
+    circuit = transpile(build_ghz(args.qubits))
     run_times = []
     for _ in range(max(1, args.repeats)):
         if comm is not None:

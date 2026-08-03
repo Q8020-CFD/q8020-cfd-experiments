@@ -1,0 +1,34 @@
+{
+  "_source": "sweep",
+  "name": "q34",
+  "case_id": "q34",
+  "params": {
+    "_output_dir": "~/aer_rocm_mpi_ladder",
+    "_run_mode": "parallel",
+    "_slurm": true,
+    "_slurm_project": "ard189",
+    "_slurm_walltime": "02:00:00",
+    "_slurm_partition": "batch",
+    "_mpi_nodes": 2,
+    "_slurm_tasks_per_case": 16,
+    "_slurm_tasks_per_node": 8,
+    "_env": "~/aer-rocm-env",
+    "_slurm_pack_venvs": "~/aer-rocm-env",
+    "_inject_outdir": "--outdir",
+    "_inject_experiment_id": "--experiment-id",
+    "_inject_workflow_id": "--workflow-id",
+    "_script": "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py",
+    "device": "GPU",
+    "shots": 1000,
+    "repeats": 4,
+    "blocking-qubits": 23,
+    "qubits": 34
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /ccs/home/ishangore/aer-rocm-env/bin/activate && export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive /mnt/bb/ishangore/venv_0/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py --device GPU --shots 1000 --repeats 4 --blocking-qubits 23 --qubits 34 --outdir /ccs/home/ishangore/aer_rocm_mpi_ladder/2026-07-31/_a68f3ea8/fecd957e --experiment-id fecd957e --workflow-id _a68f3ea8"
+  ],
+  "script": "-c",
+  "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020/q8020-cfd-experiments"
+}

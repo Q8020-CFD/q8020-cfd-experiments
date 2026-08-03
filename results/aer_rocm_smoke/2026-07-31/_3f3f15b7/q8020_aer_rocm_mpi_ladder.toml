@@ -1,0 +1,83 @@
+# Strong-scaling ladder for the distributed Aer-ROCm simulator: the SAME
+# GHZ cases at 1 -> 16 nodes, driven from this ONE file. Node/rank shape is
+# parameterized via --set (overrides apply before ${VAR} template expansion),
+# and qubit widths are selected per rung as positional group names.
+#
+# Memory map (statevector = 2^q * 16 B; node = 8 GCDs x 64 GiB = 512 GiB):
+#   q32 =  64 GiB   q34 = 256 GiB   q35 = 512 GiB   q36 = 1 TiB
+#
+# The ladder (per-GCD occupancy in parens — keep <= ~50%):
+#   nodes ranks  groups              worst case
+#   1     8      q32 q34             q34: 32 GiB/GCD (50%)
+#   2     16     q32 q34 q35         q35: 32 GiB/GCD (50%)  <- headroom probe
+#   4     32     q32 q34 q36         q36: 32 GiB/GCD (50%)
+#   8     64     q32 q34 q36         q36: 16 GiB/GCD (25%)
+#   16    128    q32 q34 q36         q36:  8 GiB/GCD (12.5%)
+# q36 on 2 nodes = 100% of HBM -> guaranteed OOM; it is deliberately NOT in
+# the 2-node rung. q35 on 2 nodes probes how much headroom Aer's exchange
+# buffers actually need — if it OOMs, that failure is the data point.
+# Chunk floor: qubits >= blocking_qubits + log2(ranks) = 23+7 = 30 at 128
+# ranks, satisfied by every group here. Keep rank counts powers of two.
+#
+# Submit ONE RUNG PER SWEEP (login node, q8020-cfd-experiments repo root,
+# venv active). Each rung is one batch job; its cases run sequentially on
+# the same node pool, so walltime covers the SUM of its cases:
+#   q8020-sweep aux/Z-Keep/input/cases/_smoke_tests/aer_rocm_mpi_ladder.toml \
+#       q32 q34 --set _mpi_nodes=1 --set _slurm_tasks_per_case=8 \
+#       --set _output_dir=$MEMBERWORK/ard189/q8020_runs
+#   ... q32 q34 q35 --set _mpi_nodes=2  --set _slurm_tasks_per_case=16  ...
+#   ... q32 q34 q36 --set _mpi_nodes=4  --set _slurm_tasks_per_case=32  ...
+#   ... q32 q34 q36 --set _mpi_nodes=8  --set _slurm_tasks_per_case=64  ...
+#   ... q32 q34 q36 --set _mpi_nodes=16 --set _slurm_tasks_per_case=128 ...
+# Add --dry-run first to inspect the generated sbatch. Analysis after:
+#   q8020-metakeys <run_dir> --mode combined   # results.0.warm_seconds etc.
+#
+# Defaults below are the SMALLEST rung (1 node / 8 ranks) so an accidental
+# bare submission is cheap. Walltime is generous: startup is dominated by
+# 100+ ranks importing qiskit off NFS, not by simulation (~seconds/case).
+#
+# MPI mechanics (same as aer_rocm_gpu_mpi.toml): _slurm_tasks_per_case > 1
+# makes the sweeper size the job for one case and run cases sequentially
+# without an srun wrapper — the srun in _script IS the multi-rank job step.
+# mpi4py must be the frontier-aer-build.sh build (links libmpi_amd + GTL).
+
+[global]
+_output_dir = "~/aer_rocm_mpi_ladder"  # override via --set to Lustre
+_run_mode = "parallel"
+_slurm = true
+_slurm_project = "ard189"
+_slurm_walltime = "02:00:00"
+_slurm_partition = "batch"
+_mpi_nodes = 1                 # nodes per case  (--set per rung)
+_slurm_tasks_per_case = 8      # MPI ranks per case, 8 per node (--set per rung)
+_slurm_tasks_per_node = 8      # Frontier: one rank per GCD
+_env = "~/aer-rocm-env"
+# Pack the venv to node-local NVMe (sbcast + untar on every node) so 128
+# ranks import qiskit from local flash instead of NFS home — startup drops
+# from ~10-25 min/case to seconds, which is what keeps 3 sequential cases
+# inside bin-5's hard 2 h walltime cap. MUST be spelled EXACTLY as in
+# _script ("~/aer-rocm-env"): the NVMe rewrite is string replacement.
+# Caveat: editable installs (pip install -e q8020-cfd-metautil) still
+# resolve to NFS via their .pth — fine, that package is tiny.
+_slurm_pack_venvs = "~/aer-rocm-env"
+_inject_outdir = "--outdir"
+_inject_experiment_id = "--experiment-id"
+_inject_workflow_id = "--workflow-id"
+_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N ${_mpi_nodes} -n ${_slurm_tasks_per_case} --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+device = "GPU"
+shots = 1000
+repeats = 4
+blocking-qubits = 23
+
+# Groups = qubit widths; select per rung on the CLI (see ladder table).
+[q32]
+qubits = 32                    # 64 GiB — fits everywhere on the ladder
+
+[q34]
+qubits = 34                    # 256 GiB — 50% of one node's HBM
+
+[q35]
+qubits = 35                    # 512 GiB — 2-node headroom probe ONLY
+
+[q36]
+qubits = 36                    # 1 TiB — needs >= 4 nodes; MAX_QUBITS_MPI cap

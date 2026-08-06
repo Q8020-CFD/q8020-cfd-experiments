@@ -1,0 +1,65 @@
+# =====================================================================
+# C3 — PHI RE-TEST AT BEST k : phi-modes = [0, 8, 32, 128]
+# ---------------------------------------------------------------------
+# Purpose: does the Fourier low-pass filter help once seams are
+# optimized?  phi=0 (filter OFF) has never been tried.  Priors killed
+# phi as a lever only at high seam count (S=80) — it may wake up once
+# seams stop dominating.
+#
+# RUN AFTER C1: set _k to the C1 winner k*.
+#
+#   q8020-sweep c3_phi_retest.toml --set _k=<kstar> \
+#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c3
+#
+# shots stays 2^17 (q8 diagnosis level — see HANDOFF "Shots per q").
+# =====================================================================
+
+[global]
+_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_q8_c3"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_slurm = true
+_slurm_project = "ard189"
+_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
+_slurm_partition = "extended"
+_slurm_walltime = "24:00:00"
+_slurm_cores_per_task = 1
+_slurm_cores_per_node = 64
+_slurm_exclusive_node = false
+_run_mode = "parallel"
+_trials = 1
+_case_timeout = 82800   # 23 hours; leaves 1h margin
+
+_k = 4                             # PLACEHOLDER — override with --set _k=<kstar>
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — everything except the swept lever.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--shots" = 131072                 # 2^17
+"--metric-transpile-timeout" = 0
+
+"--q" = 8
+"--n-steps" = 512
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--segment-size" = "${_k}"
+"--save-every" = "${_k}"           # frames land on seams
+"--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+[ch_phi_retest]
+"--phi-modes" = [0, 8, 32, 128]    # THE swept lever (0 = filter off, never tried)

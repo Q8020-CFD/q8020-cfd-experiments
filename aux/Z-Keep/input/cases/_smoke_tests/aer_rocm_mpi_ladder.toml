@@ -6,16 +6,25 @@
 # Memory map (statevector = 2^q * 16 B; node = 8 GCDs x 64 GiB = 512 GiB):
 #   q32 =  64 GiB   q34 = 256 GiB   q35 = 512 GiB   q36 = 1 TiB
 #
-# The ladder (per-GCD occupancy in parens — keep <= ~50%):
+# EMPIRICAL RESULT (2026-07-29 + 2026-07-31 campaigns): keep per-GCD
+# occupancy <= 25%, i.e. max qubits = 33 + log2(nodes). Every 50% case
+# failed — q34@1 segfaulted (~43 s, reproduced), q35@2 and q36@4 hung
+# silently until the 2 h walltime killed the job (Aer host-staging
+# fallback, not a clean OOM). Full sizing guide, timing anatomy, and
+# caveats: FRONTIER-aer-rocm-sizing.md (this directory).
+#
+# The ladder (per-GCD occupancy in parens; 50% rungs kept as known-fail
+# boundary probes — expect them to hang/segfault, budget walltime
+# accordingly or drop them):
 #   nodes ranks  groups              worst case
-#   1     8      q32 q34             q34: 32 GiB/GCD (50%)
-#   2     16     q32 q34 q35         q35: 32 GiB/GCD (50%)  <- headroom probe
-#   4     32     q32 q34 q36         q36: 32 GiB/GCD (50%)
-#   8     64     q32 q34 q36         q36: 16 GiB/GCD (25%)
+#   1     8      q32 q34             q34: 32 GiB/GCD (50%) <- FAILS (segfault)
+#   2     16     q32 q34 q35         q35: 32 GiB/GCD (50%) <- FAILS (hang)
+#   4     32     q32 q34 q36         q36: 32 GiB/GCD (50%) <- FAILS (hang)
+#   8     64     q32 q34 q36         q36: 16 GiB/GCD (25%) <- max validated
 #   16    128    q32 q34 q36         q36:  8 GiB/GCD (12.5%)
-# q36 on 2 nodes = 100% of HBM -> guaranteed OOM; it is deliberately NOT in
-# the 2-node rung. q35 on 2 nodes probes how much headroom Aer's exchange
-# buffers actually need — if it OOMs, that failure is the data point.
+# q36 on 2 nodes = 100% of HBM -> guaranteed fail; it is deliberately NOT in
+# the 2-node rung (and a hung q35 ahead of it will starve it of walltime
+# anyway, as happened on 2026-07-31).
 # Chunk floor: qubits >= blocking_qubits + log2(ranks) = 23+7 = 30 at 128
 # ranks, satisfied by every group here. Keep rank counts powers of two.
 #

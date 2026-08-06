@@ -1,0 +1,85 @@
+# =====================================================================
+# C4 — DIAL-UP, q = 4 & 8   (Phase 2 — run AFTER k*, phi* are known)
+# ---------------------------------------------------------------------
+# Purpose: scale the tuned setting across qubit count.  q4 & q8 share
+# this TOML (both shots=2^17); q16 is a SEPARATE 2^27 TOML
+# (c4_dialup_q16.toml) — 2^17 is ~1000x short at q16.
+#
+# Per group, segment-size sweeps [k*/2, k*, 2k*] (the single list axis).
+# Placeholders — set from the C1/C3 winners:
+#   _khalf = k*/2,  _kstar = k*,  _kdbl = 2k*   (all must divide 512;
+#       any k* in C1's ladder except 512 works — if k*=512 drop _kdbl)
+#   _phi8  = phi* from C3 (q8)
+# q4 pins phi-modes=8 (N=16: 8 is already Nyquist — C3 doesn't apply).
+# save-every = 2k* for EVERY case: multiple of all three k values
+# (alignment) and of 4 (FTCS-ref frame parity), uniform cadence across
+# the sweep.
+#
+#   q8020-sweep c4_dialup_q4_q8.toml \
+#       --set _khalf=<k*/2> --set _kstar=<k*> --set _kdbl=<2k*> \
+#       --set _phi8=<phistar> \
+#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_c4_q4q8
+#
+# bond-dim stays PINNED at 4: chi=4 is flat in q (same Schmidt spectrum
+# at q=8/16), 1-fid ~4e-8.  At q=4 full rank IS 4, so chi=4 reproduces
+# the June q4 prep exactly — true like-for-like anchor to the paper.
+# =====================================================================
+
+[global]
+_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_c4_q4q8"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_slurm = true
+_slurm_project = "ard189"
+_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
+_slurm_partition = "extended"
+_slurm_walltime = "24:00:00"
+_slurm_cores_per_task = 1
+_slurm_cores_per_node = 64
+_slurm_exclusive_node = false
+_run_mode = "parallel"
+_trials = 1
+_case_timeout = 82800   # 23 hours; leaves 1h margin
+
+# PLACEHOLDERS — override with --set once C1/C3 are scored.
+_khalf = 2
+_kstar = 4
+_kdbl = 8
+_phi8 = 8
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 physics, fixed in Phase 2.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--shots" = 131072                 # 2^17 — right level for q4 (overkill) and q8
+"--metric-transpile-timeout" = 0
+
+"--n-steps" = 512
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--bond-dim" = 4                   # PINNED (see header)
+"--save-every" = "${_kdbl}"        # multiple of every swept k + of ref cadence 4
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+[dialup_q4]
+"--q" = 4
+"--phi-modes" = 8                  # N=16: 8 = Nyquist, per-q value is fixed
+"--segment-size" = ["${_khalf}", "${_kstar}", "${_kdbl}"]
+
+[dialup_q8]
+"--q" = 8
+"--phi-modes" = "${_phi8}"         # phi* from C3
+"--segment-size" = ["${_khalf}", "${_kstar}", "${_kdbl}"]

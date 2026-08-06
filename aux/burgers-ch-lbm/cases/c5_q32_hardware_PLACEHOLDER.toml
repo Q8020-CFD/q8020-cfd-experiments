@@ -1,0 +1,61 @@
+# =====================================================================
+# C5 — q = 32 ON REAL IBM HARDWARE   (PLACEHOLDER — args TBD, DO NOT RUN)
+# ---------------------------------------------------------------------
+# NOT a Frontier job: sim is dead past q~20 (q32 @ k=4 = 38 qubits =
+# 4.4 TB statevector; even classical MPS prep chokes — 68 GB psi0).
+# This runs on an IBM device from a machine with IBM creds, NOT via
+# sbatch.  Kept beside the Frontier TOMLs so the case set is complete.
+#
+# TBD before this becomes runnable (see HANDOFF "Beyond q=16"):
+#   - backend name (device with >= 38 well-connected qubits)
+#   - k: retention vs depth likely favors SMALL k on hardware (more
+#     seams but fewer ancillas + shallower) — the REVERSE of the q16
+#     sim advice; treat as its own tuning question
+#   - shots: as high as the queue allows; 2^(q+11) is a per-bin FLOOR,
+#     hardware noise sits on top; post-selection retention (ancilla
+#     all-|0>) eats shots per seam
+#   - error mitigation / optimization-level / coupling-map
+#   - NO shots=0 anywhere: SV is a sim-only concept
+#
+# Deliverable: physics-consistency (mass conservation, monotonic decay,
+# shape vs q16 trend) — NOT relL2; no classical reference exists at q32.
+# Anchor credibility with a q<=16 hardware run that DOES have a ref.
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020/ch_c5_q32_hw"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+# NO _slurm block — hardware run, executes wherever IBM creds live.
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 physics carries over.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--metric-transpile-timeout" = 0
+
+"--q" = 32
+"--n-steps" = 512                  # TBD — may need shortening for queue/retention
+
+# ---------------------------------------------------------------------
+[ch_q32_hardware]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--bond-dim" = 4                   # chi=4 flat in q — but VERIFY MPS prep feasibility at q32
+"--backend-type" = "hardware"
+"--backend" = "TBD"                # device name
+"--segment-size" = 4               # TBD — tune retention-vs-depth on target device
+"--save-every" = 4                 # keep = segment-size once k is chosen
+"--phi-modes" = 8                  # TBD — per-q scaling unresolved at q32
+"--shots" = 131072                 # TBD — push as high as the queue allows
+"--optimization-level" = 3         # TBD

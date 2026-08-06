@@ -1,0 +1,81 @@
+# =====================================================================
+# C4 — DIAL-UP, q = 16   (Phase 2 — SEPARATE shots=2^27 TOML)
+# ---------------------------------------------------------------------
+# Why separate: shots scale ~2^(q+11) for ~1%/bin.  2^17 at q16 is
+# ~1000x short (~36%/bin — swamped); 2^27 = q8-parity accuracy and only
+# ~30s of Aer sampling.  Don't quietly reuse 2^17.
+#
+# Cost model at q16 (chi=4): 22-qubit circuit, 67 MB statevector —
+# memory & shots are non-issues.  The REAL ceiling is per-segment circuit
+# BUILD + TRANSPILE (>~2 min per seam, once per segment).  Hence:
+#   - prefer FEWER, LARGER segments here (k*, 2k* — skip k*/2; at k=4
+#     the 128 seams ≈ hours of transpile per case),
+#   - budget walltime as S x (build+transpile), not simulation,
+#   - worth a solver check first: the segment circuit is structurally
+#     identical every seam → transpile ONCE and cache would kill this
+#     cost entirely (see HANDOFF "Practical top-end for q=16").
+#
+# Placeholders — set from the C1/C3 winners:
+#   _kstar = k*,  _kdbl = 2k*  (must divide 512)
+#   _phi16 = per-q phi (scale ~N/16 → 4096-ish if phi* scales, else 8)
+# save-every = 2k*: multiple of both swept k values and of the FTCS-ref
+# cadence 4.  The q16 FTCS ref (ftcs_ref_q4_q8_q16.toml) already covers
+# this cadence.
+#
+#   q8020-sweep c4_dialup_q16.toml \
+#       --set _kstar=<k*> --set _kdbl=<2k*> --set _phi16=<phi16> \
+#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_c4_q16
+# =====================================================================
+
+[global]
+_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_c4_q16"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_slurm = true
+_slurm_project = "ard189"
+_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
+_slurm_partition = "extended"
+_slurm_walltime = "24:00:00"
+_slurm_cores_per_task = 1
+_slurm_cores_per_node = 64
+_slurm_exclusive_node = false
+_run_mode = "parallel"
+_trials = 1
+_case_timeout = 82800   # 23 hours; transpile-dominated — watch the first case
+
+# PLACEHOLDERS — override with --set once C1/C3 are scored.
+_kstar = 4
+_kdbl = 8
+_phi16 = 8
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 physics, fixed in Phase 2.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--shots" = 134217728              # 2^27 — q8-parity per-bin accuracy (~30s sampling)
+"--metric-transpile-timeout" = 0
+
+"--q" = 16
+"--n-steps" = 512
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--bond-dim" = 4                   # PINNED: flat in q, 1-fid ~4e-8 (full rank = 513k CX, infeasible)
+"--phi-modes" = "${_phi16}"
+"--save-every" = "${_kdbl}"        # multiple of both swept k values + ref cadence 4
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+[dialup_q16]
+"--segment-size" = ["${_kstar}", "${_kdbl}"]   # modest k only — transpile is the ceiling

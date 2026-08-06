@@ -7,10 +7,11 @@
 # ceil(tasks/_slurm_tasks_per_node) nodes — with cases running
 # SEQUENTIALLY on that node pool (concurrent multi-rank job steps race in
 # Cray MPICH's PMI/shm init: "MPIDU_Init_shm_init: unable to attach to
-# shared memory"), and (b) launches the worker WITHOUT an srun wrapper —
-# the `srun -n ...` inside _script below creates the multi-task job step
-# itself (a nested srun inside a 1-task step would deadlock). Walltime
-# must therefore cover the SUM of all cases, not the max.
+# shared memory"), (b) launches the worker WITHOUT an srun wrapper (a
+# nested srun inside a 1-task step would deadlock), and (c) SYNTHESIZES
+# the multi-rank `srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1
+# --exclusive` prefix onto _script from the _slurm_* geometry keys below.
+# Walltime must therefore cover the SUM of all cases, not the max.
 #
 # One-time setup on a Frontier LOGIN node (network + shared NFS home):
 #   ~/aer-rocm-env/bin/pip install -e ./q8020-cfd-metautil
@@ -42,6 +43,7 @@ _slurm_walltime = "00:30:00"
 _slurm_partition = "batch"
 _slurm_tasks_per_case = 16     # MPI ranks per case (one GCD each)
 _slurm_tasks_per_node = 8      # Frontier: 8 GCDs per node -> 2 nodes/case
+_slurm_gpus_per_task = 1       # one GCD per rank
 _env = "~/aer-rocm-env"        # snapshotted into metadata for provenance
 _inject_outdir = "--outdir"
 _inject_experiment_id = "--experiment-id"
@@ -52,7 +54,8 @@ _inject_workflow_id = "--workflow-id"
 # Aer's .so, GTL visible to the GPU-support check without preloading.
 # (A pip/login-node mpi4py links libmpi_cray from PrgEnv-cray; mixing the
 # two MPICH flavors in one process kills MPI_Init in MPIDU_Init_shm.)
-_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N 2 -n 16 --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+_script = "~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+_env_exports = { MPICH_GPU_SUPPORT_ENABLED = "1", LD_LIBRARY_PATH = "/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH" }
 device = "GPU"
 shots = 4096
 repeats = 4

@@ -19,12 +19,12 @@
 #       --set _slurm_project=ABC123 \
 #       --set _output_dir=$MEMBERWORK/abc123/q8020_runs             # submit
 #
-# The _script sets the GPU runtime env inline (&& forces bash -c execution)
-# because the generated sbatch loads no modules: MPICH_GPU_SUPPORT_ENABLED
-# is required by the GTL-linked Aer .so, and the ROCm lib dirs cover the
-# libamdhip64/libomp lookups that rpath doesn't. $LD_LIBRARY_PATH and
-# $SLURM_CPUS_PER_TASK are single-dollar on purpose — the sweeper only
-# expands ${VAR}, bash on the compute node expands $VAR.
+# _env_exports sets the GPU runtime env (exported in the generated sbatch,
+# which loads no modules): MPICH_GPU_SUPPORT_ENABLED is required by the
+# GTL-linked Aer .so, and the ROCm lib dirs cover the libamdhip64/libomp
+# lookups that rpath doesn't. $LD_LIBRARY_PATH and $SLURM_CPUS_PER_TASK
+# are single-dollar on purpose — the sweeper only expands ${VAR}, bash on
+# the compute node expands $VAR at runtime.
 #
 # Benchmark design (fair CPU-vs-GPU comparison):
 #   * _slurm_exclusive_node: one node per case — no core/GPU contention
@@ -53,7 +53,10 @@ _env = "~/aer-rocm-env"        # snapshotted into metadata for provenance
 _inject_outdir = "--outdir"
 _inject_experiment_id = "--experiment-id"
 _inject_workflow_id = "--workflow-id"
-_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK && ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+_script = "~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+# OMP_NUM_THREADS override: user exports are emitted AFTER the sbatch's
+# global OMP_NUM_THREADS=1, so CPU cases use their allocated cores.
+_env_exports = { MPICH_GPU_SUPPORT_ENABLED = "1", LD_LIBRARY_PATH = "/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH", OMP_NUM_THREADS = "$SLURM_CPUS_PER_TASK" }
 shots = 4096
 repeats = 4
 

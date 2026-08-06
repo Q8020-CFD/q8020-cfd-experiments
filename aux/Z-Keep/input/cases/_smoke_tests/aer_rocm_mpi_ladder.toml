@@ -1,6 +1,6 @@
 # Strong-scaling ladder for the distributed Aer-ROCm simulator: the SAME
-# GHZ cases at 1 -> 16 nodes, driven from this ONE file. Node/rank shape is
-# parameterized via --set (overrides apply before ${VAR} template expansion),
+# GHZ cases at 1 -> 16 nodes, driven from this ONE file. Rank count is
+# parameterized via --set (node count follows: ceil(ranks / 8-per-node)),
 # and qubit widths are selected per rung as positional group names.
 #
 # Memory map (statevector = 2^q * 16 B; node = 8 GCDs x 64 GiB = 512 GiB):
@@ -23,12 +23,12 @@
 # venv active). Each rung is one batch job; its cases run sequentially on
 # the same node pool, so walltime covers the SUM of its cases:
 #   q8020-sweep aux/Z-Keep/input/cases/_smoke_tests/aer_rocm_mpi_ladder.toml \
-#       q32 q34 --set _mpi_nodes=1 --set _slurm_tasks_per_case=8 \
+#       q32 q34 --set _slurm_tasks_per_case=8 \
 #       --set _output_dir=$MEMBERWORK/ard189/q8020_runs
-#   ... q32 q34 q35 --set _mpi_nodes=2  --set _slurm_tasks_per_case=16  ...
-#   ... q32 q34 q36 --set _mpi_nodes=4  --set _slurm_tasks_per_case=32  ...
-#   ... q32 q34 q36 --set _mpi_nodes=8  --set _slurm_tasks_per_case=64  ...
-#   ... q32 q34 q36 --set _mpi_nodes=16 --set _slurm_tasks_per_case=128 ...
+#   ... q32 q34 q35 --set _slurm_tasks_per_case=16  ...   # 2 nodes
+#   ... q32 q34 q36 --set _slurm_tasks_per_case=32  ...   # 4 nodes
+#   ... q32 q34 q36 --set _slurm_tasks_per_case=64  ...   # 8 nodes
+#   ... q32 q34 q36 --set _slurm_tasks_per_case=128 ...   # 16 nodes
 # Add --dry-run first to inspect the generated sbatch. Analysis after:
 #   q8020-metakeys <run_dir> --mode combined   # results.0.warm_seconds etc.
 #
@@ -37,8 +37,11 @@
 # 100+ ranks importing qiskit off NFS, not by simulation (~seconds/case).
 #
 # MPI mechanics (same as aer_rocm_gpu_mpi.toml): _slurm_tasks_per_case > 1
-# makes the sweeper size the job for one case and run cases sequentially
-# without an srun wrapper — the srun in _script IS the multi-rank job step.
+# makes the sweeper size the job for one case, run cases sequentially, and
+# SYNTHESIZE the multi-rank srun job step from the _slurm_* geometry — the
+# _script stays a bare python invocation and runs unchanged locally with
+# --set _slurm=false. Env vars live in [global._env_exports] (exported in
+# the sbatch; injected into the process env for local runs).
 # mpi4py must be the frontier-aer-build.sh build (links libmpi_amd + GTL).
 
 [global]
@@ -48,9 +51,9 @@ _slurm = true
 _slurm_project = "ard189"
 _slurm_walltime = "02:00:00"
 _slurm_partition = "batch"
-_mpi_nodes = 1                 # nodes per case  (--set per rung)
 _slurm_tasks_per_case = 8      # MPI ranks per case, 8 per node (--set per rung)
 _slurm_tasks_per_node = 8      # Frontier: one rank per GCD
+_slurm_gpus_per_task = 1       # one GCD per rank
 _env = "~/aer-rocm-env"
 # Pack the venv to node-local NVMe (sbcast + untar on every node) so 128
 # ranks import qiskit from local flash instead of NFS home — startup drops
@@ -63,7 +66,8 @@ _slurm_pack_venvs = "~/aer-rocm-env"
 _inject_outdir = "--outdir"
 _inject_experiment_id = "--experiment-id"
 _inject_workflow_id = "--workflow-id"
-_script = "export MPICH_GPU_SUPPORT_ENABLED=1 && export LD_LIBRARY_PATH=/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH && srun -N ${_mpi_nodes} -n ${_slurm_tasks_per_case} --ntasks-per-node=8 --gpus-per-task=1 --exclusive ~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+_script = "~/aer-rocm-env/bin/python aux/Z-Keep/input/codes/aer_rocm_smoke.py"
+_env_exports = { MPICH_GPU_SUPPORT_ENABLED = "1", LD_LIBRARY_PATH = "/opt/rocm-6.2.4/lib:/opt/rocm-6.2.4/llvm/lib:$LD_LIBRARY_PATH" }
 device = "GPU"
 shots = 1000
 repeats = 4

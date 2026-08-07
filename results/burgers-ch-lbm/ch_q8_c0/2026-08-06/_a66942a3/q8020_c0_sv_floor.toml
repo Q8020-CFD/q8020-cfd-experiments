@@ -1,0 +1,60 @@
+# =====================================================================
+# C0 — IDEALIZED SV & SEAMLESS t=0 → t=end   (zero-seam floor)
+# ---------------------------------------------------------------------
+# Purpose: pure algorithm error (shots=0, single segment), then + sampling
+# (shots=2^17, still seamless).  If the over-amplification shows up HERE,
+# seams aren't the story and C1 is moot.
+#
+# Vary: evolution-mode=single, shots=[0, 131072]  → 2 cases.
+# NOTE: --segment-size / --save-every alignment doesn't apply in single
+# mode, but save-every=4 is kept for frame parity with the FTCS ref.
+#
+#   q8020-sweep c0_sv_floor.toml \
+#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c0
+# =====================================================================
+
+[global]
+_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_q8_c0"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_slurm = true
+_slurm_project = "ard189"
+_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
+_slurm_partition = "batch"
+_slurm_walltime = "02:00:00"
+_slurm_cores_per_task = 1
+_slurm_cores_per_node = 64
+_slurm_exclusive_node = false
+_run_mode = "parallel"
+_trials = 1
+_case_timeout = 6600    # 1h50m; leaves ~10 min inside the 2h walltime
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — the Phase 1 baseline every case inherits.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--metric-transpile-timeout" = 0
+
+"--q" = 8
+"--n-steps" = 512
+"--save-every" = 4
+
+# ---------------------------------------------------------------------
+[ch_c0_sv_floor]
+"--method" = "cole_hopf_circuit"
+"--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
+"--phi-modes" = 8                  # baseline, held fixed
+"--evolution-mode" = "single"      # seamless t=0 → t=end (the whole point of C0)
+"--shots" = [0, 131072]            # THE swept lever: SV floor, then + sampling
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.

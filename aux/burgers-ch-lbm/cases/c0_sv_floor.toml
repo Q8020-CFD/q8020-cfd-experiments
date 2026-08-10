@@ -9,27 +9,21 @@
 # NOTE: --segment-size / --save-every alignment doesn't apply in single
 # mode, but save-every=4 is kept for frame parity with the FTCS ref.
 #
-#   q8020-sweep c0_sv_floor.toml \
-#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c0
+# EC2: run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep cases/c0_sv_floor.toml
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_q8_c0"
+_output_dir = "~/q8020-runs/ch_q8_c0"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "batch"
-_slurm_walltime = "02:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # both cases launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 6600    # 1h50m; leaves ~10 min inside the 2h walltime
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "4" }   # Aer threads per case: ~vCPUs / 2 concurrent cases
 
 "--noshow" = true
 "--no-classical-reference" = true

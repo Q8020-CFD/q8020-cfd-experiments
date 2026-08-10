@@ -1,16 +1,19 @@
 # =====================================================================
 # C5 — q = 32 ON REAL IBM HARDWARE   (PLACEHOLDER — args TBD, DO NOT RUN)
 # ---------------------------------------------------------------------
-# NOT a Frontier job: sim is dead past q~20 (q32 @ k=4 = 38 qubits =
+# NOT a sim job: sim is dead past q~20 (q32 @ k=4 = 38 qubits =
 # 4.4 TB statevector; even classical MPS prep chokes — 68 GB psi0).
-# This runs on an IBM device from a machine with IBM creds, NOT via
-# sbatch.  Kept beside the Frontier TOMLs so the case set is complete.
+# This submits to an IBM device from a machine with IBM creds — the
+# same EC2 box that runs C0-C4 works (it has outbound internet).
 #
 # TBD before this becomes runnable (see HANDOFF "Beyond q=16"):
 #   - backend name (device with >= 38 well-connected qubits)
 #   - k: retention vs depth likely favors SMALL k on hardware (more
 #     seams but fewer ancillas + shallower) — the REVERSE of the q16
 #     sim advice; treat as its own tuning question
+#   - max-total-qubits: the ≤33 sim gate does NOT apply on hardware —
+#     width is cheap, reset is costly; raise the cap freely so every
+#     step keeps its own ancilla (favor small k over reset-tiling)
 #   - shots: as high as the queue allows; 2^(q+11) is a per-bin FLOOR,
 #     hardware noise sits on top; post-selection retention (ancilla
 #     all-|0>) eats shots per seam
@@ -23,11 +26,13 @@
 # =====================================================================
 
 [global]
-_output_dir = "~/q8020/ch_c5_q32_hw"
+_output_dir = "~/q8020-runs/ch_c5_q32_hw"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 # NO _slurm block — hardware run, executes wherever IBM creds live.
+_run_mode = "parallel"
+_trials = 1
 
 "--noshow" = true
 "--no-classical-reference" = true
@@ -55,6 +60,7 @@ _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 "--backend-type" = "hardware"
 "--backend" = "TBD"                # device name
 "--segment-size" = 4               # TBD — tune retention-vs-depth on target device
+"--max-total-qubits" = 38          # TBD — q+2+k; raise freely on hardware (no ≤33 sim gate)
 "--save-every" = 4                 # keep = segment-size once k is chosen
 "--phi-modes" = 8                  # TBD — per-q scaling unresolved at q32
 "--shots" = 131072                 # TBD — push as high as the queue allows

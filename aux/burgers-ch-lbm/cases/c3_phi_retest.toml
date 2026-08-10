@@ -6,33 +6,32 @@
 # phi as a lever only at high seam count (S=80) — it may wake up once
 # seams stop dominating.
 #
-# RUN AFTER C1: set _k to the C1 winner k*.
+# RUN AFTER C1: set _k to the C1 winner k* (≤ 16 by construction).
+# Run from the workspace root (paths below are cwd-relative):
 #
-#   q8020-sweep c3_phi_retest.toml --set _k=<kstar> \
-#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c3
+#   q8020-sweep cases/c3_phi_retest.toml --set _k=<kstar> --set _mtq=<10+kstar>
 #
 # shots stays 2^17 (q8 diagnosis level — see HANDOFF "Shots per q").
+#
+# FAST-PATH GATE: _mtq = q + 2 + k* keeps the run on Aer's sample-once
+# path (HANDOFF "Fast vs slow Aer path").  Segment 1 prints `fast path`
+# / `SLOW PATH ...` — if you see SLOW PATH, kill it.
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_q8_c3"
+_output_dir = "~/q8020-runs/ch_q8_c3"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "extended"
-_slurm_walltime = "24:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # all 4 phi values launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 82800   # 23 hours; leaves 1h margin
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 4 concurrent cases
 
 _k = 4                             # PLACEHOLDER — override with --set _k=<kstar>
+_mtq = 14                          # = q+2+_k; override alongside _k (TOML can't do math)
 
 "--noshow" = true
 "--no-classical-reference" = true
@@ -57,6 +56,7 @@ _k = 4                             # PLACEHOLDER — override with --set _k=<kst
 "--evolution-mode" = "measure_reprepare"
 "--segment-size" = "${_k}"
 "--save-every" = "${_k}"           # frames land on seams
+"--max-total-qubits" = "${_mtq}"   # fast-path gate: q+2+k* — see header
 "--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
 # NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
 

@@ -15,40 +15,50 @@
 #     identical every seam → transpile ONCE and cache would kill this
 #     cost entirely (see HANDOFF "Practical top-end for q=16").
 #
+# FAST-PATH GATE at q16 (HANDOFF "Fast vs slow Aer path"): the cap
+# _mtq = 16 + 2 + (largest swept k) must stay ≤ 33, so the largest k
+# here is 15 — on the power-of-2 grid that means k ≤ 8.  Consequences:
+#   - k* ≤ 4  → both arms [k*, 2k*] run fast; _mtq = 18 + 2k*.
+#   - k* = 8  → the 2k*=16 arm is INFEASIBLE (16+2+16 = 34 > 33): drop
+#     _kdbl from the sweep list below and set _mtq = 26.
+#   - k* = 16 → k* itself is infeasible at q16; fall back to k=8
+#     (transpile ceiling favors the biggest feasible k anyway).
+# Segment 1 prints `fast path` / `SLOW PATH ...` — if SLOW PATH, kill it.
+#
 # Placeholders — set from the C1/C3 winners:
-#   _kstar = k*,  _kdbl = 2k*  (must divide 512)
+#   _kstar = k*,  _kdbl = 2k*  (must divide 512; see gate above)
 #   _phi16 = per-q phi (scale ~N/16 → 4096-ish if phi* scales, else 8)
+#   _mtq   = 18 + (largest swept k)  (TOML can't do math)
 # save-every = 2k*: multiple of both swept k values and of the FTCS-ref
 # cadence 4.  The q16 FTCS ref (ftcs_ref_q4_q8_q16.toml) already covers
 # this cadence.
 #
-#   q8020-sweep c4_dialup_q16.toml \
+# Run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep cases/c4_dialup_q16.toml \
 #       --set _kstar=<k*> --set _kdbl=<2k*> --set _phi16=<phi16> \
-#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_c4_q16
+#       --set _mtq=<18+2k*>
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_c4_q16"
+_output_dir = "~/q8020-runs/ch_c4_q16"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "extended"
-_slurm_walltime = "24:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # 2 cases (k*, 2k*) launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 82800   # 23 hours; transpile-dominated — watch the first case
+# No _slurm block / walltime / _case_timeout on EC2 — the very point for
+# this transpile-dominated sweep: cases run until done (possibly many
+# hours).  Watch the first case; kill by hand if stuck (each writes
+# pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "4" }   # Aer threads per case: ~vCPUs / 2 concurrent cases
+                                   # (transpile is single-threaded anyway — the long pole)
 
 # PLACEHOLDERS — override with --set once C1/C3 are scored.
 _kstar = 4
 _kdbl = 8
 _phi16 = 8
+_mtq = 26                          # = 16+2+_kdbl (fast-path gate; must be ≤ 33)
 
 "--noshow" = true
 "--no-classical-reference" = true
@@ -73,9 +83,11 @@ _phi16 = 8
 "--evolution-mode" = "measure_reprepare"
 "--bond-dim" = 4                   # PINNED: flat in q, 1-fid ~4e-8 (full rank = 513k CX, infeasible)
 "--phi-modes" = "${_phi16}"
+"--max-total-qubits" = "${_mtq}"   # fast-path gate: 18 + largest swept k, ≤ 33 — see header
 "--save-every" = "${_kdbl}"        # multiple of both swept k values + ref cadence 4
 # NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
 
 # ---------------------------------------------------------------------
 [dialup_q16]
-"--segment-size" = ["${_kstar}", "${_kdbl}"]   # modest k only — transpile is the ceiling
+"--segment-size" = ["${_kstar}", "${_kdbl}"]   # modest k only — transpile is the
+                                   # ceiling; if k*=8, DROP "${_kdbl}" (gate: 2k* ≤ 15)

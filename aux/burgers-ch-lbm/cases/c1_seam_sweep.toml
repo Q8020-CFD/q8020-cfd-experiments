@@ -1,5 +1,5 @@
 # =====================================================================
-# C1 — SEAM SWEEP (PRIMARY) : segment-size k = 2 .. 512   (S = 256 .. 1)
+# C1 — SEAM SWEEP (PRIMARY) : segment-size k = 2 .. 16   (S = 256 .. 32)
 # ---------------------------------------------------------------------
 # Purpose: is seam count the lever?  Does the ~4x over-amplification die
 # as S → 1?  All else = fig-1 baseline (corrected).
@@ -10,29 +10,30 @@
 # pairing is done here group-by-group.  save-every = max(k, 4) keeps
 # every group's frames a subset of the FTCS ref cadence (save-every=4).
 #
-# Cost: ~9x per k doubling; k>=32 is why this runs on Frontier.
+# k >= 32 is NOT simulable at shots>0: fully deferred k=32 needs 42
+# qubits (70 TB); capping smaller trips mid-circuit reset, which knocks
+# Aer off its sample-once path — wall-clock goes ~linear in shots (a
+# TIME wall, not memory; HANDOFF "Fast vs slow Aer path").  Reach S→1
+# via C5 hardware or by extrapolating the S=256→32 trend.
+# --max-total-qubits 26 (= q+2+max k) keeps all four k fully
+# deferred/fast.  Segment 1 prints `fast path` / `SLOW PATH ...` — if
+# you see SLOW PATH, kill the job.
 #
-#   q8020-sweep c1_seam_sweep.toml \
-#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c1
+# EC2: run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep cases/c1_seam_sweep.toml
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_q8_c1"
+_output_dir = "~/q8020-runs/ch_q8_c1"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "extended"
-_slurm_walltime = "24:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # all 4 k-groups launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 82800   # 23 hours; leaves 1h margin
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 4 concurrent cases
 
 "--noshow" = true
 "--no-classical-reference" = true
@@ -57,10 +58,12 @@ _case_timeout = 82800   # 23 hours; leaves 1h margin
 "--evolution-mode" = "measure_reprepare"
 "--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
 "--phi-modes" = 8                  # baseline, held fixed here
+"--max-total-qubits" = 26          # q(8)+n_bond(2)+max k(16): keeps ALL k in group fast
 # NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
 
 # ---------------------------------------------------------------------
 # THE swept lever, one group per k (save-every zipped by hand).
+# k >= 32 omitted — infeasible at shots>0 (see header).
 
 [seam_k2]                          # S = 256
 "--segment-size" = 2
@@ -77,23 +80,3 @@ _case_timeout = 82800   # 23 hours; leaves 1h margin
 [seam_k16]                         # S = 32
 "--segment-size" = 16
 "--save-every" = 16
-
-[seam_k32]                         # S = 16
-"--segment-size" = 32
-"--save-every" = 32
-
-[seam_k64]                         # S = 8
-"--segment-size" = 64
-"--save-every" = 64
-
-[seam_k128]                        # S = 4
-"--segment-size" = 128
-"--save-every" = 128
-
-[seam_k256]                        # S = 2
-"--segment-size" = 256
-"--save-every" = 256
-
-[seam_k512]                        # S = 1 (single seam at t=end)
-"--segment-size" = 512
-"--save-every" = 512

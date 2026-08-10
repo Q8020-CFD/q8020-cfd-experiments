@@ -8,17 +8,22 @@
 # Per group, segment-size sweeps [k*/2, k*, 2k*] (the single list axis).
 # Placeholders — set from the C1/C3 winners:
 #   _khalf = k*/2,  _kstar = k*,  _kdbl = 2k*   (all must divide 512;
-#       any k* in C1's ladder except 512 works — if k*=512 drop _kdbl)
+#       k* comes from C1's k ≤ 16 ladder)
 #   _phi8  = phi* from C3 (q8)
+#   _mtq4  = 4 + 2 + 2k*,  _mtq8 = 8 + 2 + 2k*   (fast-path gate, per q:
+#       largest k in the group is _kdbl; TOML can't do math — see
+#       HANDOFF "Fast vs slow Aer path"; must stay ≤ 33)
 # q4 pins phi-modes=8 (N=16: 8 is already Nyquist — C3 doesn't apply).
 # save-every = 2k* for EVERY case: multiple of all three k values
 # (alignment) and of 4 (FTCS-ref frame parity), uniform cadence across
-# the sweep.
+# the sweep.  Segment 1 prints `fast path` / `SLOW PATH ...` — if you
+# see SLOW PATH, kill it.
 #
-#   q8020-sweep c4_dialup_q4_q8.toml \
+# Run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep cases/c4_dialup_q4_q8.toml \
 #       --set _khalf=<k*/2> --set _kstar=<k*> --set _kdbl=<2k*> \
 #       --set _phi8=<phistar> \
-#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_c4_q4q8
+#       --set _mtq4=<6+2k*> --set _mtq8=<10+2k*>
 #
 # bond-dim stays PINNED at 4: chi=4 is flat in q (same Schmidt spectrum
 # at q=8/16), 1-fid ~4e-8.  At q=4 full rank IS 4, so chi=4 reproduces
@@ -26,28 +31,24 @@
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_c4_q4q8"
+_output_dir = "~/q8020-runs/ch_c4_q4q8"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "extended"
-_slurm_walltime = "24:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # all 6 cases (2 q x 3 k) launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 82800   # 23 hours; leaves 1h margin
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 6 concurrent cases
 
 # PLACEHOLDERS — override with --set once C1/C3 are scored.
 _khalf = 2
 _kstar = 4
 _kdbl = 8
 _phi8 = 8
+_mtq4 = 14                         # = 4+2+_kdbl (fast-path gate at q4)
+_mtq8 = 18                         # = 8+2+_kdbl (fast-path gate at q8)
 
 "--noshow" = true
 "--no-classical-reference" = true
@@ -77,9 +78,11 @@ _phi8 = 8
 [dialup_q4]
 "--q" = 4
 "--phi-modes" = 8                  # N=16: 8 = Nyquist, per-q value is fixed
+"--max-total-qubits" = "${_mtq4}"  # q+2+2k*: keeps every swept k fast
 "--segment-size" = ["${_khalf}", "${_kstar}", "${_kdbl}"]
 
 [dialup_q8]
 "--q" = 8
 "--phi-modes" = "${_phi8}"         # phi* from C3
+"--max-total-qubits" = "${_mtq8}"  # q+2+2k*: keeps every swept k fast
 "--segment-size" = ["${_khalf}", "${_kstar}", "${_kdbl}"]

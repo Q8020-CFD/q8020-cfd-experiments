@@ -7,39 +7,39 @@
 # from floor.
 #
 # One TOML per k (handoff rule).  This file is parameterized on _k so
-# the SAME file serves both required k values:
+# the SAME file serves both required k values (run from workspace root):
 #
 #   k = 4 (paper-like anchor, the default):
-#     q8020-sweep c2_shots_ladder.toml \
-#         --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c2_k4
+#     q8020-sweep cases/c2_shots_ladder.toml
 #
 #   k = k* (the C1 winner — rerun once C1 is scored):
-#     q8020-sweep c2_shots_ladder.toml --set _k=<kstar> \
-#         --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_q8_c2_kstar
+#     q8020-sweep cases/c2_shots_ladder.toml \
+#         --set _k=<kstar> --set _mtq=<10+kstar> \
+#         --set _output_dir=~/q8020-runs/ch_q8_c2_kstar
 #
 # _k feeds BOTH --segment-size and --save-every (must stay equal/aligned:
 # solver hard-errors if snap steps don't land on seams).
+#
+# FAST-PATH GATE: _mtq = q + 2 + max(4, k*)  (k*=8 → 18; k*=16 → 26).
+# k* MUST be ≤ 16 — a slow-path k at 2^20 shots is the exact
+# pin-the-machine combo (HANDOFF "Fast vs slow Aer path").  Segment 1
+# prints `fast path` / `SLOW PATH ...` — if you see SLOW PATH, kill it.
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_q8_c2_k4"
+_output_dir = "~/q8020-runs/ch_q8_c2_k4"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "extended"
-_slurm_walltime = "24:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # all 5 shot rungs launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 82800   # 23 hours; leaves 1h margin
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 5 concurrent cases
 
 _k = 4                             # steps per segment; override with --set _k=<kstar>
+_mtq = 14                          # = q+2+max(4,_k); override alongside _k (TOML can't do math)
 
 "--noshow" = true
 "--no-classical-reference" = true
@@ -63,6 +63,7 @@ _k = 4                             # steps per segment; override with --set _k=<
 "--evolution-mode" = "measure_reprepare"
 "--segment-size" = "${_k}"
 "--save-every" = "${_k}"           # frames land on seams
+"--max-total-qubits" = "${_mtq}"   # fast-path gate: q+2+max(4,k) — see header
 "--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
 "--phi-modes" = 8                  # baseline, held fixed here
 # NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.

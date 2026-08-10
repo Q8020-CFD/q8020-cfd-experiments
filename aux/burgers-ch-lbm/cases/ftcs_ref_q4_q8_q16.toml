@@ -12,29 +12,20 @@
 # an independent METHOD; the q16 grid is hugely over-resolved for
 # nu=0.03, FTCS truncation ~1e-10).  See HANDOFF "Reference (relL2)".
 #
-# Cheap (auto-sub-steps for CFL, ~seconds per q) → short batch job.
+# Cheap (auto-sub-steps for CFL, ~seconds per q).  Run from the
+# workspace root (paths below are cwd-relative):
 #
-#   q8020-sweep ftcs_ref_q4_q8_q16.toml \
-#       --set _output_dir=/lustre/orion/ard189/scratch/$USER/ch_ftcs_refs
+#   q8020-sweep cases/ftcs_ref_q4_q8_q16.toml
 # =====================================================================
 
 [global]
-_output_dir = "/lustre/orion/ard189/scratch/ishangore/ch-lbm/ch_ftcs_refs"
+_output_dir = "~/q8020-runs/ch_ftcs_refs"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
 
-_slurm = true
-_slurm_project = "ard189"
-_slurm_pack_venvs = ["./q8020-cfd-ch-lbm/.venv"]
-_slurm_partition = "batch"
-_slurm_walltime = "01:00:00"
-_slurm_cores_per_task = 1
-_slurm_cores_per_node = 64
-_slurm_exclusive_node = false
-_run_mode = "parallel"
+_run_mode = "parallel"             # 3 refs (one per q) launch concurrently (local Popen)
 _trials = 1
-_case_timeout = 3000
 
 "--noshow" = true
 "--no-classical-reference" = true

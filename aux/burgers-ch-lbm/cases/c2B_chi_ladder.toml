@@ -1,0 +1,93 @@
+# =====================================================================
+# C6 — CHI (BOND-DIM) LADDER : chi = 2, 4, 8, 16   at k=8, shots=2^16
+# ---------------------------------------------------------------------
+# Purpose: does MPS truncation at the SEAMS act as an implicit denoiser?
+# Under measure_reprepare the sqrt-of-counts state is re-SVD'd at every
+# seam (64 of them here); the smooth phi lives in the leading ~4 Schmidt
+# directions while multinomial shot noise scatters across all ranks, so
+# chi caps how much of that noise survives the re-encode.
+#
+# NOTE — deliberate deviation from HANDOFF "Bond-dim decision: PIN
+# chi=4".  That pin addresses chi as an ERROR SOURCE on the smooth phi
+# (1-fid 4e-8 at chi=4) so MPS can't confound the k sweep; it did not
+# test chi as a seam-noise LEVER at low shots.  The prior null result
+# for bond-dim was at S=80 seams pre-C1.  chi=16 is full rank at q8
+# (any state exact) = the "no truncation" anchor; fine on sim, but do
+# NOT carry full rank to q16 (513k CX — the reason the pin exists).
+#
+# chi pairs with --max-total-qubits (n_bond = ceil(log2 chi)):
+#   mtq = q + n_bond + k  ->  chi 2/4/8/16 => mtq 17/18/19/20.
+# The sweeper cross-products lists (cannot zip), so one group per chi.
+# All four stay fully deferred/fast (heat_anc = k = 8).  Segment 1
+# prints `fast path` / `SLOW PATH ...` — if you see SLOW PATH, kill it.
+#
+# Anchors: chi_4 is bit-identical params to C2's 2^16 rung (00e609d3,
+# relL2 1.20 vs SV) — same seed, must reproduce bit-for-bit (repro
+# check for free).  SV-vs-truth is 2e-4 (FTCS refs), so any movement
+# here is pure seam-noise response, not bias.
+#
+# Wall time ~2x per extra qubit of width (sample-once SV path):
+# chi 2/4/8/16 ~= 1.9h / 3.7h / 7.4h / ~15h.  Parallel => ~15h total,
+# bounded by chi_16.  Drop it via `--groups chi_2 chi_4 chi_8` for a
+# same-day answer.
+#
+# EC2: run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/c6_chi_ladder.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_q8_c6_chi"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # all 4 chi rungs launch concurrently (local Popen)
+_trials = 1
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 4 concurrent cases
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — everything except the swept lever.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--shots" = 65536                  # 2^16, fixed (C2 anchor rung)
+"--metric-transpile-timeout" = 0
+
+"--q" = 8
+"--n-steps" = 512
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--segment-size" = 8               # k=8 fixed (64 seams)
+"--save-every" = 8                 # frames land on seams
+"--phi-modes" = 8                  # baseline, held fixed here
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+# THE swept lever, one group per chi (mtq zipped by hand).
+
+[chi_2]                            # n_bond = 1; strongest seam truncation
+"--bond-dim" = 2
+"--max-total-qubits" = 17
+
+[chi_4]                            # n_bond = 2; the pinned baseline = C2 2^16 rung
+"--bond-dim" = 4
+"--max-total-qubits" = 18
+
+[chi_8]                            # n_bond = 3
+"--bond-dim" = 8
+"--max-total-qubits" = 19
+
+[chi_16]                           # n_bond = 4; FULL RANK at q8 = no-truncation anchor
+"--bond-dim" = 16
+"--max-total-qubits" = 20

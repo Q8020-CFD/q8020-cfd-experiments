@@ -1,0 +1,74 @@
+# =====================================================================
+# C2 — SHOTS LADDER × k : shots = 2^14 .. 2^20 at fixed segment-size
+# ---------------------------------------------------------------------
+# Purpose: split per-seam shot noise (error ∝ 1/√shots, S seams compound)
+# from the truncation floor (flat bias).  KEEP the low end (16384) — it
+# anchors the 1/√shots fit; without it the fit can't separate slope
+# from floor.
+#
+# One TOML per k (handoff rule).  This file is parameterized on _k so
+# the SAME file serves both required k values (run from workspace root):
+#
+#   k = 4 (paper-like anchor, the default):
+#     q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/c2_shots_ladder.toml
+#
+#   k = k* (the C1 winner — rerun once C1 is scored):
+#     q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/c2_shots_ladder.toml \
+#         --set _k=<kstar> --set _mtq=<10+kstar> \
+#         --set _output_dir=~/q8020-runs/ch_q8_c2_kstar
+#
+# _k feeds BOTH --segment-size and --save-every (must stay equal/aligned:
+# solver hard-errors if snap steps don't land on seams).
+#
+# FAST-PATH GATE: _mtq = q + 2 + max(4, k*)  (k*=8 → 18; k*=16 → 26).
+# k* MUST be ≤ 16 — a slow-path k at 2^20 shots is the exact
+# pin-the-machine combo (HANDOFF "Fast vs slow Aer path").  Segment 1
+# prints `fast path` / `SLOW PATH ...` — if you see SLOW PATH, kill it.
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_q8_c2_k4"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # all 5 shot rungs launch concurrently (local Popen)
+_trials = 1
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 5 concurrent cases
+
+_k = 4                             # steps per segment; override with --set _k=<kstar>
+_mtq = 14                          # = q+2+max(4,_k); override alongside _k (TOML can't do math)
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — everything except the swept lever.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--metric-transpile-timeout" = 0
+
+"--q" = 8
+"--n-steps" = 512
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--segment-size" = "${_k}"
+"--save-every" = "${_k}"           # frames land on seams
+"--max-total-qubits" = "${_mtq}"   # fast-path gate: q+2+max(4,k) — see header
+"--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
+"--phi-modes" = 8                  # baseline, held fixed here
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+[ch_shots_ladder]
+#              2^14   2^16    2^17    2^19    2^20
+"--shots" = [16384, 65536, 131072, 524288, 1048576]   # THE swept lever

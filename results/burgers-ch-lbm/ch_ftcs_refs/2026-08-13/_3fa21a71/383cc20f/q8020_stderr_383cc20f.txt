@@ -1,0 +1,21 @@
+[burgers] q=16 N=65536 nu=3.0e-02 cfl=0.1 dt=1.5259e-06 n_steps=512 method=ftcs_reference
+[burgers] reference trajectory skipped (--no-classical-reference)
+[burgers] running method=ftcs_reference ...
+[burgers] resolved FTCS reference on 65536 pts (subsampled to N=65536) ...
+Traceback (most recent call last):
+  File "/root/q8020/./q8020-cfd-ch-lbm/src/burgers_solver.py", line 563, in <module>
+    sols_method = solve_burgers_subsampled(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_classical.py", line 221, in solve_burgers_subsampled
+    sols_fine = solve_burgers(
+                ^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_classical.py", line 157, in solve_burgers
+    u = u + dt * compute_rhs_shift(u, dx, nu, g, bc=bc)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_fd.py", line 65, in compute_rhs_shift
+    sp = shift_matrix(N, +1, bc=bc)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_fd.py", line 33, in shift_matrix
+    S = np.zeros((N, N), dtype=float)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 32.0 GiB for an array with shape (65536, 65536) and data type float64

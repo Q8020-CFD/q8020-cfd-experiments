@@ -1,0 +1,49 @@
+# =====================================================================
+# FTCS REFERENCE RUNS : q = 4, 8, 16   (relL2 denominator for C0-C4)
+# ---------------------------------------------------------------------
+# One ref per q (list = sweep axis).  The ref depends on physics + grid
+# + cadence only — NOT on any quantum knob — so C0-C3 all share the q=8
+# ref produced here; C4 uses one per q.
+#
+# Cadence: save-every=4 frames land on every multiple of 4, which is a
+# SUPERSET of the frames of every quantum case in this study (all case
+# save-every values are multiples of 4), so this one cadence covers
+# C0-C4.  ref-points=800 < N at q16 → ref runs ON the q16 grid (still
+# an independent METHOD; the q16 grid is hugely over-resolved for
+# nu=0.03, FTCS truncation ~1e-10).  See HANDOFF "Reference (relL2)".
+#
+# Cheap (auto-sub-steps for CFL, ~seconds per q).  Run from the
+# workspace root (paths below are cwd-relative):
+#
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/ftcs_ref_q4_q8_q16.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_ftcs_refs"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # 3 refs (one per q) launch concurrently (local Popen)
+_trials = 1
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Physics — identical to the quantum baseline (must match exactly).
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+"--n-steps" = 512
+"--seed" = 1234
+
+# ---------------------------------------------------------------------
+[ftcs_ref]
+"--method" = "ftcs_reference"
+"--q" = [4, 8, 16]            # one ref run per q (list = sweep axis)
+"--ref-points" = 800          # min resolved grid; at q16 runs on q-grid (fine)
+"--save-every" = 4            # covers every case cadence in C0-C4 (all mult. of 4)

@@ -1,0 +1,44 @@
+{
+  "_source": "sweep",
+  "name": "chi_2",
+  "case_id": "chi_2",
+  "params": {
+    "_output_dir": "~/q8020-runs/ch_q8_c6_chi",
+    "_inject_outdir": "--outdir",
+    "_env": "./q8020-cfd-ch-lbm/.venv",
+    "_script": "python ./q8020-cfd-ch-lbm/src/burgers_solver.py",
+    "_run_mode": "parallel",
+    "_trials": 1,
+    "_env_exports": {
+      "OMP_NUM_THREADS": "2"
+    },
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.3,
+    "--nu": 0.03,
+    "--cfl": 0.1,
+    "--seed": 1234,
+    "--shots": 65536,
+    "--metric-transpile-timeout": 0,
+    "--q": 8,
+    "--n-steps": 512,
+    "--method": "cole_hopf_circuit",
+    "--evolution-mode": "measure_reprepare",
+    "--segment-size": 8,
+    "--save-every": 8,
+    "--phi-modes": 8,
+    "--bond-dim": 2,
+    "--max-total-qubits": 17
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /root/q8020/q8020-cfd-ch-lbm/.venv/bin/activate && python ./q8020-cfd-ch-lbm/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --bc periodic --ic sine --source none --ic-amplitude 0.3 --nu 0.03 --cfl 0.1 --seed 1234 --shots 65536 --metric-transpile-timeout 0 --q 8 --n-steps 512 --method cole_hopf_circuit --evolution-mode measure_reprepare --segment-size 8 --save-every 8 --phi-modes 8 --bond-dim 2 --max-total-qubits 17 --outdir /root/q8020-runs/ch_q8_c6_chi/2026-08-13/_bd8bc733/7f0d8c63"
+  ],
+  "script": "-c",
+  "cwd": "/root/q8020"
+}

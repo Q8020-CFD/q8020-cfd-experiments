@@ -1,0 +1,96 @@
+# =====================================================================
+# C7 — CFL LADDER : (cfl, n-steps) = (0.1,512) .. (0.8,64)   at k=8, 2^16
+# ---------------------------------------------------------------------
+# Purpose: seam count via dt.  The qft-diagonal step applies the EXACT
+# discrete-heat semigroup e^{nu*lambda*dt} (arccos(exp) angles, FD
+# Laplacian eigenvalues) — zero time-discretization error, no operator
+# splitting (source=none), no advective CFL in phi-space.  Total
+# post-selection contraction over fixed T is invariant to the split.
+# So at fixed T_end, raising cfl only REDUCES the number of seams
+# (n_steps/k) and the wall time; if seam noise compounds ~sqrt(S),
+# expect ~2.8x error reduction across this ladder for free.  Faster
+# decay than sqrt(S) = evidence of the nonlinear amplification regime.
+#
+# PAIRING RULE: T_end = n_steps * cfl * dx must stay FIXED at 0.2
+# (cfl * n-steps = 51.2 at q8).  Changing cfl alone (as in C0-C4, which
+# pin n-steps=512) changes the physical end time, not the numerics.
+# The sweeper cross-products lists (cannot zip), so one group per rung.
+#
+# All rungs: k=8, save-every=8, chi=4, mtq=18 — every group fully
+# deferred/fast (identical segment circuit STRUCTURE; only the rotation
+# angles differ).  Segment 1 prints `fast path` / `SLOW PATH ...`.
+#
+# Frames land at the same STEP multiples but different PHYSICAL times
+# per rung — compare rungs (and the FTCS ref) at t_final = 0.2 only,
+# or re-run the ref per cfl.  SV-vs-truth is 2e-4 (FTCS refs), so any
+# movement here is pure seam-noise response, not bias.
+#
+# Anchor: cfl_0p1 is bit-identical params to C2's 2^16 rung (00e609d3,
+# relL2 1.20 vs SV) — same seed, must reproduce bit-for-bit.  Skip it
+# via `--groups cfl_0p2 cfl_0p4 cfl_0p8` if C2's copy suffices.
+#
+# Wall time ~ n_segments x ~200s: 3.7h / 1.8h / 0.9h / 0.5h.
+# Parallel => ~3.7h total, bounded by cfl_0p1.
+#
+# EC2: run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/c7_cfl_ladder.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_q8_c7_cfl"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # all 4 cfl rungs launch concurrently (local Popen)
+_trials = 1
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case: ~vCPUs / 4 concurrent cases
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — everything except the swept lever.
+# NOTE: --cfl and --n-steps live in the groups (zipped pair), not here.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--seed" = 1234
+"--shots" = 65536                  # 2^16, fixed (C2 anchor rung)
+"--metric-transpile-timeout" = 0
+
+"--q" = 8
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--segment-size" = 8               # k=8 fixed
+"--save-every" = 8                 # frames land on seams
+"--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
+"--phi-modes" = 8                  # baseline, held fixed here
+"--max-total-qubits" = 18          # q(8)+n_bond(2)+k(8): fast path on every rung
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+# THE swept lever, one group per rung (n-steps zipped by hand so
+# T_end = n_steps * cfl * dx = 0.2 is identical on every rung).
+
+[cfl_0p1]                          # S = 64 seams; = C2 2^16 rung (repro anchor)
+"--cfl" = 0.1
+"--n-steps" = 512
+
+[cfl_0p2]                          # S = 32 seams
+"--cfl" = 0.2
+"--n-steps" = 256
+
+[cfl_0p4]                          # S = 16 seams
+"--cfl" = 0.4
+"--n-steps" = 128
+
+[cfl_0p8]                          # S = 8 seams
+"--cfl" = 0.8
+"--n-steps" = 64

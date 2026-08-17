@@ -1,0 +1,37 @@
+[burgers] q=8 N=256 nu=3.0e-02 cfl=0.8 dt=3.1250e-03 n_steps=64 method=cole_hopf_circuit
+[burgers] reference trajectory skipped (--no-classical-reference)
+[burgers] running method=cole_hopf_circuit ...
+[cole_hopf_circuit] propagator=qft-diagonal q=8 nu=3.0e-02 dt=3.1250e-03 n_steps=64 shots=524288
+[_run_shots_measure_reprepare] n_segments=8 segment_size=8 shots=524288
+[_run_shots_measure_reprepare] fast path: fully deferred (no reset), width=18 (SV 0.00 GiB), sample-once.
+[_run_shots_measure_reprepare] segment 1/8 steps 1-8 depth=2065 transpiling ...
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/root/q8020/q8020-backend-utils/src/q8020_backend_utils/ibm/circuit.py", line 106, in _stats_worker
+    conn.send(info)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 206, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 427, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/root/q8020/q8020-backend-utils/src/q8020_backend_utils/ibm/circuit.py", line 108, in _stats_worker
+    conn.send({
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 206, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 427, in _send_bytes
+    self._send(header + buf)
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 384, in _send
+    n = write(self._handle, buf)
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+BrokenPipeError: [Errno 32] Broken pipe

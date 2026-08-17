@@ -1,0 +1,110 @@
+# =====================================================================
+# C8 — SHOTS x CFL CROSS : cfl = 0.8, 1.6, 3.2  x  shots = 2^14..2^19
+#                          x  seeds = 1234, 1235, 1236   (54 cases)
+# ---------------------------------------------------------------------
+# Purpose: map the (seam count, shots) error surface at the low-S end
+# C7 opened up.  C7 showed err ~ S^0.84 at fixed 2^16 shots; C2 showed
+# no shots floor down to 0.29 at 2^20 — but that was at S=64.  With
+# S = 8/4/2 there is far less seam chain to amplify each seam's
+# multinomial noise, so shots may buy error back here.  Also answers
+# whether C2's diverging 2^14 rung survives at low S (the shots floor
+# that matters for hardware budgeting).
+#
+# PAIRING RULE (same as C7): T_end = n_steps * cfl * dx fixed at 0.2
+# (cfl * n-steps = 51.2 at q8).  One group per cfl rung, n-steps
+# zipped by hand; the sweeper cross-products the shots x seed lists
+# WITHIN each group: 3 groups x 6 shots x 3 seeds = 54 cases.
+#
+# TRIALS: deliberately NOT via _trials — the sweeper replicates
+# _trials>1 cases without touching the command line (sweep.py
+# expand_case_lists), so with a pinned --seed the copies are
+# bit-identical (proven by the C6/C7 repro anchors).  Real replicates
+# come from the --seed list below.
+#
+# WALL TIME: shots are FREE on the sample-once fast path — C2 proof:
+# 2^14..2^20 rungs all took 3.68h each.  Cost is segment count only.
+# Segments/case: cfl 0.8/1.6/3.2 -> S = 8/4/2; total = 18x14 = 252
+# segments at ~87 segs/h saturated => ~3h wall, all-at-once.
+# RAM guard: 54 concurrent Aer procs — OMP_NUM_THREADS=1 (the "2" was
+# tuned for 4 cases).  If RAM is tight, batch via
+#   --groups cfl_0p8   (144 segs, ~1.7h)
+#   --groups cfl_1p6   ( 72 segs, ~0.9h)
+#   --groups cfl_3p2   ( 36 segs, ~0.5h)
+#
+# All cases: q=8, k=8, chi=4, mtq=18 — identical circuit STRUCTURE
+# (only angles/shots/seed differ), fully deferred/fast on every rung.
+# Segment 1 prints `fast path` / `SLOW PATH ...` — SLOW PATH = kill it.
+#
+# Anchor: (cfl_0p8, shots=65536, seed=1234) is bit-identical params to
+# C7's cfl_0p8 rung (c4c12dba, relL2 0.21 vs FTCS at t=0.2) — must
+# reproduce bit-for-bit (repro check for free).
+#
+# Frames land at different PHYSICAL times per cfl rung — compare rungs
+# (and the FTCS ref) at t_final = 0.2 only.  SV-vs-truth is 2e-4
+# (FTCS refs), so any movement here is pure seam/shot noise, not bias.
+#
+# EC2: run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/c8_shots_cfl_cross.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_shots_cfl_cross"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # all 54 cases launch concurrently (local Popen)
+_trials = 1                        # replication via --seed list, NOT _trials (see header)
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "1" }   # 54 concurrent cases: 1 Aer thread each
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — everything except the swept levers.
+# NOTE: --cfl and --n-steps live in the groups (zipped pair), not here.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--metric-transpile-timeout" = 0
+
+"--q" = 8
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--segment-size" = 8               # k=8 fixed (k=16 target deferred until params settle)
+"--save-every" = 8                 # frames land on seams
+"--bond-dim" = 4                   # PINNED: null lever (C6), exact for this phi
+"--phi-modes" = 8                  # baseline, held fixed here
+"--max-total-qubits" = 18          # q(8)+n_bond(2)+k(8): fast path on every rung
+
+# ---------------------------------------------------------------------
+# One group per cfl rung (n-steps zipped by hand so
+# T_end = n_steps * cfl * dx = 0.2 is identical on every rung).
+# The shots x seed lists MUST live in the groups, not [global]:
+# list-valued keys only cross-product at group level (dry-run proof:
+# global lists collapse the sweep to 3 cases).  6 shots x 3 seeds = 18
+# cases per group.
+
+[cfl_0p8]                          # S = 8 seams; contains the C7 repro anchor
+"--cfl" = 0.8
+"--n-steps" = 64
+"--shots" = [16384, 32768, 65536, 131072, 262144, 524288]   # 2^14..2^19
+"--seed" = [1234, 1235, 1236]      # real replicates (also seeds transpiler; harmless)
+
+[cfl_1p6]                          # S = 4 seams
+"--cfl" = 1.6
+"--n-steps" = 32
+"--shots" = [16384, 32768, 65536, 131072, 262144, 524288]
+"--seed" = [1234, 1235, 1236]
+
+[cfl_3p2]                          # S = 2 seams
+"--cfl" = 3.2
+"--n-steps" = 16
+"--shots" = [16384, 32768, 65536, 131072, 262144, 524288]
+"--seed" = [1234, 1235, 1236]

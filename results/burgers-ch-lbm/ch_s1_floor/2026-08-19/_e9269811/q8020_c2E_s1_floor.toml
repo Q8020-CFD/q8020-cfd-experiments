@@ -1,0 +1,106 @@
+# =====================================================================
+# C9 — S=1 SINGLE-LAYER FLOOR + k-COLLAPSE : {S=1 k=1, S=1 k=8, S=2 k=1}
+#                          x  shots = 2^14..2^19
+#                          x  seeds = 1234, 1235, 1236   (54 cases)
+# ---------------------------------------------------------------------
+# Purpose: formalize the k/S collapse (2026-08-18) in the harvested
+# pipeline.  The exact CH propagator's theta_k = arccos(exp(nu*l_k*dt))
+# is exact at ANY dt, so ONE layer covers any time span — k>1 steps per
+# segment is pure gate cost and S>1 buys nothing on decoherence.  This
+# sweep (a) measures the pure final-readout sampling floor (S=1, no
+# seams at all), (b) A/B-tests the k-collapse at S=1 (k=1 vs k=8: same
+# physics, 8x the layers), and (c) re-lands C8's best rung shape at
+# k=1.  The s1_k1 group IS the hardware circuit shape: 11 qubits
+# (q8 + bond2 + anc1), one layer, one readout, straight from the IC.
+#
+# PAIRING RULE (same as C7/C8): T_end = n_steps * cfl * dx fixed at
+# 0.2 (cfl * n-steps = 51.2 at q8).  All three groups satisfy it:
+# 51.2x1, 6.4x8, 25.6x2.  The sweeper cross-products shots x seed
+# WITHIN each group: 3 groups x 6 shots x 3 seeds = 54 cases.
+#
+# PREDICTIONS (from the 2026-08-18 local validation, 2^17 shots):
+#   s1_k1 == s1_k8 within seed scatter (k-collapse: layers are angle-
+#     splits of the same exact diagonal — bit-identity NOT expected,
+#     different circuit => different transpile + sampling stream);
+#   s2_k1 ~ C8 cfl=3.2/k=8 rung (0.090+-0.009 at 2^17) — S is the only
+#     live variable, k/cfl split is inert;
+#   s1 floor law: relL2 ~ 0.085*sqrt(2^17/shots) => ~0.042 at 2^19,
+#     ~0.24 at 2^14.  s1 vs s2 gap expected marginal (~6%): the t=0.1
+#     mid-seam's noise mostly diffuses away by t=0.2.
+# Local soft anchors (same solver CLI, so Aer should reproduce):
+#   s1_k1 2^17 seeds 1234/1235/1236 -> relL2 0.063/0.094/0.097.
+#
+# TRIALS: via the --seed list, NOT _trials (sweeper replicates
+# _trials>1 without touching the command line => bit-identical copies).
+#
+# WALL TIME: trivial — 1-8 layers/case (vs C8's 14-avg segments of 8);
+# seconds of execution plus the one metric transpile per case.  54-way
+# concurrency is safe here (C8's OOM kills came from 54 concurrent
+# transpiles of 8-layer segments; these circuits are ~8-64x smaller).
+#
+# Frames: s2_k1 lands t=0.1 and t=0.2 (FTCS ref steps 256/512); the
+# S=1 groups produce only the final frame — that is the point.
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_s1_floor"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # all 54 concurrently (tiny circuits, safe)
+_trials = 1                        # replication via --seed list (see header)
+_env_exports = { OMP_NUM_THREADS = "1" }
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point — identical to C8 except the swept levers.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--metric-transpile-timeout" = 0   # keep CX stats: records the one-layer
+                                   # ~7.7k CX figure in the metadata
+
+"--q" = 8
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--bond-dim" = 4                   # PINNED for C8 comparability (chi=2
+                                   # saves a qubit on hw; not swept here)
+"--phi-modes" = 8                  # baseline, held fixed
+"--max-total-qubits" = 18          # cap, not floor: k=1 groups sit at 11
+
+# ---------------------------------------------------------------------
+# --cfl / --n-steps / --segment-size / --save-every are zipped by hand
+# per group (T_end = 0.2 on every rung; save-every = segment-size so
+# frames land on segment ends).  shots x seed lists MUST live in the
+# groups, not [global] (global lists don't cross-product).
+
+[s1_k1]                            # S = 1, ONE layer — the hw circuit shape
+"--cfl" = 51.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = [0, 16384, 32768, 65536, 131072, 262144, 524288]   # 2^14..2^19
+"--seed" = [1234, 1235, 1236]
+
+[s1_k8]                            # S = 1, 8 layers — k-collapse A/B vs s1_k1
+"--cfl" = 6.4
+"--n-steps" = 8
+"--segment-size" = 8
+"--save-every" = 8
+"--shots" = [0, 16384, 32768, 65536, 131072, 262144, 524288]
+"--seed" = [1234, 1235, 1236]
+
+[s2_k1]                            # S = 2 at k=1 — C8 cfl=3.2/k=8 twin + t=0.1 frame
+"--cfl" = 25.6
+"--n-steps" = 2
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = [0, 16384, 32768, 65536, 131072, 262144, 524288]
+"--seed" = [1234, 1235, 1236]

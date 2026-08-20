@@ -1,5 +1,5 @@
 # =====================================================================
-# HW2 — q x S LADDER ON REAL IBM HARDWARE  (6 cases, ~7-9 QPU-minutes)
+# HW1 — q x S LADDER ON REAL IBM HARDWARE  (6 cases, ~7-9 QPU-minutes)
 # ---------------------------------------------------------------------
 # !! THIS FILE DEFAULTS TO --backend-type hardware AND SPENDS REAL   !!
 # !! QPU TIME ON SUBMIT.  Rehearse first (recipes below), and submit !!
@@ -32,19 +32,19 @@
 #
 # SUBMISSION STAGES (gate the q8 seam ladder on the q8 probe; group
 # names are POSITIONAL args to q8020-sweep):
-#   A. q8020-sweep hw2_qs_ladder.toml q8_s1
-#   B. relL2 < ~0.7?  q8020-sweep hw2_qs_ladder.toml q8_s2 q8_s4
+#   A. q8020-sweep hw1_qs_ladder.toml q8_s1
+#   B. relL2 < ~0.7?  q8020-sweep hw1_qs_ladder.toml q8_s2 q8_s4
 #      else skip B — comparing noise to noise wastes QPU.
-#   C. q8020-sweep hw2_qs_ladder.toml q4_s1 q4_s2 q3_s1
+#   C. q8020-sweep hw1_qs_ladder.toml q4_s1 q4_s2 q3_s1
 #
 # REHEARSALS (free, run before stage A):
 #   hardware code path, no credentials (TREX/DD applied but inert in
 #   local-testing mode):
-#     q8020-sweep hw2_qs_ladder.toml \
+#     q8020-sweep hw1_qs_ladder.toml \
 #       --set backend-type=fake --set backend=torino
 #   authoritative routed CX/depth per segment, zero shots (needs
 #   creds — resolves the real backend, submits nothing):
-#     q8020-sweep hw2_qs_ladder.toml --set hw-dry-run=true
+#     q8020-sweep hw1_qs_ladder.toml --set hw-dry-run=true
 #   NOTE --set backend-type=sim does NOT give ideal Aer here: the
 #   pinned --backend name is rejected in sim mode (loud ValueError).
 #   Ideal anchors at matching shots: drop --backend/--backend-type
@@ -64,7 +64,7 @@
 # =====================================================================
 
 [global]
-_output_dir = "~/q8020-runs/ch_hw2_qs_ladder"
+_output_dir = "~/q8020-runs/ch_hw1_qs_ladder"
 _inject_outdir = "--outdir"
 _env = "./q8020-cfd-ch-lbm/.venv"
 _script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"

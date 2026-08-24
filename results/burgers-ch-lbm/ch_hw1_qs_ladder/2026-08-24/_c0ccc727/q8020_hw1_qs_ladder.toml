@@ -1,0 +1,159 @@
+# =====================================================================
+# HW1 — q x S LADDER ON REAL IBM HARDWARE  (6 cases, ~7-9 QPU-minutes)
+# ---------------------------------------------------------------------
+# !! THIS FILE DEFAULTS TO --backend-type hardware AND SPENDS REAL   !!
+# !! QPU TIME ON SUBMIT.  Rehearse first (recipes below), and submit !!
+# !! in stages by naming groups — do NOT fire all 6 blind.           !!
+#
+# The 2026-08-19 hardware plan (see hw-feasibility-probe memory + C9):
+# the k/S-collapsed single-layer circuit at three grid sizes, plus a
+# measure-reprepare seam ladder.  Fig-1 physics throughout (nu 0.03,
+# amp 0.3, sine, periodic), T_end = 0.2 on every rung
+# (cfl * n_steps = 0.2 / dx), k = 1 per segment (C9: k>1 is pure gate
+# cost, bit-identical output).  chi = 4 at q8 (chi=2 has an SV floor
+# of 0.129 there — truncation bias); chi = 2 at q<=4 (verified free).
+#
+#   group  q  chi  cfl   n-steps  QPU jobs  shots/seg  ideal anchor*
+#   q8_s1  8   4   51.2     1        1       65536      0.063
+#   q8_s2  8   4   25.6     2        2       65536      0.091
+#   q8_s4  8   4   12.8     4        4       65536      0.105
+#   q4_s1  4   2    3.2     1        1      131072      0.151
+#   q4_s2  4   2    1.6     2        2      131072      —
+#   q3_s1  3   2    1.6     1        1      262144      ~0.23 (2^17)
+#   (* Aer relL2 vs same-grid FTCS at 2^17, seed 1234; regenerate at
+#      matching shots free via the sim rehearsal below.)
+#
+# Shots rationale: q8 rungs are expected noise-dominated (FakeTorino
+# extrapolation ~1.0 at 7.8k CX) — 2^16 puts the sampling floor at
+# ~0.12, plenty to tell signal from depolarized, at half the cost.
+# q4/q3 rungs expect real signal (0.3-0.8) — buy the floor down; the
+# circuits are 30-100x shorter so the shots are cheap.  Each segment
+# executes the FULL shot count => an S-segment case costs S x.
+#
+# SUBMISSION STAGES (gate the q8 seam ladder on the q8 probe; group
+# names are POSITIONAL args to q8020-sweep):
+#   A. q8020-sweep hw1_qs_ladder.toml q8_s1
+#   B. relL2 < ~0.7?  q8020-sweep hw1_qs_ladder.toml q8_s2 q8_s4
+#      else skip B — comparing noise to noise wastes QPU.
+#   C. q8020-sweep hw1_qs_ladder.toml q4_s1 q4_s2 q3_s1
+#
+# REHEARSALS (free, run before stage A):
+#   hardware code path, no credentials (TREX/DD applied but inert in
+#   local-testing mode):
+#     q8020-sweep hw1_qs_ladder.toml \
+#       --set backend-type=fake --set backend=torino
+#   authoritative routed CX/depth per segment, zero shots (needs
+#   creds — resolves the real backend, submits nothing):
+#     q8020-sweep hw1_qs_ladder.toml --set hw-dry-run=true
+#   NOTE --set backend-type=sim does NOT give ideal Aer here: the
+#   pinned --backend name is rejected in sim mode (loud ValueError).
+#   Ideal anchors at matching shots: drop --backend/--backend-type
+#   and run the solver directly (C9-style); 2^17 anchors already
+#   exist (see header table).
+#
+# Scoring: offline vs ch_ftcs_refs (same-grid FTCS), as C9.  Refs
+# exist for q=4 (_3fa21a71/e895390e) and q=8 (_3fa21a71/9bbe98a3);
+# NO q=3 ref exists yet (the refs sweep was q4/q8/q16) — run one
+# locally (seconds) before scoring q3_s1.  Per-segment job_ids +
+# billed quantum_seconds land in analysis.per_step_metrics[-1]
+# .segments_full; the backend calibration snapshot is written as the
+# backend fragment (real hardware only — skipped on fake).
+#
+# Seed 1234 pins the transpile only; real-QPU sampling is not
+# seedable (execute_circuit_counts skips seed_simulator on hardware).
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_hw1_qs_ladder"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+# NO _slurm block — hardware runs execute wherever IBM creds live.
+_run_mode = "serial"               # one QPU device; don't queue-race cases
+_trials = 1
+
+"--noshow" = true
+"--no-classical-reference" = true  # cfl>=1.6 macro-dt breaks inline FTCS;
+"--no-analytic-reference" = true   # score offline vs ch_ftcs_refs
+
+# Fig-1 op point — identical to C7/C8/C9.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--phi-modes" = 8                  # baseline, held fixed
+"--max-total-qubits" = 18          # cap, not floor: k=1 rungs sit at <=11
+"--seed" = 1234                    # transpile determinism only (see header)
+
+# --- backend / hardware execution (rehearsals override via --set) ----
+"--backend" = "ibm_kingston"         # --set backend=<name> for another Heron
+"--backend-type" = "hardware"      # sim | fake | hardware
+"--session" = "auto"               # auto = on for hardware: one held
+                                   # Session per case, segments share it
+"--measure-mitigation" = "auto"    # TREX; auto = on for hardware
+"--dynamical-decoupling" = "auto"  # XpXm; auto = on for hardware
+"--optimization-level" = 3
+"--hw-dry-run" = false             # --set hw-dry-run=true: transpile + stop
+
+# ---------------------------------------------------------------------
+# One case per group; cfl / n-steps / bond-dim / shots zipped by hand
+# (T_end = 0.2 everywhere).  save-every = segment-size => a frame at
+# every seam, so the per-timestep error plot falls straight out.
+
+[q8_s1]                            # the q=8 first try — C9 hw shape, 11 qubits
+"--q" = 8
+"--bond-dim" = 4                   # chi=2 is biased at q8 (SV floor 0.129)
+"--cfl" = 51.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536
+
+[q8_s2]                            # seam A/B at q8 — stage B only
+"--q" = 8
+"--bond-dim" = 4
+"--cfl" = 25.6
+"--n-steps" = 2
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536
+
+[q8_s4]                            # seam ladder at q8 — stage B only
+"--q" = 8
+"--bond-dim" = 4
+"--cfl" = 12.8
+"--n-steps" = 4
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536
+
+[q4_s1]                            # drop-down optimum: 6 qubits, ~200 CX
+"--q" = 4
+"--bond-dim" = 2
+"--cfl" = 3.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 131072
+
+[q4_s2]                            # seams where signal exists
+"--q" = 4
+"--bond-dim" = 2
+"--cfl" = 1.6
+"--n-steps" = 2
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 131072
+
+[q3_s1]                            # anchor rung: 5 qubits, ~110 2q routed
+"--q" = 3
+"--bond-dim" = 2
+"--cfl" = 1.6
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 262144

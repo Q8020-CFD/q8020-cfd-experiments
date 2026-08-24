@@ -1,0 +1,68 @@
+[burgers] q=8 N=256 nu=3.0e-02 cfl=25.6 dt=1.0000e-01 n_steps=2 method=cole_hopf_circuit
+[burgers] reference trajectory skipped (--no-classical-reference)
+[burgers] running method=cole_hopf_circuit ...
+[cole_hopf_circuit] propagator=qft-diagonal q=8 nu=3.0e-02 dt=1.0000e-01 n_steps=2 shots=65536
+[_run_shots_measure_reprepare] n_segments=2 segment_size=1 shots=65536
+[_run_shots_measure_reprepare] segment 1/2 steps 1-1 depth=266 transpiling ...
+[execute_circuit_counts] submitted job_id=da64r6jotlns739cl73g shots=65536; waiting for result ...
+[_run_shots_measure_reprepare] segment 1/2 done in 156.1s p_success=0.5260 cumulative_norm=6.9090e+00
+[_run_shots_measure_reprepare] segment 2/2 steps 2-2 depth=266 transpiling ...
+
+thread '<unnamed>' (1290164) panicked at crates/synthesis/src/qsd.rs:734:85:
+called `Result::unwrap()` on an `Err` value: PyErr { type: <class 'qiskit.exceptions.QiskitError'>, value: QiskitError('TwoQubitWeylDecomposition: failed to diagonalize M2. Please report this at https://github.com/Qiskit/qiskit-terra/issues/4159. Input: [[Complex { re: -0.17156592320476322, im: -0.46964362445871927 }, Complex { re: -0.4715247682170218, im: 0.16632616438553813 }, Complex { re: 0.4696436244600018, im: -0.17156592320539676 }, Complex { re: 0.16632616438488673, im: 0.4715247682157613 }],\n [Complex { re: -0.17156592320548616, im: 0.4696436244599387 }, Complex { re: -0.47152476821581046, im: -0.1663261643848016 }, Complex { re: 0.46964362445878244, im: 0.17156592320467373 }, Complex { re: 0.16632616438562323, im: -0.47152476821697253 }],\n [Complex { re: -0.07889802752137791, im: -0.4937358618259972 }, Complex { re: -0.49282678693912435, im: 0.08439050939867965 }, Complex { re: -0.4937358618274639, im: 0.07889802752143936 }, Complex { re: -0.08439050939870235, im: -0.49282678693764964 }],\n [Complex { re: -0.07889802752129922, im: 0.4937358618274585 }, Complex { re: -0.49282678693766424, im: -0.08439050939877446 }, Complex { re: -0.49373586182600276, im: -0.07889802752151791 }, Complex { re: -0.08439050939860744, im: 0.4928267869391097 }]], shape=[4, 4], strides=[4, 1], layout=Cc (0x5), const ndim=2'), traceback: None }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Traceback (most recent call last):
+  File "/root/q8020/./q8020-cfd-ch-lbm/src/burgers_solver.py", line 694, in <module>
+    sols_method, step_metrics, genuine_steps = run_simulation_fw(
+                                               ^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_fw.py", line 446, in run_simulation_fw
+    _, result_metrics = integrator.step(
+                        ^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_fw.py", line 245, in step
+    result = self._run_all(state, grid, config, dt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_fw.py", line 386, in _run_all
+    return _run()
+           ^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_fw.py", line 361, in _run
+    return run_cole_hopf_circuit_simulation(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_cole_hopf_circuit.py", line 1333, in run_cole_hopf_circuit_simulation
+    batch_results = _run_shots_measure_reprepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/src/lib_cole_hopf_circuit.py", line 709, in _run_shots_measure_reprepare
+    qc_t, t_info = transpile_circuit(
+                   ^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-backend-utils/src/q8020_backend_utils/ibm/circuit.py", line 227, in transpile_circuit
+    qc_transpiled = transpile(qc, **kwargs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/compiler/transpiler.py", line 298, in transpile
+    out_circuits = pm.run(circuits, callback=callback, num_processes=num_processes)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/transpiler/passmanager.py", line 419, in run
+    return super().run(circuits, output_name, callback, num_processes=num_processes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/transpiler/passmanager.py", line 456, in wrapper
+    return meth(*meth_args, **meth_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/transpiler/passmanager.py", line 196, in run
+    return super().run(
+           ^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/passmanager/passmanager.py", line 236, in run
+    _run_workflow(
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/passmanager/passmanager.py", line 309, in _run_workflow
+    passmanager_ir, final_state = flow_controller.execute(
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/passmanager/base_tasks.py", line 215, in execute
+    passmanager_ir, state = next_task.execute(
+                            ^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/transpiler/basepasses.py", line 167, in execute
+    new_dag, state = super().execute(
+                     ^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/passmanager/base_tasks.py", line 97, in execute
+    ret = self.run(passmanager_ir)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/q8020/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit/transpiler/passes/synthesis/unitary_synthesis.py", line 186, in run
+    out = run_main_loop(
+          ^^^^^^^^^^^^^^
+pyo3_runtime.PanicException: called `Result::unwrap()` on an `Err` value: PyErr { type: <class 'qiskit.exceptions.QiskitError'>, value: QiskitError('TwoQubitWeylDecomposition: failed to diagonalize M2. Please report this at https://github.com/Qiskit/qiskit-terra/issues/4159. Input: [[Complex { re: -0.17156592320476322, im: -0.46964362445871927 }, Complex { re: -0.4715247682170218, im: 0.16632616438553813 }, Complex { re: 0.4696436244600018, im: -0.17156592320539676 }, Complex { re: 0.16632616438488673, im: 0.4715247682157613 }],\n [Complex { re: -0.17156592320548616, im: 0.4696436244599387 }, Complex { re: -0.47152476821581046, im: -0.1663261643848016 }, Complex { re: 0.46964362445878244, im: 0.17156592320467373 }, Complex { re: 0.16632616438562323, im: -0.47152476821697253 }],\n [Complex { re: -0.07889802752137791, im: -0.4937358618259972 }, Complex { re: -0.49282678693912435, im: 0.08439050939867965 }, Complex { re: -0.4937358618274639, im: 0.07889802752143936 }, Complex { re: -0.08439050939870235, im: -0.49282678693764964 }],\n [Complex { re: -0.07889802752129922, im: 0.4937358618274585 }, Complex { re: -0.49282678693766424, im: -0.08439050939877446 }, Complex { re: -0.49373586182600276, im: -0.07889802752151791 }, Complex { re: -0.08439050939860744, im: 0.4928267869391097 }]], shape=[4, 4], strides=[4, 1], layout=Cc (0x5), const ndim=2'), traceback: None }

@@ -1,0 +1,142 @@
+# =====================================================================
+# HW2 — q8 RE-PREPARE RETRY + IDEAL S=1 ANCHOR  (3 cases, ~8-9 QPU-min)
+# ---------------------------------------------------------------------
+# !! THIS FILE DEFAULTS TO --backend-type hardware AND SPENDS REAL   !!
+# !! QPU TIME ON SUBMIT.  Rehearse first (recipes below), and submit !!
+# !! one group at a time — do NOT fire all three blind.              !!
+#
+# Three cases, all q=8, Fig-1 physics (nu 0.03, amp 0.3, sine, periodic),
+# T_end = 0.2, k = 1 per segment — same op point as HW1/C7/C8/C9:
+#
+#   group             q  chi  cfl    n-steps  segs  shots/seg  QPU jobs
+#   q8_s1_ideal       8   4   51.2      1        1    65536        1
+#   q8_s1_ideal_chi2  8   2   51.2      1        1    65536        1
+#   q8_s2_rerun       8   4   25.6      2        2    65536        2
+#
+# MEASURED statevector (shots=0) truncation floors at this exact op
+# point (verified locally 2026-08-24, ch-lbm .venv): chi=4 -> relL2
+# 0.00017 (the method's true floor); chi=2 -> 0.021.  So chi=2 carries a
+# real but SMALL ~2% truncation bias -- NOT the 0.129 the HW1 plan
+# estimated (that figure was ~6x too pessimistic).  On hardware that 2%
+# is invisible under q8 depolarization, while chi=2 drops one bond-qubit
+# (11 -> 10) and shortens the prep => possibly LESS noise.  The chi=2 vs
+# chi=4 pair tests whether the qubit saving beats the bias on silicon.
+#
+# --- q8_s2_rerun --------------------------------------------------------
+# Exact reproduction of the HW1 case that crashed (de261d24): the q8
+# 2-seam measure-reprepare run.  On 2026-08-24 segment 1 completed on
+# ibm_kingston (job da64r6jotlns739cl73g, p_succ 0.526, ~130 QPU-s),
+# then segment 2's TRANSPILE hit a qiskit Rust panic —
+#   TwoQubitWeylDecomposition: failed to diagonalize M2  (qiskit #4159)
+# — in QSD unitary synthesis at opt-level 3.
+#
+# WHY A RERUN IS A COIN FLIP, NOT A GUARANTEED REPEAT: segment 2's prep
+# unitary is rebuilt from segment 1's LIVE hardware counts, and real-QPU
+# sampling is NOT seedable (seed 1234 pins transpile only).  Fresh counts
+# -> a different segment-2 unitary -> most likely dodges the degenerate
+# block and completes.  But it re-spends segment 1's ~130 QPU-s to find
+# out, and q8's 256-amplitude prep has many 2-qubit blocks (many dice
+# rolls), so re-hitting the panic is not negligible.
+#
+# TO DODGE THE PANIC DETERMINISTICALLY: uncomment the opt-level-2 line in
+# the [q8_s2_rerun] block below.  Opt-level <=2 avoids the aggressive QSD
+# path that invokes the broken decomposer, at a modest CX-count cost.
+# (The proper fix is a catch-PanicException + re-transpile fallback in
+# _run_shots_measure_reprepare; the --set below is the no-code stopgap.)
+#
+# --- q8_s1_ideal / q8_s1_ideal_chi2 -------------------------------------
+# The best q8 hardware shape: single segment (S=1, ZERO re-prepare seams
+# -> no data-dependent 2nd transpile to crash, minimum depth), one
+# big-cfl exact step to T_end=0.2.  This is HW1's q8_s1 verbatim (chi=4).
+# The _chi2 twin drops the bond dim to 2: same shape, one fewer qubit
+# (11 -> 10) and a shorter prep, at the cost of a measured 2% statevector
+# bias (0.021, see table).  Expect depolarization on silicon either way
+# (HW1 q8_s1 came back ~1.01); the pair's job is to see whether chi=2's
+# fewer qubits let more signal survive -- NOT to beat the q-wall (that
+# needs a shallower prep, not a parameter tweak).
+#
+# SUBMISSION STAGES (group names are POSITIONAL args to q8020-sweep):
+#   A. q8020-sweep hw2_q8_reprepare_retry.toml q8_s1_ideal q8_s1_ideal_chi2
+#      (2 jobs, clean single-segment; compare chi=2 vs chi=4 on silicon.)
+#   B. q8020-sweep hw2_q8_reprepare_retry.toml q8_s2_rerun   # the gamble
+#   (run A first: if S=1 is depolarized, the 2-seam rerun buys nothing.)
+#
+# REHEARSALS (free, run before any submit):
+#   hardware code path, no creds (TREX/DD applied but inert):
+#     q8020-sweep hw2_q8_reprepare_retry.toml \
+#       --set backend-type=fake --set backend=torino
+#   authoritative routed CX/depth per segment, zero shots (needs creds,
+#   submits nothing):
+#     q8020-sweep hw2_q8_reprepare_retry.toml --set hw-dry-run=true
+#
+# Scoring: offline vs ch_ftcs_refs q=8 (_3fa21a71/9bbe98a3), as C9/HW1.
+# Per-segment job_ids + billed quantum_seconds land in
+# analysis.per_step_metrics[-1].segments_full.
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_hw2_q8_retry"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+# NO _slurm block — hardware runs execute wherever IBM creds live.
+_run_mode = "serial"               # one QPU device; don't queue-race cases
+_trials = 1
+
+"--noshow" = true
+"--no-classical-reference" = true  # cfl>=1.6 macro-dt breaks inline FTCS;
+"--no-analytic-reference" = true   # score offline vs ch_ftcs_refs
+
+# Fig-1 op point — identical to HW1/C7/C8/C9.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--phi-modes" = 8                  # baseline, held fixed
+"--max-total-qubits" = 18          # cap, not floor: k=1 q8 rung sits at 11
+"--seed" = 1234                    # transpile determinism only; NOT hw sampling
+
+# --- backend / hardware execution (rehearsals override via --set) ----
+"--backend" = "ibm_kingston"       # --set backend=<name> for another Heron
+"--backend-type" = "hardware"      # sim | fake | hardware
+"--session" = "auto"               # one held Session per case; segments share
+"--measure-mitigation" = "auto"    # TREX; auto = on for hardware
+"--dynamical-decoupling" = "auto"  # XpXm; auto = on for hardware
+"--optimization-level" = 3
+"--hw-dry-run" = false             # --set hw-dry-run=true: transpile + stop
+
+# ---------------------------------------------------------------------
+
+[q8_s2_rerun]                      # exact repro of the crashed HW1 q8_s2
+"--q" = 8
+"--bond-dim" = 4
+"--cfl" = 25.6
+"--n-steps" = 2                    # 2 segments => 1 measure-reprepare seam
+"--segment-size" = 1
+"--save-every" = 1                 # frame at each seam (steps 1 and 2)
+"--shots" = 65536
+# Uncomment to dodge the qiskit #4159 QSD panic deterministically
+# (opt-level <=2 skips the aggressive unitary-synthesis path):
+# "--optimization-level" = 2
+
+[q8_s1_ideal]                      # the ideal q8 shape — S=1, no re-prepare
+"--q" = 8
+"--bond-dim" = 4                   # SV floor 0.00017 (method's true floor)
+"--cfl" = 51.2
+"--n-steps" = 1                    # 1 segment => zero re-prepare seams
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536
+
+[q8_s1_ideal_chi2]                 # same shape, one fewer qubit (11 -> 10)
+"--q" = 8
+"--bond-dim" = 2                   # SV floor 0.021 (2% bias, invisible under hw noise)
+"--cfl" = 51.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536

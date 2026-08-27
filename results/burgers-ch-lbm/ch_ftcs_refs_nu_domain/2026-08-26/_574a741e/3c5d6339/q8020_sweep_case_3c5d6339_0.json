@@ -1,0 +1,35 @@
+{
+  "_source": "sweep",
+  "name": "ftcs_ref_1",
+  "case_id": "ftcs_ref_1",
+  "params": {
+    "_output_dir": "~/q8020-runs/ch_ftcs_refs_nu_domain",
+    "_inject_outdir": "--outdir",
+    "_env": "./q8020-cfd-ch-lbm/.venv",
+    "_script": "python ./q8020-cfd-ch-lbm/src/burgers_solver.py",
+    "_run_mode": "parallel",
+    "_trials": 1,
+    "--noshow": true,
+    "--no-classical-reference": true,
+    "--no-analytic-reference": true,
+    "--bc": "periodic",
+    "--ic": "sine",
+    "--source": "none",
+    "--ic-amplitude": 0.3,
+    "--cfl": 0.1,
+    "--q": 8,
+    "--n-steps": 400,
+    "--seed": 1234,
+    "--method": "ftcs_reference",
+    "--ref-points": 800,
+    "--save-every": 10,
+    "--nu": 0.0125
+  },
+  "command": [
+    "bash",
+    "-c",
+    "source /home/dp107543/projects/githubs/q8020/q8020-cfd-ch-lbm/.venv/bin/activate && python ./q8020-cfd-ch-lbm/src/burgers_solver.py --noshow --no-classical-reference --no-analytic-reference --bc periodic --ic sine --source none --ic-amplitude 0.3 --cfl 0.1 --q 8 --n-steps 400 --seed 1234 --method ftcs_reference --ref-points 800 --save-every 10 --nu 0.0125 --outdir /home/dp107543/q8020-runs/ch_ftcs_refs_nu_domain/2026-08-26/_574a741e/3c5d6339"
+  ],
+  "script": "-c",
+  "cwd": "/home/dp107543/projects/githubs/q8020"
+}

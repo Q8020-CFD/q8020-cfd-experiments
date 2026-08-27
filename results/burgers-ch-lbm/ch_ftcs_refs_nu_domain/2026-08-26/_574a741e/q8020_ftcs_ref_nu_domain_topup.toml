@@ -1,0 +1,60 @@
+# =====================================================================
+# FTCS REFERENCE TOP-UP for the CH nu-domain study (q=8, A=0.3, CFL=0.1)
+# ---------------------------------------------------------------------
+# The nu_domain sweep's in-process FTCS reference blew up for every
+# nu >= 0.03 (explicit-diffusion instability: diffusion number
+# d = nu*dt/dx^2 = 25.6*nu > 0.5 for nu > 0.0195), so those cases scored
+# NaN.  This run rebuilds a STABLE, sub-stepped `ftcs_reference` truth so
+# the CH fields (already saved on disk as results.u_final_method) can be
+# scored offline via score_nu_domain.py.
+#
+# We only generate the THREE nu values that are NOT already on disk.
+# The other five (0.015, 0.02, 0.03, 0.05, 0.08) already have an
+# identical-op-point ftcs_reference truth at q=8/n-steps=400/cfl=0.1 in
+#   results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_mutual_q8_nu0XX
+#   results/burgers-ch-lbm-June2026/burgers_ab/burgers_ab_show_q8_ch_smooth
+# and those were validated to match the nu_domain in-process FTCS to
+# relL2 ~ 1e-4 at the two nu where the latter stayed stable (0.015, 0.02).
+# score_nu_domain.py joins both sources by nu.
+#
+# Physics + cadence + ref-points MUST match those borrowed runs exactly
+# (ic sine A=0.3, periodic, cfl 0.1, n-steps 400, seed 1234,
+# ref-points 800 -> refined k=4 grid then subsampled, save-every 10) so
+# all eight truths are constructed the same way.
+#
+# ftcs_reference is classical + auto-sub-stepped => cheap (seconds each);
+# there is no quantum knob and no stability caveat.  Run from workspace
+# root (paths below are cwd-relative):
+#
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/ftcs_ref_nu_domain_topup.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_ftcs_refs_nu_domain"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # 3 refs launch concurrently (local Popen)
+_trials = 1
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Physics — identical to the nu_domain quantum baseline (must match exactly).
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--cfl" = 0.1
+"--q" = 8
+"--n-steps" = 400
+"--seed" = 1234
+
+# ---------------------------------------------------------------------
+[ftcs_ref]
+"--method" = "ftcs_reference"
+"--ref-points" = 800               # matches the borrowed ab-q8 refs (k=4 -> 1024 pts)
+"--save-every" = 10                # matches nu_domain / ab cadence
+"--nu" = [0.010, 0.0125, 0.10]     # the three nu with no truth on disk yet

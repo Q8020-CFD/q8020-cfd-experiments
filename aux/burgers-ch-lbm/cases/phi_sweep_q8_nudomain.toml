@@ -1,0 +1,87 @@
+# =====================================================================
+# CH PHI-MODES SWEEP  at the nu-domain op point  (q=8, A=0.3, CFL=0.1)
+# ---------------------------------------------------------------------
+# The Fourier low-pass `--phi-modes` is the smoothing applied to the raw
+# shot-noisy Cole-Hopf potential phi BEFORE the log-derivative inverse
+#   u = -2*nu * d/dx[ ln(phi) ].
+# Prior evidence bracketed but never mapped this knob:
+#   * June agame_phi_q8 swept phi in {8,16,32} at nu=0.03 and called it
+#     "not a lever" -- phi16 relL2 1.66 vs phi8 1.615 -- but never tried 0.
+#   * c3_phi_retest.toml was DESIGNED for phi=[0,8,32,128] but never ran.
+#   * nu_domain_q8_seg48 (phi=0, no filter) BLEW UP: relL2 100-300, the
+#     log-derivative amplifies raw shot noise into an unphysical field.
+# So the real shape is unknown: 0 is a cliff, >=8 is flat-ish.  This run
+# maps the whole curve at ONE clean op point to find (a) the MINIMUM
+# modes that keep the reconstruction physical and (b) whether more modes
+# past that help, plateau, or slowly re-admit noise.
+#
+# OP POINT = the nu_domain_q8 winner (seg10, relL2~0.42 headline):
+#   q=8 (256 grid), A=0.3, cfl=0.1, n-steps=400, shots=150k,
+#   bond-dim=16 (full/exact MPS rank at q=8 -> no truncation confound),
+#   segment-size=10  => S = 400/10 = 40 seams (the low-seam-noise end).
+# Only --phi-modes varies; everything else is frozen so any relL2 move
+# is attributable to the filter alone.
+#
+# nu = 0.015 (NOT the 0.02 sweet-spot centre) ON PURPOSE:
+#   The offline scorer (score_nu_domain.py) keys cases on (nu,seg) and
+#   cannot disambiguate phi, so it is useless for a phi sweep -- the
+#   IN-PROCESS FTCS reference is the only practical readout.  That ref is
+#   explicit-diffusion and only stable for diff# = nu*cfl/dx < 0.5, i.e.
+#   nu < ~0.0195 at this grid/cfl.  nu=0.015 gives diff# = 0.384 (stable),
+#   so every case writes a real relL2 to its own metadata -- no offline
+#   rescue, no NaN.  phi there is still ~exp(A/2*pi*nu) ~ 24x peaked, so
+#   the filter is genuinely stressed; it sits just inside the sweet-spot
+#   neighbourhood the nu_domain sweep already probed.
+#
+# FAST PATH: seg10 needs q+n_bond+segment_size = 8+4+10 = 22 deferred
+# ancilla; max-total-qubits=24 grants heat_anc = 24-4-8 = 12 >= 10, so
+# the block is fully deferred (Aer sample-once-from-statevector, 2^22
+# amplitudes) -- no per-shot slow path.
+#
+# 6 phi values x 1 nu x 1 segment-size = 6 cases.
+# Run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/phi_sweep_q8_nudomain.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_q8_phi_sweep"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"                 # all cases launch concurrently (local Popen)
+_trials = 1
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case
+
+"--noshow" = true
+"--no-analytic-reference" = true       # no-op for sine IC; classical FTCS ref stays ON
+
+# --- fixed operating point (nu_domain_q8 seg10 winner) ------------
+"--bc" = "periodic"
+"--ic" = "sine"                        # u0 = A * sin(2*pi*x)
+"--ic-amplitude" = 0.3                 # A = 0.3
+"--source" = "none"
+"--cfl" = 0.1                          # dt = cfl * dx
+"--q" = 8                              # 2^8 = 256-point grid
+"--n-steps" = 400                      # T_end = 0.156
+"--nu" = 0.015                         # diff# = 0.384 < 0.5: in-process FTCS ref STABLE -> real relL2
+
+"--seed" = 1234
+"--shots" = 150000
+"--metric-transpile-timeout" = 0
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--segment-size" = 10                  # S = 400/10 = 40 seams (nu_domain seg10 op point)
+"--save-every" = 10                    # multiple of segment-size (frames land on seams)
+"--bond-dim" = 16                      # full/exact MPS rank at q=8: no truncation
+"--max-total-qubits" = 24              # heat_anc = 24-4-8 = 12 >= seg10: fast deferred path
+# --phi-modes is THE swept knob -> lives in the group below.
+
+# ---------------------------------------------------------------------
+# THE swept knob (phi-modes).  List-valued keys cross-product only inside
+# a group section.  0 = filter OFF (known cliff); 2/4 = aggressive
+# low-pass (is minimal smoothing enough?); 8 = the nu_domain baseline;
+# 16/32 = lighter filters (does more help, plateau, or re-admit noise?).
+[phi_sweep]
+"--phi-modes" = [0, 2, 4, 8, 16, 32]

@@ -1,0 +1,105 @@
+# =====================================================================
+# CH DOMAIN-OF-UTILITY : sweep viscosity nu   (q=8, A=0.3, CFL=0.1, sim)
+# ---------------------------------------------------------------------
+# Companion to nu_domain_q8.toml — SAME operating point and SAME swept
+# nu set, but a different seam-count axis and no phi low-pass filter.
+# Purpose: fix everything except nu and map where Cole-Hopf linearises
+# the nonlinear Burgers term into the heat equation WELL and where it
+# does NOT.  The CH potential phi peaks like exp(A / (2*pi*nu)):
+#   nu=0.010 -> ~118x   nu=0.03 -> ~4.9x   nu=0.10 -> ~1.6x
+# Low nu -> sharp phi -> poorly resolved on the 2^8=256 grid and by a
+# finite shot budget -> CH degrades.  High nu -> smooth (but nearly
+# linear anyway).  The swept nu set walks that curve.
+#
+# TWO seam counts (segment-size 4 and 8) are run at each nu so the
+# ~nu-independent seam-noise offset separates from the nu-dependent
+# linearisation signal (per C7: seam count is the dominant error lever,
+# err ~ S^0.84).  n-steps fixed => identical physical end time and
+# steepening for every case.
+#
+# NOISELESS statevector sim (--backend-type default = sim): the only
+# error terms are grid (2^q), shot noise (large shots -> small), and
+# seams.  bond-dim=16 is the FULL/exact MPS rank at q=8 (2^(q/2)), so
+# the peaked low-nu phi is prepared without truncation -- MPS prep is
+# not a confound.
+#
+# phi-modes=0 (NO Fourier low-pass): the raw shot-noisy phi is fed
+# straight into the Cole-Hopf inverse (log-derivative) with no smoothing
+# -- unlike nu_domain_q8.toml (phi-modes=8).  Expect the log-derivative
+# to amplify high-frequency shot noise; this run isolates how much the
+# phi-modes filter was buying at this shot budget.
+#
+# Reference: classical FTCS reference left ON (per the same-grid-truth
+# choice), so each case self-scores relL2 vs FTCS on the q-grid.
+# CAVEAT (known): the in-process FTCS ref is explicit-diffusion and goes
+# UNSTABLE for diff# = nu*cfl/dx > 0.5, i.e. nu > ~0.0195 at this
+# cfl/grid.  So nu in {0.03, 0.05, 0.08, 0.10} will store final_error =
+# NaN even though results.u_final_method is finite on disk.  Rebuild the
+# relL2-vs-nu curve for those offline against a stable sub-stepped FTCS
+# truth (score_nu_domain.py: borrowed + ftcs_ref_nu_domain_topup.toml),
+# exactly as done for nu_domain_q8.
+#
+# SEAM GEOMETRY at cfl=0.1, n-steps=400 (T_end=0.156, ~29.5% of the
+# A=0.3 shock time t_shock=1/(2*pi*A)~0.53):
+#   seg4  -> S = 400/4 = 100 seams   (exceeds the C7 range top of 64 ->
+#            expect the highest seam-noise floor, err ~ S^0.84)
+#   seg8  -> S = 400/8 =  50 seams   (near the nu_domain_q8 seg10 S=40)
+# Both segment sizes stay on Aer's FAST fully-deferred path at
+# max-total-qubits=24 (block >= segment_size); no per-shot slow path.
+#
+# NOTE (no-reprepare group intentionally omitted): a single segment over
+# all 400 steps (segment-size=400, zero seams) cannot run at shots>0 on
+# Aer -- the fully-deferred fast path would need q+n_bond+400 ~ 412
+# qubits, so it drops to the per-shot trajectory path and is intractable
+# at 150k shots (the documented C0 zero-seam timeout).  The exact
+# zero-seam floor is the shots=0 SV path (see C0 / C2E), not this sweep.
+#
+# 8 nu x 2 segment-sizes = 16 cases.
+# Run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/nu_domain_q8_seg48.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_q8_nu_domain_seg48"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"                 # all cases launch concurrently (local Popen)
+_trials = 1
+_env_exports = { OMP_NUM_THREADS = "2" }   # Aer threads per case
+
+"--noshow" = true
+"--no-analytic-reference" = true       # no-op for sine IC; classical FTCS ref stays ON
+
+# --- fixed operating point ----------------------------------------
+"--bc" = "periodic"
+"--ic" = "sine"                        # u0 = A * sin(2*pi*x)
+"--ic-amplitude" = 0.3                 # A = 0.3
+"--source" = "none"
+"--cfl" = 0.1                          # dt = cfl * dx  (nu-independent)
+"--q" = 8                              # 2^8 = 256-point grid
+"--n-steps" = 400                      # fixed => same T_end (0.156) for all cases
+
+"--seed" = 1234
+"--shots" = 150000
+"--metric-transpile-timeout" = 0
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--save-every" = 8                     # multiple of both segment sizes (frames on seams)
+"--bond-dim" = 16                      # full/exact MPS rank at q=8: no truncation at low nu
+"--phi-modes" = 0                      # NO Fourier low-pass: raw phi into the log-derivative
+"--max-total-qubits" = 24              # q(8)+n_bond(4)+heat_anc(12): fast deferred path both groups
+
+# ---------------------------------------------------------------------
+# THE swept knob (nu) lives in the GROUPS: list-valued keys cross-product
+# only inside a group section, not in [global].  Second axis = segment
+# depth "k", one group per value.  8 nu x 2 groups = 16 cases.
+[seg4]                                 # S = 400/4 = 100 seams (highest seam floor)
+"--segment-size" = 4
+"--nu" = [0.010, 0.0125, 0.015, 0.02, 0.03, 0.05, 0.08, 0.10]
+
+[seg8]                                 # S = 400/8 = 50 seams (nearer the CH floor)
+"--segment-size" = 8
+"--nu" = [0.010, 0.0125, 0.015, 0.02, 0.03, 0.05, 0.08, 0.10]

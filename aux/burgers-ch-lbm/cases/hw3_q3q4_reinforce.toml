@@ -1,0 +1,139 @@
+# =====================================================================
+# HW3 — q3 / q4 SINGLE-SEGMENT REINFORCE ON REAL IBM HARDWARE
+#        (2 default cases + 1 optional replicate, ~few QPU-minutes)
+# ---------------------------------------------------------------------
+# !! THIS FILE DEFAULTS TO --backend-type hardware AND SPENDS REAL   !!
+# !! QPU TIME ON SUBMIT.  Rehearse first (recipes below), and submit !!
+# !! by naming groups — do NOT fire blind.                           !!
+#
+# WHY THIS SWEEP.  HW1/HW2 established the q-wall on ibm_kingston:
+#   q3_s1 : 5 qubits,  97 routed CZ,  p_succ 0.81  -> REAL signal
+#           (relL2 ~0.55, cos 0.96 -> error is pure amplitude loss;
+#            unit-norm rescale takes relL2 -> ~0.29)
+#   q4_s1 : 6 qubits, 308 routed CZ,  p_succ 0.64  -> MARGINAL
+#   q8_*  : 11 qubits, ~19.3k CZ,     p_succ 0.52  -> DEPOLARIZED
+#           (chi=2 saved only 284 CZ; phi-modes changes 0 gates;
+#            nothing shrinks the 2^q amplitude-prep multiplexer ->
+#            q8 is DEAD in every variant, do not re-spend QPU on it.)
+#
+# HW3 does NOT chase q8.  It reinforces the two rungs where signal
+# exists so the result is publishable rather than a single noisy point:
+#   1. q3_s1 at max shots -> the cleanest best-case number, so the
+#      rescale claim (0.55 -> ~0.29) rests on low sampling noise.
+#   2. q4_s1 at max shots (up from HW1's 2^17) -> the open question:
+#      does buying the sampling floor down + rescale lift q4 out of
+#      "marginal" into "real signal"?
+#   3. (optional) a q4_s1 replicate -> hardware sampling is NOT
+#      seedable, so a second identical job gives a run-to-run error
+#      bar on the marginal rung.  Fire only if you want variance.
+#
+# Fig-1 physics throughout (nu 0.03, amp 0.3, sine, periodic), T_end
+# = 0.2, k = 1, single segment (S=1, ZERO re-prepare seams -> no
+# data-dependent 2nd transpile, so the qiskit #4159 QSD panic that
+# bit HW1/HW2 q8_s2 CANNOT occur here; opt-level 3 is safe).
+# chi = 2 is free at q<=4 (verified; the SV truncation floor is
+# negligible there).  cfl = 0.2 * 2^q so one exact step reaches
+# T_end (q3 -> 1.6, q4 -> 3.2); this matches HW1's q3_s1 / q4_s1
+# circuit shapes verbatim.
+#
+#   group        q  chi  cfl   n-steps  segs  shots     QPU jobs
+#   q3_s1        3   2   1.6      1        1   262144       1
+#   q4_s1        4   2   3.2      1        1   262144       1
+#   q4_s1_rep    4   2   3.2      1        1   262144       1   (optional)
+#
+# SUBMISSION STAGES (group names are POSITIONAL args to q8020-sweep):
+#   A. q8020-sweep hw3_q3q4_reinforce.toml q3_s1 q4_s1
+#   B. (optional variance) q8020-sweep hw3_q3q4_reinforce.toml q4_s1_rep
+#
+# REHEARSALS (free, run before any submit):
+#   hardware code path, no creds (TREX/DD applied but inert):
+#     q8020-sweep hw3_q3q4_reinforce.toml \
+#       --set backend-type=fake --set backend=torino
+#   authoritative routed CZ/depth per case, zero shots (needs creds,
+#   submits nothing):
+#     q8020-sweep hw3_q3q4_reinforce.toml --set hw-dry-run=true
+#
+# SCORING (offline, as HW1/C9 — inline refs are disabled here because
+# the big-cfl macro-dt breaks the inline FTCS baseline):
+#   * q4 truth : ch_ftcs_refs/2026-08-13/_3fa21a71/e895390e (exists)
+#   * q3 truth : NO stored q=3 ref -- regenerate locally in seconds
+#     with the solver's own FTCS scheme (validated bit-exact vs the
+#     stored q4 ref at T=0.2; see plots/make_hw1_error_vs_time.py).
+#   * REPORT BOTH raw relL2 AND unit-norm-rescaled relL2 + cosine.
+#     The hardware error here is dominated by amplitude attenuation
+#     (cos ~0.96 at q3), so rescaling is the honest accuracy figure;
+#     there is no solver rescale flag -- it is a scoring-side step.
+#   Per-case job_id + billed quantum_seconds land in
+#   analysis.per_step_metrics[-1].segments_full; the backend
+#   calibration snapshot is written as the backend fragment.
+#
+# Seed 1234 pins the transpile only; real-QPU sampling is not
+# seedable (execute_circuit_counts skips seed_simulator on hardware)
+# -- which is exactly why q4_s1_rep measures something.
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_hw3_q3q4_reinforce"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+# NO _slurm block — hardware runs execute wherever IBM creds live.
+_run_mode = "serial"               # one QPU device; don't queue-race cases
+_trials = 1
+
+"--noshow" = true
+"--no-classical-reference" = true  # cfl>=1.6 macro-dt breaks inline FTCS;
+"--no-analytic-reference" = true   # score offline vs ch_ftcs_refs
+
+# Fig-1 op point — identical to C7/C8/C9/HW1/HW2.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--phi-modes" = 8                  # baseline, held fixed (changes 0 gates)
+"--max-total-qubits" = 18          # cap, not floor: q3->5, q4->6 qubits
+"--seed" = 1234                    # transpile determinism only; NOT hw sampling
+
+# --- backend / hardware execution (rehearsals override via --set) ----
+"--backend" = "ibm_kingston"       # --set backend=<name> for another Heron
+"--backend-type" = "hardware"      # sim | fake | hardware
+"--session" = "auto"               # one held Session per case
+"--measure-mitigation" = "auto"    # TREX; auto = on for hardware
+"--dynamical-decoupling" = "auto"  # XpXm; auto = on for hardware
+"--optimization-level" = 3         # safe: single segment => no QSD-panic seam
+"--hw-dry-run" = false             # --set hw-dry-run=true: transpile + stop
+
+# ---------------------------------------------------------------------
+# One case per group. cfl = 0.2 * 2^q so n-steps=1 reaches T_end=0.2.
+# save-every = segment-size = 1 => one frame at t=0.2.
+
+[q3_s1]                            # proven winner — 5 qubits, ~97 routed CZ
+"--q" = 3
+"--bond-dim" = 2
+"--cfl" = 1.6
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 262144
+
+[q4_s1]                            # stretch rung — 6 qubits, ~308 routed CZ
+"--q" = 4
+"--bond-dim" = 2
+"--cfl" = 3.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 262144
+
+[q4_s1_rep]                        # OPTIONAL replicate for a run-to-run error bar
+"--q" = 4
+"--bond-dim" = 2
+"--cfl" = 3.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 262144

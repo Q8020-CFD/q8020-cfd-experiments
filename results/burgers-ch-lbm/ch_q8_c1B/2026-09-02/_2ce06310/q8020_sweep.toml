@@ -1,0 +1,140 @@
+# =====================================================================
+# C1B — SEAM SWEEP (FULL LADDER TO S=1) : segment-size k = 2 .. 512
+#                                          (S = n_steps/k = 256 .. 1)
+# ---------------------------------------------------------------------
+# Copy of c1_seam_sweep.toml, extended DOWN to S=1.  Same fig-1 op point;
+# the only swept lever is segment-size k, one group per k.
+#
+# WHY k CAN NOW GO TO 512 (was capped at 16 in C1):
+#   `collapse` is ON by default (CLI: --no-collapse to disable).  A
+#   collapsed segment emits ONE QFT/diagonal/QFT^-1 layer with a SINGLE
+#   heat ancilla for the segment's whole time span, exactly equivalent
+#   to its k per-step layers (heat diagonal commutes with itself:
+#   D(dt)^k = D(k*dt), and intra-segment QFT^-1/QFT pairs cancel).  So
+#   segment width is q + n_bond + 1 = 11 qubits (q8, chi4) REGARDLESS of
+#   k.  The old "fully deferred k=32 = 42 qubits / 70 TB" wall and the
+#   `--max-total-qubits 26` cap described the pre-collapse per-step path
+#   and are gone — hence no --max-total-qubits line below.
+#     Verified: lib_cole_hopf_circuit.py:330-345 (collapse branch ->
+#     QuantumCircuit(q+1)); :643-644 (total_q = q+n_bond+1);
+#     burgers_solver.py:278 (--no-collapse, default collapse=True).
+#
+# WHAT STILL BOUNDS THIS SWEEP:
+#   * q, not k, is the OOM wall (2^q statevector + 2^q multiplexer CX).
+#     k is free.
+#   * Collapse MUST stay engaged.  Do NOT pass --no-collapse here: it
+#     re-arms the q+n_bond+segment_size path -> time wall (k=512 => 512
+#     reset rounds) or OOM.  Segment 1 prints `fast path: collapsed
+#     segment` on stderr; if you see `SLOW PATH`, kill the job.
+#   * k must divide n_steps (512) and --save-every must be a multiple of
+#     --segment-size (solver hard-errors otherwise).  All k below are
+#     powers of 2 that divide 512; save-every = max(k,4) keeps every
+#     group's frames a subset of the FTCS ref cadence (save-every=4).
+#
+# k is a PHYSICS lever now, not a cost lever: raising k shrinks the seam
+# count S = n_steps/k, and fewer seams = less measure-reprepare noise
+# (C1 outcome: k16 best, k2/k4 blew up).  This ladder walks that all the
+# way to S=1 (k=512): a single collapsed layer straight from the IC to
+# the final frame, zero seams — the true zero-seam floor and the q8
+# hardware circuit shape (cf. C9 s1_k1).
+#
+# CROSS-CHECKS (same T_end=0.2, so the k/cfl split is inert — S is the
+# only live variable):
+#   seam_k32  (S=16) ~ C7 cfl_0p4 ;  seam_k64  (S=8) ~ C7 cfl_0p8
+#   seam_k256 (S=2)  ~ C8 best rung / C9 s2_k1
+#   seam_k512 (S=1)  ~ C9 s1 shape (11 qubits, one layer, one readout)
+# Not bit-identical across the two constructions (different transpile +
+# sampling stream), but should agree within seed scatter.
+#
+# WALL TIME ~ S x (~200s per segment: prep + collapsed-layer metric
+# transpile).  seam_k2 (S=256) is the long pole (~hours); everything
+# k>=32 is minutes or less; seam_k512 is one segment.  Parallel launch
+# is bounded by seam_k2 / seam_k4.
+#
+# EC2: run from the workspace root (paths below are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/aux/burgers-ch-lbm/cases/c1B_seam_full_s1.toml
+#   # subset e.g. only the new low-S half:
+#   q8020-sweep ...c1B_seam_full_s1.toml --groups seam_k32 seam_k64 seam_k128 seam_k256 seam_k512
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_q8_c1B"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"             # all 9 k-groups launch concurrently (local Popen)
+_trials = 1
+# No _slurm block / walltime / _case_timeout on EC2 — cases run until
+# done; kill a stuck one by hand (each writes pipeline_std{out,err}.txt).
+_env_exports = { OMP_NUM_THREADS = "2" }   # 11-qubit statevectors: threads barely matter; cost is transpile
+
+"--noshow" = true
+"--no-classical-reference" = true
+"--no-analytic-reference" = true
+
+# Fig-1 op point (corrected) — everything except the swept lever.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+"--cfl" = 0.1
+
+"--seed" = 1234
+"--shots" = 131072                 # 2^17
+"--metric-transpile-timeout" = 0   # always transpile: keep the CX stat per group
+
+"--q" = 8
+"--n-steps" = 512                  # power of 2 -> every k below divides evenly
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--bond-dim" = 4                   # PINNED: exact for this phi (1-fid ~4e-8)
+"--phi-modes" = 8                  # baseline, held fixed here
+# NO "--max-total-qubits": collapse (default ON) fixes segment width at
+# q+n_bond+1=11 for any k, so the cap is inert.  See header. Do NOT add
+# --no-collapse — it re-arms the per-step wall.
+# NOTE: no "--propagator" line — flag removed; qft-diagonal is the only path.
+
+# ---------------------------------------------------------------------
+# THE swept lever, one group per k (save-every zipped by hand).
+# Original C1 half: k = 2 .. 16  (S = 256 .. 32)
+
+[seam_k2]                          # S = 256
+"--segment-size" = 2
+"--save-every" = 4                 # multiple of k=2, keeps ref-frame parity
+
+[seam_k4]                          # S = 128  (paper-like anchor)
+"--segment-size" = 4
+"--save-every" = 4
+
+[seam_k8]                          # S = 64
+"--segment-size" = 8
+"--save-every" = 8
+
+[seam_k16]                         # S = 32
+"--segment-size" = 16
+"--save-every" = 16
+
+# New low-S half: k = 32 .. 512  (S = 16 .. 1) — unlocked by collapse.
+
+[seam_k32]                         # S = 16   (~ C7 cfl_0p4)
+"--segment-size" = 32
+"--save-every" = 32
+
+[seam_k64]                         # S = 8    (~ C7 cfl_0p8)
+"--segment-size" = 64
+"--save-every" = 64
+
+[seam_k128]                        # S = 4
+"--segment-size" = 128
+"--save-every" = 128
+
+[seam_k256]                        # S = 2    (~ C8 best / C9 s2_k1)
+"--segment-size" = 256
+"--save-every" = 256
+
+[seam_k512]                        # S = 1    zero seams — the floor / hw shape
+"--segment-size" = 512
+"--save-every" = 512

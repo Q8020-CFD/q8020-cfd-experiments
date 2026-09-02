@@ -1,0 +1,88 @@
+# =====================================================================
+# CH DOMAIN-OF-UTILITY vs Re — HIGH-Re EXTENSION  (q=8, A=0.3, CFL=0.1, sim)
+# ---------------------------------------------------------------------
+# Extends nu_domain_q8_single.toml to higher Re (lower nu) to expose the
+# CH-method degradation edge.  Identical operating point in every other
+# respect, so its cases merge onto the same relL2-vs-Re plot; only the
+# five new nu are computed here (the original 12 are exact matches and
+# are reused by the scorer, which globs both run dirs).
+#
+# Expectation (measured, not guessed):
+#   * bond-4 keeps climbing (MPS truncation drops phi's 5th Schmidt value,
+#     whose weight grows with Re).
+#   * bond-8 == bond-16 to ~1e-10 EVERYWHERE: phi's central-cut rank caps
+#     at 8 for the sine IC at any nu, so both are exact prep.  The two
+#     arms track identically.
+#   * BUT the shared 8/16 curve should RISE at high Re: as phi sharpens
+#     (~exp(A/(2*pi*nu))) the 256-point q-grid under-resolves it, so even
+#     exact-prep CH deviates from the resolved FTCS-800 truth.  That rise
+#     is the CH domain-of-utility degradation (grid + linearisation, NOT
+#     bond), and it lifts 8 and 16 together.
+#
+# CAVEAT at extreme Re: the FTCS-800 truth itself runs on a 1024-pt grid;
+# at nu~5e-4 the shock is thinner than either grid resolves, so relL2
+# there reflects the 256-vs-1024 resolution gap, not pure CH error.  This
+# is the intended "don't go much past" boundary; Re=600 is the top.
+#
+# New nu -> Re:  0.0020->150  0.0015->200  0.0010->300  0.00075->400  0.0005->600
+# 5 nu x 3 bond arms = 15 CH cases + 5 ftcs_reference truths = 20 cases.
+# Run from the workspace root:
+#   cd /Users/agallojr/proj/src/q8020
+#   q8020-cfd-ch-lbm/.venv/bin/q8020-sweep \
+#     q8020-cfd-experiments/aux/burgers-ch-lbm/cases/nu_domain_q8_single_hiRe.toml
+# =====================================================================
+
+[global]
+_output_dir = "/Users/agallojr/proj/src/q8020/q8020-cfd-experiments/results/burgers-ch-lbm/ch_q8_nu_domain_single"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"
+_trials = 1
+_env_exports = { OMP_NUM_THREADS = "1" }
+
+"--noshow" = true
+"--no-analytic-reference" = true
+"--no-classical-reference" = true
+
+# --- fixed operating point (identical to nu_domain_q8_single.toml) ---
+"--bc" = "periodic"
+"--ic" = "sine"
+"--ic-amplitude" = 0.3
+"--source" = "none"
+"--cfl" = 0.1
+"--q" = 8
+"--n-steps" = 512
+"--save-every" = 8
+"--seed" = 1234
+"--metric-transpile-timeout" = 0
+
+[ch_bond4]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 4
+"--phi-modes" = 8
+"--nu" = [0.0020, 0.0015, 0.0010, 0.00075, 0.00050]
+
+[ch_bond8]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 8
+"--phi-modes" = 8
+"--nu" = [0.0020, 0.0015, 0.0010, 0.00075, 0.00050]
+
+[ch_bond16]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 16
+"--phi-modes" = 8
+"--nu" = [0.0020, 0.0015, 0.0010, 0.00075, 0.00050]
+
+[ftcs_ref]
+"--method" = "ftcs_reference"
+"--ref-points" = 800
+"--nu" = [0.0020, 0.0015, 0.0010, 0.00075, 0.00050]

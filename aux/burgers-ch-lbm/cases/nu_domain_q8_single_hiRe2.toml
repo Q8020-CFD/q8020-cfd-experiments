@@ -1,0 +1,142 @@
+# =====================================================================
+# CH DOMAIN-OF-UTILITY vs Re — Re>=1000 PUSH + ADAPTIVE FTCS REFERENCE
+# ---------------------------------------------------------------------
+# Two jobs in one sweep, same q=8/A=0.3/CFL=0.1/n-steps=512 op point:
+#
+#  (1) NEW high-Re CH cases: 5 new nu (Re 750..2000) x bond {4,8,16}
+#      = 15 CH cases, extending the plot past Re=1000.
+#
+#  (2) ADAPTIVE FTCS reference for EVERY nu at Re>=150.  The old FTCS-800
+#      truth refines to a 1024-pt grid (k=ceil(800/256)=4), which puts
+#      only ~1.7 pts across the shock at Re=150 and <1 at Re>=600 -- an
+#      UNRESOLVED, invalid reference there (this is the erratic bond-4
+#      wiggle and the 8/16 blow-up cliff at the plot's right edge).  Here
+#      each nu gets its OWN ref-points sized to ~6-8 pts/shock (shock
+#      thickness ~ nu/A), so the reference resolves the shock at every Re.
+#      One group per nu because ref-points must track nu (a single group
+#      with list nu + list ref-points would cross-product, and
+#      over-resolving high-nu re-triggers the FTCS substep cost cliff:
+#      substeps ~ nu*grid^2).
+#
+# The scorer merges all run dirs and dedupes by (method,nu,bond) newest-
+# wins, so these adaptive refs REPLACE the FTCS-800 refs for Re>=150,
+# while Re<=120 keeps FTCS-800 (already solid, >=8.5 pts/shock).
+#
+# HONEST CAVEAT: a better reference makes the y-axis truthful but will
+# NOT lower the error at high Re -- the 256-pt SOLVER grid is itself
+# under-resolved (drops below 2 pts/shock by Re~120).  The rescored
+# high-Re points become an HONEST large error (256-grid CH cannot resolve
+# the shock), not a measurement artifact.  Lowering it needs higher q.
+#
+# ref-points per nu (all multiples of 256 so grid = ref_points exactly):
+#   Re150 nu2e-3   ->1280   Re200 nu1.5e-3 ->1536   Re300 nu1e-3  ->2048
+#   Re400 nu7.5e-4 ->2816   Re600 nu5e-4   ->4096   Re750 nu4e-4  ->5120
+#   Re1000 nu3e-4  ->6912   Re1200 nu2.5e-4->8192   Re1500 nu2e-4 ->10240
+#   Re2000 nu1.5e-4->13568
+#
+# Run from workspace root:
+#   cd /Users/agallojr/proj/src/q8020
+#   q8020-cfd-ch-lbm/.venv/bin/q8020-sweep \
+#     q8020-cfd-experiments/aux/burgers-ch-lbm/cases/nu_domain_q8_single_hiRe2.toml
+# =====================================================================
+
+[global]
+_output_dir = "/Users/agallojr/proj/src/q8020/q8020-cfd-experiments/results/burgers-ch-lbm/ch_q8_nu_domain_single"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"
+_trials = 1
+_env_exports = { OMP_NUM_THREADS = "1" }
+
+"--noshow" = true
+"--no-analytic-reference" = true
+"--no-classical-reference" = true
+
+"--bc" = "periodic"
+"--ic" = "sine"
+"--ic-amplitude" = 0.3
+"--source" = "none"
+"--cfl" = 0.1
+"--q" = 8
+"--n-steps" = 512
+"--save-every" = 8
+"--seed" = 1234
+"--metric-transpile-timeout" = 0
+
+# --- (1) NEW high-Re CH cases: 5 new nu x 3 bond arms ----------------
+[ch_bond4]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 4
+"--phi-modes" = 8
+"--nu" = [0.0004, 0.0003, 0.00025, 0.0002, 0.00015]
+
+[ch_bond8]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 8
+"--phi-modes" = 8
+"--nu" = [0.0004, 0.0003, 0.00025, 0.0002, 0.00015]
+
+[ch_bond16]
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 16
+"--phi-modes" = 8
+"--nu" = [0.0004, 0.0003, 0.00025, 0.0002, 0.00015]
+
+# --- (2) adaptive FTCS reference, one group per nu (Re>=150) ---------
+[ftcs_re150]
+"--method" = "ftcs_reference"
+"--nu" = 0.002
+"--ref-points" = 1280
+
+[ftcs_re200]
+"--method" = "ftcs_reference"
+"--nu" = 0.0015
+"--ref-points" = 1536
+
+[ftcs_re300]
+"--method" = "ftcs_reference"
+"--nu" = 0.001
+"--ref-points" = 2048
+
+[ftcs_re400]
+"--method" = "ftcs_reference"
+"--nu" = 0.00075
+"--ref-points" = 2816
+
+[ftcs_re600]
+"--method" = "ftcs_reference"
+"--nu" = 0.0005
+"--ref-points" = 4096
+
+[ftcs_re750]
+"--method" = "ftcs_reference"
+"--nu" = 0.0004
+"--ref-points" = 5120
+
+[ftcs_re1000]
+"--method" = "ftcs_reference"
+"--nu" = 0.0003
+"--ref-points" = 6912
+
+[ftcs_re1200]
+"--method" = "ftcs_reference"
+"--nu" = 0.00025
+"--ref-points" = 8192
+
+[ftcs_re1500]
+"--method" = "ftcs_reference"
+"--nu" = 0.0002
+"--ref-points" = 10240
+
+[ftcs_re2000]
+"--method" = "ftcs_reference"
+"--nu" = 0.00015
+"--ref-points" = 13568

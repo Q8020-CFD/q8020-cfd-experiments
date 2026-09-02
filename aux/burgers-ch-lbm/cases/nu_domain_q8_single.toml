@@ -1,0 +1,123 @@
+# =====================================================================
+# CH DOMAIN-OF-UTILITY vs Re  —  SINGLE-MODE / SEAMLESS  (q=8, A=0.3, CFL=0.1, sim)
+# ---------------------------------------------------------------------
+# Purpose: map where Cole-Hopf linearises Burgers WELL vs POORLY as a
+# function of Reynolds number Re = A/nu (A=0.3 fixed).  Fix everything
+# except nu; sweep nu over Re 2..120 and score relL2 vs a stable
+# sub-stepped FTCS-800 truth.  The relL2-vs-Re curve IS the domain map.
+#
+# WHY THIS IS A FRESH RUN, NOT A REUSE OF ch_q8_nu_domain (2026-08-25):
+#   1. That sweep predates commit 557b27a (2026-08-27) which collapses
+#      the per-step QFT/diagonal/QFT^-1 layers within each read-out-free
+#      stretch.  In SINGLE mode the whole t=0->t_end trajectory is ONE
+#      such stretch, so D(dt)^k = D(k*dt) folds to a single exact heat
+#      propagator — a code path that sweep never exercised.
+#   2. That sweep used measure_reprepare with seams (S=40/80), bond-dim
+#      16, shots=150000.  This one is single-segment (S=1, k=512),
+#      shots=0 (pure statevector algorithm floor).  Different physics
+#      knobs, different code path.  No result is borrowed; all recomputed.
+#
+# WHY n-steps=512 (not a power of 10): dt = cfl*dx, dx = 1/256 (periodic
+# q=8), so T_end = n_steps*cfl*dx = 512*0.1/256 = 0.200 EXACTLY, and 512
+# = 2*256 keeps the frame cadence a clean divisor of the 2^q grid.  In
+# single mode the collapse makes the CH result step-count-independent
+# (one exact propagator for the full T_end), so n_steps only fixes T_end
+# (0.200 ~ 38% of the A=0.3 shock time t_shock = 1/(2*pi*A) ~ 0.531) and
+# the FTCS truth's accuracy.  A power of 10 gives an ugly T_end and
+# breaks grid divisibility for no benefit.
+#
+# THREE bond-dim arms per nu (4, 8, 16): bond-dim 16 is the FULL/exact
+# MPS rank at q=8 (2^(q/2), the linear-algebra bound d_k=min(2^k,2^(q-k))
+# peaks at the central cut = 16, so it never truncates any q=8 state).
+# The CH potential phi peaks like exp(A/(2*pi*nu)) — sharp at low nu /
+# high Re — so bond-4 may TRUNCATE the prep there.  Comparing the two
+# arms separates genuine CH-linearisation + grid breakdown (both arms
+# move together) from MPS-truncation error (only bond-4 degrades).
+#
+# NOISELESS statevector (--backend-type default = sim), shots=0: the
+# only error terms are grid (2^q=256) and — for bond-4 — MPS truncation.
+# No shot noise, no seam noise.  phi-modes=8 is set to match intent but
+# is INERT at shots=0 (it low-passes shot noise only; the SV path has
+# none).  At shots=0 the live knob is bond-dim.
+#
+# Reference: in-process classical FTCS is turned OFF (--no-classical-
+# reference) because plain FTCS on the 256-grid goes unstable for
+# nu > 0.5*dx/cfl ~ 0.0195 (diffusion number > 0.5) and would score NaN.
+# The [ftcs_ref] group below produces a STABLE sub-stepped ftcs_reference
+# truth at ref-points 800 for every nu; score_nu_domain_single.py joins
+# CH fields to that truth by nu offline.
+#
+# 12 nu x 3 bond arms = 36 CH cases + 12 ftcs_reference truths = 48 cases.
+# Re = A/nu with A=0.3:
+#   nu   0.0025 0.003 0.005 0.0075 0.010 0.015 0.020 0.030 0.050 0.080 0.120 0.150
+#   Re   120    100   60    40     30    20    15    10    6     3.75  2.5   2
+#
+# Run from the workspace root (paths below are cwd-relative):
+#   cd /Users/agallojr/proj/src/q8020
+#   q8020-cfd-ch-lbm/.venv/bin/q8020-sweep \
+#     q8020-cfd-experiments/aux/burgers-ch-lbm/cases/nu_domain_q8_single.toml
+# =====================================================================
+
+[global]
+_output_dir = "/Users/agallojr/proj/src/q8020/q8020-cfd-experiments/results/burgers-ch-lbm/ch_q8_nu_domain_single"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"                     # all cases launch concurrently (local Popen)
+_trials = 1
+_env_exports = { OMP_NUM_THREADS = "1" }   # 36 procs / 12 cores: 1 Aer thread each
+
+"--noshow" = true
+"--no-analytic-reference" = true           # no-op for sine IC
+"--no-classical-reference" = true          # unstable in-process FTCS off; ftcs_ref group is the truth
+
+# --- fixed operating point ----------------------------------------
+"--bc" = "periodic"
+"--ic" = "sine"                            # u0 = A * sin(2*pi*x)
+"--ic-amplitude" = 0.3                     # A = 0.3
+"--source" = "none"
+"--cfl" = 0.1                              # dt = cfl * dx  (nu-independent)
+"--q" = 8                                  # 2^8 = 256-point grid
+"--n-steps" = 512                          # T_end = 0.200 exactly, fixed for all cases
+"--save-every" = 8                         # 64 frames, clean divisor of 512
+"--seed" = 1234
+"--metric-transpile-timeout" = 0
+
+# ---------------------------------------------------------------------
+# CH arms.  Single-mode / seamless: S=1, k=512.  shots=0 SV floor.
+# The swept knob (nu) is list-valued INSIDE each group (cross-product is
+# per-group).  Second axis = bond dim, one group per value.
+[ch_bond4]                                 # cheap config under study
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 4
+"--phi-modes" = 8                          # inert at shots=0 (matches intent)
+"--nu" = [0.0025, 0.003, 0.005, 0.0075, 0.010, 0.015, 0.020, 0.030, 0.050, 0.080, 0.120, 0.150]
+
+[ch_bond8]                                 # intermediate arm
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 8
+"--phi-modes" = 8
+"--nu" = [0.0025, 0.003, 0.005, 0.0075, 0.010, 0.015, 0.020, 0.030, 0.050, 0.080, 0.120, 0.150]
+
+[ch_bond16]                                # full/exact MPS rank at q=8 (control)
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "single"
+"--shots" = 0
+"--bond-dim" = 16
+"--phi-modes" = 8
+"--nu" = [0.0025, 0.003, 0.005, 0.0075, 0.010, 0.015, 0.020, 0.030, 0.050, 0.080, 0.120, 0.150]
+
+# ---------------------------------------------------------------------
+# Stable classical truth: ftcs_reference sub-steps a refined 800+ grid
+# (k=4 -> 1024 pts) for FTCS stability at every nu, subsamples back to
+# the 256 q-grid.  Same physics/cadence as the CH arms so scoring is
+# pointwise on identical coordinates.
+[ftcs_ref]
+"--method" = "ftcs_reference"
+"--ref-points" = 800                       # refined k=4 -> 1024-pt grid, sub-stepped
+"--nu" = [0.0025, 0.003, 0.005, 0.0075, 0.010, 0.015, 0.020, 0.030, 0.050, 0.080, 0.120, 0.150]

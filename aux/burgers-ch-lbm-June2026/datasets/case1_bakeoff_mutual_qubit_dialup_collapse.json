@@ -1,0 +1,77 @@
+{
+  "name": "case1_bakeoff_mutual_qubit_dialup_collapse",
+  "status": "complete",
+  "description": "Collapse-code rerun of the Burgers MUTUAL bakeoff (A=0.3, nu=0.03) on q8020-cfd-ch-lbm via AWS Batch, 2026-09-03. Same fair stock-vs-stock CH-vs-QLBM comparison as case1_bakeoff_mutual_qubit_dialup, but CH runs with collapse ON (default): the per-step QFT/diagonal/QFT^-1 layers within each read-out-free segment fold to a single exact heat propagator. This is a pure circuit-depth optimization (mathematically exact for the diagonal heat operator), so CH accuracy matches June to shot noise, but the circuit-cost metrics (qubits/depth/2q gates) drop sharply: CH qubits 10/14/17 -> 7/10/13, deepest depth 3046/16602/84156 -> 808/4438/21944, CX/circuit 1006/6628/40272 -> 247/1606/9416. QLBM is untouched by collapse (flat 9 qubits, ~432.6k depth). This dataset is the collapse counterpart of fig1; regenerate fig1_collapse.png from it.",
+  "global": {
+    "ic": "sine",
+    "ic_amplitude": 0.3,
+    "nu": 0.03,
+    "cfl": 0.1,
+    "bc": "periodic",
+    "source": "none",
+    "evolution_mode": "measure_reprepare",
+    "segment_size": 5,
+    "save_every": 10,
+    "shots": 150000,
+    "propagator": "qft-diagonal",
+    "collapse": true
+  },
+  "runs": [
+    {
+      "label": "q4_ch",
+      "q": 4,
+      "method": "cole_hopf_circuit",
+      "n_steps": 30,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q4/2026-09-03/_0daaf069/b7509f5c"
+    },
+    {
+      "label": "q4_qlbm",
+      "q": 4,
+      "method": "qlbm_circuit",
+      "n_steps": 30,
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q4/2026-09-03/_0daaf069/42a3615a"
+    },
+    {
+      "label": "q6_ch",
+      "q": 6,
+      "method": "cole_hopf_circuit",
+      "n_steps": 100,
+      "bond_dim": 8,
+      "phi_modes": 8,
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q6/2026-09-03/_d61160a7/90fe44cd"
+    },
+    {
+      "label": "q6_qlbm",
+      "q": 6,
+      "method": "qlbm_circuit",
+      "n_steps": 100,
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q6/2026-09-03/_d61160a7/2c2561e4"
+    },
+    {
+      "label": "q8_ch",
+      "q": 8,
+      "method": "cole_hopf_circuit",
+      "n_steps": 400,
+      "bond_dim": 16,
+      "phi_modes": 8,
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q8/2026-09-03/_3da12f29/7fd5a918"
+    },
+    {
+      "label": "q8_qlbm",
+      "q": 8,
+      "method": "qlbm_circuit",
+      "n_steps": 400,
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q8/2026-09-03/_3da12f29/4ab5be3a"
+    },
+    {
+      "label": "ftcs_reference",
+      "q": 8,
+      "method": "ftcs_reference",
+      "n_steps": 400,
+      "note": "800-pt classical reference for all q (interpolated down per grid)",
+      "path": "../../../results/burgers-ch-lbm/ch_fig1_ab_mutual_q8/2026-09-03/_3da12f29/5b3089f4"
+    }
+  ]
+}

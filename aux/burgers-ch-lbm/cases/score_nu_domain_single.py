@@ -153,12 +153,9 @@ def main() -> None:
               if c["method"] == "ftcs_reference" and c["u"] is not None}
     ch = [c for c in cases if c["method"] == "cole_hopf_circuit"]
 
-    # Reference-switch boundary: lowest Re whose FTCS truth used a finer
-    # grid than the baseline 800 (i.e. the adaptive shock-resolved refs).
-    # Shaded on the plot so the FTCS-800 -> adaptive switch is explicit.
-    finer = [A_AMPLITUDE / nu for nu, t in truths.items()
-             if nu and (t.get("ref_points") or 0) > 800]
-    switch_re = min(finer) if finer else None
+    # Per-Re FTCS reference (ref-points), for the shaded bands on the plot.
+    re_ref = sorted((A_AMPLITUDE / nu, (t.get("ref_points") or 0))
+                    for nu, t in truths.items() if nu)
 
     if not ch:
         raise SystemExit(f"No CH cases under {args.root}")
@@ -244,16 +241,35 @@ def main() -> None:
     ax.set_xscale("log")
     ax.set_yscale("log")
 
-    # Shade the Re range that uses the adaptive shock-resolved FTCS (all
-    # Re >= switch_re) vs the baseline FTCS-800 region (Re < switch_re).
-    if switch_re is not None:
-        xmax = ax.get_xlim()[1]
-        ax.axvspan(switch_re, xmax, color="#f2a900", alpha=0.10, zorder=0)
-        ax.axvline(switch_re, color="#f2a900", lw=1.2, ls=":", zorder=1)
-        ax.text(switch_re * 1.05, ax.get_ylim()[1], "adaptive FTCS (shock-resolved) →",
-                color="#9c6b00", fontsize=8, va="top", ha="left")
-        ax.text(switch_re * 0.95, ax.get_ylim()[1], "← FTCS-800",
-                color="#555555", fontsize=8, va="top", ha="right")
+    # Shade the plot into bands by which FTCS reference (ref-points) each
+    # Re region uses.  Each band spans the midpoints between adjacent Re
+    # points; adjacent bands with the same ref-points merge, so the whole
+    # Re<150 stretch reads as one "FTCS 800" band and each finer ref gets
+    # its own band labelled "FTCS <ref-points>".
+    if re_ref:
+        xlo, xhi = ax.get_xlim()
+        res = [r for r, _ in re_ref]
+        # geometric-mean edges between neighbours (log x-axis)
+        edges = [xlo] + [
+            (res[i] * res[i + 1]) ** 0.5 for i in range(len(res) - 1)
+        ] + [xhi]
+        # merge consecutive same-ref bands
+        bands = []  # (left, right, ref_points)
+        for i, (_, rp) in enumerate(re_ref):
+            lft, rgt = edges[i], edges[i + 1]
+            if bands and bands[-1][2] == rp:
+                bands[-1] = (bands[-1][0], rgt, rp)
+            else:
+                bands.append((lft, rgt, rp))
+        ytop = ax.get_ylim()[1]
+        for j, (lft, rgt, rp) in enumerate(bands):
+            if j % 2:  # shade alternating bands so boundaries read clearly
+                ax.axvspan(lft, rgt, color="#f2a900", alpha=0.10, zorder=0)
+            if j:      # boundary line between refs
+                ax.axvline(lft, color="#cc9a00", lw=0.8, ls=":", zorder=1)
+            ax.text((lft * rgt) ** 0.5, ytop, f"FTCS {rp}",
+                    color="#7a5c00", fontsize=7.5, rotation=90,
+                    va="top", ha="center")
 
     ax.set_xlabel("Re = A/nu   (A = 0.3)")
     ax.set_ylabel("relL2 vs FTCS (shock-resolved)")

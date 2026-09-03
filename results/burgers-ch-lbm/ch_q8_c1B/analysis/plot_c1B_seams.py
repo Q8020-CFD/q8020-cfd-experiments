@@ -133,56 +133,70 @@ def main():
     print("wrote", os.path.relpath(csv_path, REPO))
 
     # --- figure -------------------------------------------------------
+    # Labels/format deliberately match the June reference figure
+    # (aux/burgers-ch-lbm-June2026/seam_shots_figs/fig_seam_k_sweep.png):
+    # same title, axis labels, x ticks (ScalarFormatter), "k"-suffixed depth
+    # ticks, statevector-floor annotation, colorblind palette, and rcParams.
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    import matplotlib.ticker as mticker
 
-    BLUE, ORANGE, GREY = "#1f77b4", "#d1642a", "#7f7f7f"
+    plt.rcParams.update({
+        "font.size": 10,
+        "axes.grid": True,
+        "grid.alpha": 0.3,
+        "axes.axisbelow": True,
+        "figure.dpi": 150,
+    })
+    C_L2, C_DEPTH, C_REF = "#0072B2", "#D55E00", "#888888"  # June palette
+
     xs = [r["S"] for r in rows]
     ys = [r["relL2"] for r in rows]
     dep = [r["seg_depth"] for r in rows]
+    ks = [r["k"] for r in rows]
 
-    fig, axL = plt.subplots(figsize=(9, 5.5))
+    fig, axa = plt.subplots(1, 1, figsize=(7.2, 4.6))
 
-    # left: relL2 (blue)
-    axL.plot(xs, ys, "o-", color=BLUE, lw=2, ms=8, zorder=3)
-    axL.set_xscale("log", base=2)
-    axL.set_yscale("log")
-    axL.set_xlabel("segments  S = n_steps / k")
-    axL.set_ylabel("relL2  (CH final field vs FTCS truth)", color=BLUE)
-    axL.tick_params(axis="y", labelcolor=BLUE)
-    axL.set_xticks(xs)
-    axL.set_xticklabels([str(s) for s in xs])
-    axL.grid(True, which="both", alpha=0.22)
-    # per-point k labels
-    for r in rows:
-        axL.annotate(f"k={r['k']}", (r["S"], r["relL2"]),
-                     textcoords="offset points", xytext=(0, 9),
-                     fontsize=8, color=BLUE, ha="center")
-    # relL2 = 1 marker and SV floor
-    axL.axhline(1.0, ls=":", lw=1, color=GREY, alpha=0.8)
-    axL.text(xs[-1], 1.0, "relL2 = 1 (solution-scale error)", fontsize=8,
-             color=GREY, va="bottom", ha="right")
+    # left: accuracy (blue) — relative L2 vs the FTCS truth
+    axa.plot(xs, ys, "o-", color=C_L2, lw=2, ms=7)
     if floor is not None:
-        axL.axhline(floor, ls="--", lw=1.2, color=GREY)
-        axL.text(xs[0], floor, f"statevector floor "
-                 f"(no shot noise, relL2={floor:.1e}; S=1, k={N_STEPS})",
-                 fontsize=8, color=GREY, va="bottom", ha="left")
+        axa.axhline(floor, color=C_REF, ls="--", lw=1.2)
+        axa.text(0.01, floor,
+                 f" statevector floor (no shot noise, L2={floor:.1e}; "
+                 f"S={xs[0]}, k={ks[0]})",
+                 color=C_REF, va="bottom", ha="left", fontsize=8,
+                 transform=axa.get_yaxis_transform())
+    axa.set_yscale("log")
+    axa.set_ylabel("L2 (rel vs FTCS)", color=C_L2)
+    axa.tick_params(axis="y", colors=C_L2)
+    axa.set_xscale("log", base=2)
+    axa.xaxis.set_major_formatter(mticker.ScalarFormatter())
+    axa.set_xticks(xs)
+    axa.set_xlabel("segments (S)")
+    axa.set_title(
+        r"Cole-Hopf $\phi$, evolution error over k-step segments"
+        r"  (q=8, shots=$2^{17}$, Re=10)", pad=10)
+    # label each point with its in-segment k (= n_steps / S)
+    for seg, l2, k in zip(xs, ys, ks):
+        axa.annotate(f"k={int(k)}", (seg, l2), textcoords="offset points",
+                     xytext=(6, 8), fontsize=7, color=C_L2)
 
-    # right: segment circuit depth (orange)
-    axR = axL.twinx()
-    axR.plot(xs, dep, "s--", color=ORANGE, lw=1.8, ms=7, zorder=2)
-    axR.set_yscale("log")
-    axR.set_ylabel("segment circuit depth (transpiled)", color=ORANGE)
-    axR.tick_params(axis="y", labelcolor=ORANGE)
-    axR.set_ylim(1e3, 1e6)  # honest window so the flat depth reads as flat
-    axR.annotate(f"depth ~ {dep[0]:.0f}, flat in S\n(collapse: 1 layer/segment)",
-                 (xs[len(xs) // 2], dep[len(xs) // 2]),
-                 textcoords="offset points", xytext=(0, -34),
-                 fontsize=8, color=ORANGE, ha="center")
+    # right: segment circuit depth (orange). Under collapse this is FLAT in S
+    # (~15.8k), so keep a >=1-decade window: the flatness reads as flat and the
+    # ~1% build drift is not inflated into a spurious trend.
+    axd = axa.twinx()
+    axd.plot(xs, dep, "s--", color=C_DEPTH, lw=1.6, ms=5, alpha=0.9)
+    axd.set_yscale("log")
+    axd.set_ylabel("segment circuit depth", color=C_DEPTH)
+    axd.tick_params(axis="y", colors=C_DEPTH)
+    axd.set_ylim(7e3, 2e5)
+    axd.yaxis.set_major_locator(mticker.FixedLocator([1e4, 2e4, 5e4, 1e5]))
+    axd.yaxis.set_minor_locator(mticker.NullLocator())
+    axd.yaxis.set_major_formatter(
+        mticker.FuncFormatter(lambda x, _: f"{x / 1e3:g}k"))
+    axd.grid(False)
 
-    axL.set_title("Cole-Hopf phi, evolution error over k-step segments "
-                  "(q=8, shots=$2^{17}$, Re=10)")
     fig.tight_layout()
     png = os.path.join(HERE, "segments_vs_relL2.png")
     fig.savefig(png, dpi=150, bbox_inches="tight")

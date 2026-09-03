@@ -1,0 +1,87 @@
+# =====================================================================
+# A-B MUTUAL-RANGE BAKEOFF :  nu = 0.03  (A=0.3, q=4)   [ch-lbm / collapse]
+# ---------------------------------------------------------------------
+# Regenerated 2026-09-03 from the June-2026 paper case
+#   burgers-ch-lbm-June2026/input/ab-q4/burgers_ab_mutual_q4_nu030.toml
+# to run on q8020-cfd-ch-lbm (the AWS-Batch solver) instead of the old
+# q8020-mps-burgers.  The traced code path is functionally equivalent:
+# same CH transform, same qft-diagonal heat propagator, same QALB dense
+# collision, same FTCS-800 + LBM references and rel-L2 metric.  Deltas
+# vs the June TOML:
+#   * _script / _env / _output_dir retargeted to ch-lbm and ~/q8020-runs
+#     (the Batch entrypoint only syncs ~/q8020-runs/ to S3).
+#   * --propagator dropped: ch-lbm has a single propagator == old qft-diagonal.
+#   * collapse is ON by default (pass --no-collapse to disable).  It is a
+#     pure circuit-depth optimization, exact for the diagonal heat operator,
+#     so CH results match June to shot noise -- BUT the circuit-cost metrics
+#     (qubits/depth/2q gates) will be far LOWER than the June paper table.
+#   * _group_postproc (mps-burgers plot_method_compare.py) dropped: ch-lbm
+#     ships no standalone plotter -- compare offline from harvested metadata.
+#
+# HARDWARE-FEASIBILITY PROBE (q=4, N=16).  Small-grid copy of the q6
+# bakeoff; QLBM tau = 0.5 + nu*N = 0.98 at N=16 (vs 2.42 at q6/N=64) so
+# QLBM accuracy is expected to differ from q6.  CH peakedness
+# exp(A/2*pi*nu) ~ 4.9x (grid-independent).  Knobs are best-vs-best.
+# See docs/AB-BAKEOFF-guide.md.
+#
+# Submit (from workspace root):
+#   docker/submit.sh q8020-cfd-experiments/aux/burgers-ch-lbm/cases/burgers_ab_mutual_q4_nu030.toml
+# or run locally:
+#   q8020-cfd-ch-lbm/.venv/bin/q8020-sweep \
+#     q8020-cfd-experiments/aux/burgers-ch-lbm/cases/burgers_ab_mutual_q4_nu030.toml
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_fig1_ab_mutual_q4"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+
+_run_mode = "parallel"                     # 4 groups launch concurrently (local Popen)
+_trials = 1
+_env_exports = { OMP_NUM_THREADS = "4" }   # Aer threads/case; track the Batch instance vCPUs
+
+"--noshow" = true
+"--no-classical-reference" = true          # in-proc FTCS off; ftcs_ref group is the truth
+"--no-analytic-reference" = true
+
+"--cfl" = 0.1
+"--save-every" = 10
+
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--seed" = 1234
+"--shots" = 150000
+"--metric-transpile-timeout" = 0
+
+"--q" = 4
+"--n-steps" = 30                     # 3 QLBM lattice steps (cfl=1, N=16): all
+                                     # 3 q4 methods land together at 34% T_shock.
+                                     # N=16 can only hit 23% or 34%, never q6/q8's
+                                     # 29% -- so 30 keeps the q4 trio aligned.
+
+# ---------------------------------------------------------------------
+[cole_hopf_circuit]
+"--method" = "cole_hopf_circuit"
+# NOTE: no --propagator line -- flag removed in ch-lbm; qft-diagonal is the only path.
+"--evolution-mode" = "measure_reprepare"   # collapse ON by default; segment ends
+"--segment-size" = 5                       #   align with save-every=10 (no mid-seg snapshot)
+"--bond-dim" = 8                      # >= full MPS rank at N=16 (clamps to full)
+"--phi-modes" = 8                     # = N/2 (Nyquist) at N=16: keeps full spectrum
+
+[qlbm_circuit]
+"--method" = "qlbm_circuit"
+"--fock-qubits" = 3                   # qc=3 convergent (grid-independent reg width)
+"--qalb-collision-trotter-reps" = 0   # dense exact collision = best L2
+
+[lbm_classical]
+"--method" = "lbm"
+
+[ftcs_ref]
+"--method" = "ftcs_reference"
+"--ref-points" = 800                  # finer than N=16 to stay a faithful ref
+"--save-every" = 10                   # reference must snapshot at the cadence

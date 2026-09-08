@@ -252,6 +252,11 @@ def main() -> None:
         help="with --still, which panel to save (default both). 'profile' "
              "= the u(x,t) panel, 'error' = the L2 panel only.",
     )
+    ap.add_argument(
+        "--title", default=None,
+        help="optional title drawn above the saved still (e.g. to mark a "
+             "code variant such as the collapse path).",
+    )
     args = ap.parse_args()
 
     # Shared figure style (must match the sibling script's figures): large
@@ -439,6 +444,15 @@ def main() -> None:
             fidx = int(tok)
         fidx = max(0, min(fidx, len(frame_times) - 1))
         update(fidx)
+        # Optional variant-marking title.  For the error-only panel put it on
+        # that axis (a fig suptitle would fall outside the tight crop); for a
+        # profile/both save the profile title slot already holds the physics
+        # subtitle, so the marker goes above as a figure suptitle.
+        if args.title:
+            if args.panel == "error" and have_err:
+                ax_err.set_title(args.title, fontsize=16, fontweight="bold")
+            else:
+                fig.suptitle(args.title, fontsize=16, fontweight="bold")
         out = Path(args.out) if args.out else ds_path.with_name(
             f"{ds_path.stem}_still_{fidx}_{args.panel}.png")
         fig.canvas.draw()
@@ -455,7 +469,8 @@ def main() -> None:
             fig.canvas.draw()
             fig.savefig(str(out), dpi=150, bbox_inches="tight", pad_inches=0.1,
                         bbox_extra_artists=[panel_ax.yaxis.label,
-                                            panel_ax.xaxis.label])
+                                            panel_ax.xaxis.label,
+                                            panel_ax.title])
             other_ax.set_visible(True)
         plt.close(fig)
         # Provenance sidecar next to the still: how it was made (code +

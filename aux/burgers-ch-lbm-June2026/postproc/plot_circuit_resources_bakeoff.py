@@ -188,6 +188,10 @@ def main() -> None:
     ap.add_argument("--out-twin", default=None,
                     help="compact single-panel PNG: qubit bars (left, "
                          "linear) + circuit cost lines (right, log)")
+    ap.add_argument("--title", default=None,
+                    help="optional figure suptitle to mark a code variant "
+                         "(e.g. the collapse path); applies to the "
+                         "--out-twin panel.")
     args = ap.parse_args()
     if args.out_a or args.out_b:
         args.split = True
@@ -413,7 +417,11 @@ def main() -> None:
             handles=part_h + [qlbm_patch] + cost_metric_h,
             loc="upper left", fontsize=8, frameon=False, ncol=2,
         )
-        fig_t.tight_layout()
+        if args.title:
+            fig_t.suptitle(args.title, fontsize=14, fontweight="bold")
+            fig_t.tight_layout(rect=(0, 0, 1, 0.92))
+        else:
+            fig_t.tight_layout()
         out_t = Path(args.out_twin)
         fig_t.savefig(str(out_t), dpi=150)
         plt.close(fig_t)

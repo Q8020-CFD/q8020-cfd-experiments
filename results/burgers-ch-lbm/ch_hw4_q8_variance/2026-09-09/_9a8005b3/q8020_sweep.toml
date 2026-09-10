@@ -1,0 +1,178 @@
+# =====================================================================
+# HW4 — q8 DEPOLARIZATION FLOOR + VARIANCE + S=1-vs-S=2  (3 groups)
+# ---------------------------------------------------------------------
+# !! THIS FILE DEFAULTS TO --backend-type hardware AND SPENDS REAL   !!
+# !! QPU TIME ON SUBMIT.  Rehearse first (recipes below), and submit !!
+# !! by naming groups / staging trials — do NOT fire all 40 blind.   !!
+#
+# PURPOSE.  We already KNOW q8 is depolarized on ibm_kingston (HW1
+# q8_s1: relL2 ~1.01, cos ~0, p_succ 0.52, ~19.3k routed CZ).  This run
+# is deliberately garbage-tolerant: its job is NOT to beat the q-wall
+# but to (a) re-confirm the floor on current calibration, (b) test
+# whether chi=2's one-fewer-qubit prep (10 vs 11) lets ANY signal
+# survive vs chi=4, (c) put a RUN-TO-RUN ERROR BAR on the floor —
+# hardware sampling is not seedable, so 10 identical trials measure the
+# device drift + calibration + sampling spread at fixed physics — and
+# (d) DEMONSTRATE ON SILICON that segmenting does NOT help the exact CH
+# path (S=2 group), complementing the sim seam ladder (C1B: err monotone
+# in S, S=1 best).  Collapse floors EVERY segment at one q-bound layer
+# (~15.8-19.3k CZ), so S=2 is two full-depth circuits + a re-prep seam
+# that re-prepares segment 2 from already-depolarized segment-1 counts —
+# expected WORSE than S=1, not a decoherence firewall.  (The firewall
+# tradeoff exists only for the QLBM/Trotter path, where depth grows with
+# evolved time; the exact CH layer's depth is time-independent.)
+#
+# WHY NO Re SWEEP AT q8.  The amplitude-prep multiplexer encodes 2^q
+# amplitudes regardless of how peaked phi is; changing Re (nu or amp)
+# changes only rotation ANGLES, not gate structure or CZ count.  So
+# every Re gives the SAME ~19.3k-CZ circuit and the same depolarized
+# output — a q8 Re sweep on hardware is same-depth garbage each time.
+# We run ONE op point (Fig-1 Re = A/nu = 0.3/0.03 = 10), comparable to
+# all prior C-series/HW1/HW2 work.  Re-vs-q utility is a SIMULATOR
+# study (map it at q6/q8 statevector with phi-modes adapted per Re).
+#
+# SHAPE.  Fig-1 physics (nu 0.03, amp 0.3, sine, periodic), T_end = 0.2.
+# S=1 groups: k=1, SINGLE segment, ZERO re-prepare seams; cfl = 0.2*2^q
+# = 51.2 so one exact step reaches T_end.  No data-dependent 2nd transpile
+# => the qiskit #4159 QSD Weyl panic CANNOT occur; opt-level 3 safe.
+# This is HW1's q8_s1 / HW2's q8_s1_ideal shape verbatim.
+# S=2 group (q8_s2): cfl = 25.6, n-steps 2, segment-size 1 => TWO
+# segments, ONE re-prep seam, each segment reaches dt=0.1 (T_end=0.2
+# total).  The seam IS a data-dependent transpile, so this group forces
+# --optimization-level 2 to dodge the Weyl panic deterministically
+# (opt<=2 skips the aggressive QSD synthesis).  chi=2 (10q): cheapest
+# seam re-prep, the deployable hw config, and gives S=2 its best shot.
+#
+#   group             q  chi  cfl    n-steps  segs  shots   trials  jobs
+#   q8_s1_ideal       8   4   51.2      1        1   65536    10      10
+#   q8_s1_ideal_chi2  8   2   51.2      1        1   65536    10      10
+#   q8_s2             8   2   25.6      2        2   65536    10      20  (2 seg/trial)
+#                                                          TOTAL  40 jobs
+#
+# COST.  q8 single segment ran ~130-250 QPU-s/job on kingston at these
+# shots (HW1 segment 1 was ~130s).  S=1 arms = 10 jobs each; the S=2 arm
+# is 2 segments/trial => 20 jobs.  40 jobs total => roughly 90-165
+# QPU-min.  STAGE IT: fire one S=1 arm first, read the spread, THEN the
+# S=2 demo (it only earns QPU if the S=1 floor is what you expect).  To
+# trim cost, lower _trials per group or --set shots=32768.
+#
+# SUBMISSION STAGES (group names are POSITIONAL args to q8020-sweep):
+#   A. q8020-sweep hw4_q8_variance.toml q8_s1_ideal        # chi=4, 10 jobs
+#   B. q8020-sweep hw4_q8_variance.toml q8_s1_ideal_chi2   # chi=2, 10 jobs
+#   C. q8020-sweep hw4_q8_variance.toml q8_s2              # chi=2 S=2, 20 jobs
+#   (or name several at once — serial, one device.)
+#
+# REHEARSALS (FREE, run before any submit):
+#   hardware code path, no creds (TREX/DD applied but inert):
+#     q8020-sweep hw4_q8_variance.toml \
+#       --set backend-type=fake --set backend=torino --set _trials=1
+#   authoritative routed CZ/depth + qubit count, zero shots (needs
+#   creds, submits NOTHING):
+#     q8020-sweep hw4_q8_variance.toml --set hw-dry-run=true --set _trials=1
+#
+# SCORING (offline, as HW1/C9 — inline refs disabled; big-cfl macro-dt
+# breaks the inline FTCS baseline):
+#   * q8 truth : ch_ftcs_refs/2026-08-13/_3fa21a71/9bbe98a3 (exists).
+#   * REPORT per trial: raw relL2, unit-norm-rescaled relL2, AND cosine.
+#     Then aggregate the trials per group -> mean +/- std (the error bar).
+#     Cosine is the honest "is any shape left" metric; rescaled relL2
+#     removes the pure-attenuation component.
+#   * chi=4 vs chi=2 (both S=1): subtract the known SV-floor bias before
+#     attributing any gap to the qubit saving -- chi=2 starts ~2% worse
+#     classically (SV 0.021 vs 0.00017), invisible under q8 noise.
+#   * S=1 vs S=2 (score q8_s2's FINAL frame, step 2, vs the same T=0.2
+#     truth): expected S=2 mean >= S=1 mean (seams inject noise, don't
+#     firewall).  Compare chi=2 S=1 band vs chi=2 S=2 band -- same chi,
+#     so the only difference is the seam.  Also inspect segment-1 (step
+#     1, t=0.1) p_success: if seg1 is already depolarized, the seam
+#     re-preps from noise, which IS the point.
+#   Per-case job_id + billed quantum_seconds land in
+#   analysis.per_step_metrics[-1].segments_full; backend calibration
+#   snapshot is written as the backend fragment (differs per trial ->
+#   ties drift to the variance).
+#
+# Seed 1234 pins the transpile only; real-QPU sampling is NOT seedable
+# (execute_circuit_counts skips seed_simulator on hardware) -- which is
+# exactly why the 10 trials measure something.
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_hw4_q8_variance"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+# NO _slurm block — hardware runs execute wherever IBM creds live.
+_run_mode = "serial"               # one QPU device; don't queue-race cases
+# NOTE: _trials only replicates when set INSIDE a [group] (expand_case_lists
+# sees the group section, not [global]; sweep.py:2381).  So it lives in each
+# group below, NOT here.  A [global] _trials is silently ignored.
+
+"--noshow" = true
+"--no-classical-reference" = true  # cfl=51.2 macro-dt breaks inline FTCS;
+"--no-analytic-reference" = true   # score offline vs ch_ftcs_refs
+
+# Fig-1 op point — identical to C7/C8/C9/HW1/HW2.  Re = A/nu = 0.3/0.03 = 10.
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.03
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--phi-modes" = 8                  # baseline, held fixed (changes 0 gates)
+"--max-total-qubits" = 18          # cap, not floor: k=1 q8 rung sits at 10-11
+"--seed" = 1234                    # transpile determinism only; NOT hw sampling
+
+# --- backend / hardware execution (rehearsals override via --set) ----
+"--backend" = "ibm_kingston"       # --set backend=<name> for another Heron
+"--backend-type" = "hardware"      # sim | fake | hardware
+"--session" = "auto"               # one held Session per case
+"--measure-mitigation" = "auto"    # TREX; auto = on for hardware
+"--dynamical-decoupling" = "auto"  # XpXm; auto = on for hardware
+"--optimization-level" = 3         # safe: single segment => no QSD-panic seam
+"--hw-dry-run" = false             # --set hw-dry-run=true: transpile + stop
+
+# ---------------------------------------------------------------------
+# One case per group. cfl = 0.2 * 2^q so n-steps=1 reaches T_end=0.2.
+# save-every = segment-size = 1 => one frame at t=0.2.
+
+[q8_s1_ideal]                      # chi=4 — 11 qubits; SV floor 0.00017
+_trials = 10                       # 10 non-seedable replicates -> variance band
+"--q" = 8
+"--bond-dim" = 4
+"--cfl" = 51.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536
+
+[q8_s1_ideal_chi2]                 # chi=2 — 10 qubits (one fewer), shorter prep
+_trials = 10                       # 10 non-seedable replicates -> variance band
+"--q" = 8
+"--bond-dim" = 2                   # SV floor 0.021 (2% bias, invisible under hw noise)
+"--cfl" = 51.2
+"--n-steps" = 1
+"--segment-size" = 1
+"--save-every" = 1
+"--shots" = 65536
+
+# S=2 DEMONSTRATION — chi=2, TWO segments, ONE re-prep seam.  Directly
+# comparable to q8_s1_ideal_chi2 (same chi, same T_end): the ONLY
+# difference is the seam.  cfl=25.6 => each of 2 segments covers dt=0.1;
+# save-every=1 frames both t=0.1 (seam) and t=0.2 (final -> score this).
+# 2 segments/trial => 20 QPU jobs for this group alone.  Expected WORSE
+# than S=1 (collapse => each segment is still one full q-bound layer;
+# the seam re-preps from depolarized counts).  opt-level 2 (override,
+# not the global 3) makes the seam's data-dependent transpile dodge the
+# qiskit #4159 QSD Weyl panic deterministically.
+[q8_s2]
+_trials = 10                       # 10 replicates -> S=2 variance band (x2 seg = 20 jobs)
+"--q" = 8
+"--bond-dim" = 2                   # match q8_s1_ideal_chi2 so seam is the only variable
+"--cfl" = 25.6                     # 2 steps x dt(0.1) = T_end 0.2
+"--n-steps" = 2
+"--segment-size" = 1               # 1 step/segment => 2 segments, 1 seam
+"--save-every" = 1                 # frames at t=0.1 (seam) and t=0.2 (final)
+"--shots" = 65536
+"--optimization-level" = 2         # OVERRIDE global 3: dodge #4159 Weyl panic at the seam

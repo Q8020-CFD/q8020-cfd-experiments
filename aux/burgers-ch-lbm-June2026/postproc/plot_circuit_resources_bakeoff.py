@@ -192,6 +192,15 @@ def main() -> None:
                     help="optional figure suptitle to mark a code variant "
                          "(e.g. the collapse path); applies to the "
                          "--out-twin panel.")
+    ap.add_argument("--series-json", default=None,
+                    help="replay a previous run's sidecar JSON: take the "
+                         "plotted series verbatim from its 'series' block "
+                         "instead of re-harvesting the results tree and "
+                         "rebuilding the CH register split. Use this to "
+                         "re-render an ARCHIVAL figure (e.g. the paper's "
+                         "fig1) whose numbers predate later solver changes -- "
+                         "a live re-harvest would mix its stored n_qubits "
+                         "with a split rebuilt from today's code.")
     args = ap.parse_args()
     if args.out_a or args.out_b:
         args.split = True
@@ -204,7 +213,21 @@ def main() -> None:
     # inputs = provenance record of every run dir + analysis file consumed.
     series: dict[str, list[dict]] = {}
     inputs: list[dict] = []
-    for run in ds.get("runs", []):
+    if args.series_json:
+        # Replay: the sidecar's 'series' is keyed by method LABEL, so map back
+        # to the method key. Nothing is re-harvested and no circuit is rebuilt.
+        by_label = {v["label"]: k for k, v in METHOD_STYLE.items()}
+        prev = json.loads(Path(args.series_json).read_text())
+        for label, pts in (prev.get("series") or {}).items():
+            method = by_label.get(label)
+            if method is None:
+                print(f"  replay: unknown method label {label!r}, skipping",
+                      file=sys.stderr)
+                continue
+            series[method] = [dict(p) for p in pts]
+        inputs = prev.get("inputs", [])
+        print(f"replaying series from {args.series_json}")
+    for run in ([] if args.series_json else ds.get("runs", [])):
         method = run.get("method", "")
         if method not in METHOD_STYLE:
             continue  # skip FTCS reference / classical
@@ -305,6 +328,7 @@ def main() -> None:
         # Bar total labels go on ax2 so they sit above the depth lines.
         _draw_qubits_stacked(ax, top_label_ax=ax2)
         ax.set_ylabel("qubits", fontsize=13)
+        ax.set_xlabel("problem size", fontsize=13)
         for method, pts in series.items():
             mcolor = METHOD_STYLE[method]["color"]
             pts = sorted(pts, key=lambda p: p["q"])
@@ -491,6 +515,8 @@ def main() -> None:
             "path": str(ds_path),
             "global": ds.get("global", {}),
         },
+        # set when --series-json replayed a prior sidecar instead of harvesting
+        "replayed_from": args.series_json,
         "inputs": inputs,                     # results/ run dirs + analysis files
         "series": {
             METHOD_STYLE[m]["label"]: series[m] for m in series

@@ -1,0 +1,144 @@
+# =====================================================================
+# SMOOTH-MOVIE RERUN — Melvina's Fig. 2 CH case on the NEW ch-lbm code
+# ---------------------------------------------------------------------
+# !! DEFAULTS TO --backend-type hardware AND SPENDS REAL QPU TIME ON   !!
+# !! SUBMIT.  Rehearse first (recipes below); stage the 4 devices.     !!
+#
+# PURPOSE.  Re-run the exact parameters of Melvina's June-2026 hardware
+# sweep (paper_cases_table.xlsx rows #19-22, user=melvi, experiment
+# `ch_hw_smooth_movie`, 2026-06-15) using the CURRENT ch-lbm solver
+# (burgers_solver.py) instead of her local burgers_ch_hw_runner.py fork.
+# ch-lbm is a fork of mps-burgers and is functionally equivalent for CH
+# cases (same distribution to ~shot noise; NOT bit-identical), and hw
+# sampling is not seedable anyway -- so this reproduces her CIRCUIT and
+# PHYSICS, not her exact counts.
+#
+# PARAMETER PROVENANCE.  Her runner used a built-in `smooth_movie` case
+# that was never committed to any repo (only on her ZBook); the values
+# below are recovered verbatim from the run artifacts
+# (results/burgers-ch-lbm-June2026/real-qc/hardware_runs/smooth_movie_*/
+#  q8020_case_0.json): q=3, nu=0.08, sine A=0.3, cfl=0.3, n_steps=6,
+# segment_size=1 (=> 6 serial QPU calls / movie frames), bc=periodic,
+# qft-diagonal, bond_dim=8, phi_modes=8, shots=150000, seed=1234,
+# TREX+DD, opt-level 3.
+#
+# REALIZED CIRCUIT (verified via free fake-Torino dry-run of THIS solver
+# at THESE params): 5 qubits, ~93-97 routed CZ/segment, depth ~300 --
+# matches her June circuit (5 qubits, 97-98 CZ, depth 286-313).  NOTE the
+# bond_dim=8 is a CAP: a smooth sine at q=3 is rank-2, so ch-lbm
+# auto-truncates to chi=2 -> 1 bond qubit -> 5 total (lib_mps.py:76,224).
+# Passing --bond-dim 8 is faithful to both the table and the realized run.
+#
+# SCORING.  dt=0.0375 < FTCS stability limit (~0.078 at q3/nu0.08), so the
+# INLINE FTCS/analytic references are stable here (unlike the q8 macro-dt
+# HW runs) -- left ENABLED, so each frame reports relL2 directly.  For
+# paper-consistency vs her "FTCS 800" column, additionally score offline
+# against a fine FTCS reference.
+#
+#   group     backend   device                    q chi segs shots trials
+#   kingston  ibm_kingston (Heron R2)              3  2*  6   150000  10
+#   fez       ibm_fez      (Heron R2)              3  2*  6   150000  10
+#   miami     ibm_miami    (Nighthawk R1)          3  2*  6   150000  10
+#   boston    ibm_boston   (Heron R3)              3  2*  6   150000  10
+#   (* chi=2 realized from --bond-dim 8 cap)
+#   4 devices x 6 segs x 10 trials = 240 QPU jobs
+#   (hw sampling is not seedable, so the 10 trials per device measure the
+#    run-to-run device-drift + sampling spread -- an uncertainty band, the
+#    point of this rerun.  _trials replicates ONLY inside a [group]:
+#    expand_case_lists sees the group section, not [global]; a [global]
+#    _trials is silently ignored -- so it lives in each group below.)
+#
+# COST (10 trials/device).  q3 is shallow (~95 CZ), but the per-JOB QPU
+# charge is overhead-dominated at this depth, so it's roughly flat in shots
+# (dropping shots barely helps).  Her June billed usage.quantum_seconds was
+# ~43 s/segment on the Heron trio and ~605 s/segment on miami/Nighthawk
+# (~14x).  Per segment x 6 x 10 trials:
+#   kingston/fez/boston : 43 s  x 6 x 10 = ~2,580 s = ~43 QPU-min EACH
+#   miami (Nighthawk R1): 605 s x 6 x 10 = ~36,300 s = ~10.1 QPU-HOURS
+#   TOTAL ~= 44,040 s ~= 12.2 QPU-hours, ~83% of it miami alone (~9x HW4).
+# The 605 s/segment for miami is high and from older June metadata; the NEW
+# ch-lbm run records qpu_charge_time_seconds precisely per segment, so the
+# first miami trial's real charge lands in analysis.per_step_metrics[-1].
+# segments_full[*].execute.job_metrics.usage -- check it before firing the
+# remaining 9 if the miami spend is a concern.  Queue depth is the OTHER
+# wildcard (June: kingston 613s, fez 678s, miami 5370s, boston 53818s wall,
+# almost all QUEUE) -- boston is ordered LAST so the other three finish
+# first under serial mode.  To trim, lower _trials per group (below) or
+# fire miami as a shorter arm first.
+#
+# SUBMISSION STAGES (group names are POSITIONAL args to q8020-sweep):
+#   A. q8020-sweep smooth_movie_rerun_4dev.toml kingston
+#   B. q8020-sweep smooth_movie_rerun_4dev.toml fez
+#   C. q8020-sweep smooth_movie_rerun_4dev.toml miami
+#   D. q8020-sweep smooth_movie_rerun_4dev.toml boston   # long queue
+#   (or name several / all at once -- serial, one device at a time.)
+#
+# REHEARSALS (FREE, run before any submit):
+#   hardware code path, no creds (TREX/DD applied but inert):
+#     q8020-sweep smooth_movie_rerun_4dev.toml kingston \
+#       --set backend-type=fake --set backend=torino --set shots=512
+#   authoritative routed CZ/depth + qubit count, zero shots (needs creds,
+#   submits NOTHING):
+#     q8020-sweep smooth_movie_rerun_4dev.toml kingston --set hw-dry-run=true
+# =====================================================================
+
+[global]
+_output_dir = "~/q8020-runs/ch_smooth_movie_rerun"
+_inject_outdir = "--outdir"
+_env = "./q8020-cfd-ch-lbm/.venv"
+_script = "python ./q8020-cfd-ch-lbm/src/burgers_solver.py"
+_run_mode = "serial"               # one QPU device at a time; no queue-race
+
+"--noshow" = true
+# inline references ENABLED (dt is FTCS-stable at these params) -> relL2 per frame
+
+# --- physics: Melvina's smooth_movie op point (Re = A/nu = 0.3/0.08 = 3.75)
+"--bc" = "periodic"
+"--ic" = "sine"
+"--source" = "none"
+"--ic-amplitude" = 0.3
+"--nu" = 0.08
+
+"--method" = "cole_hopf_circuit"
+"--evolution-mode" = "measure_reprepare"
+"--phi-modes" = 8
+"--max-total-qubits" = 18           # cap; the q3 rung realizes 5
+"--seed" = 1234                     # transpile determinism; NOT hw sampling
+
+# --- case shape (identical across all 4 devices) ---------------------
+"--q" = 3
+"--bond-dim" = 8                    # cap; smooth sine truncates to chi=2 (5 qubits)
+"--cfl" = 0.3                       # dt = 0.3 * (1/8) = 0.0375
+"--n-steps" = 6                     # 6 steps, segment-size 1 => 6 QPU calls (movie)
+"--segment-size" = 1
+"--save-every" = 1                  # a frame at every step
+"--shots" = 150000
+
+# --- hardware execution (rehearsals override via --set) --------------
+"--backend-type" = "hardware"       # sim | fake | hardware
+"--session" = "auto"                # one held Session per case (6 serial jobs)
+"--measure-mitigation" = "auto"     # TREX; auto = on for hardware
+"--dynamical-decoupling" = "auto"   # XpXm; auto = on for hardware
+"--optimization-level" = 3          # matches Melvina; q3 QSD is tiny (no #4159
+                                    # Weyl panic seen at opt-3 in dry-run). If a
+                                    # seam transpile ever panics, --set optimization-level=2.
+"--hw-dry-run" = false              # --set hw-dry-run=true: transpile + stop
+
+# ---------------------------------------------------------------------
+# One case per group; only --backend differs.  boston LAST (longest queue).
+
+[kingston]
+_trials = 10                        # 10 non-seedable replicates -> UQ band
+"--backend" = "ibm_kingston"        # Heron R2  (~43 QPU-min)
+
+[fez]
+_trials = 10                        # 10 non-seedable replicates -> UQ band
+"--backend" = "ibm_fez"             # Heron R2  (~43 QPU-min)
+
+[miami]
+_trials = 10                        # 10 replicates; ~14x Heron cost (~10 QPU-hr)
+"--backend" = "ibm_miami"           # Nighthawk R1 -- check trial-0 billed sec
+
+[boston]
+_trials = 10                        # 10 non-seedable replicates -> UQ band
+"--backend" = "ibm_boston"          # Heron R3  (~43 QPU-min; queued ~15h in June)

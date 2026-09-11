@@ -1,0 +1,38 @@
+[burgers] q=3 N=8 nu=8.0e-02 cfl=0.3 dt=3.7500e-02 n_steps=6 method=cole_hopf_circuit
+[burgers] running classical FTCS baseline ...
+[burgers] classical done 0.00s
+[burgers] running method=cole_hopf_circuit ...
+[cole_hopf_circuit] propagator=qft-diagonal q=3 nu=8.0e-02 dt=3.7500e-02 n_steps=6 shots=150000
+[_run_shots_measure_reprepare] n_segments=6 segment_size=1 shots=150000
+[_run_shots_measure_reprepare] segment 1/6 steps 1-1 depth=13 transpiling ...
+/work/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit_ibm_runtime/qiskit_runtime_service.py:1270: UserWarning: This instance has met its usage limit. Workloads will not run until time ismade available. Check https://quantum.cloud.ibm.com/instances/crn%3Av1%3Abluemix%3Apublic%3Aquantum-computing%3Aus-east%3Aa%2F32cfba68b6dd41419125aad337407aff%3Af27c7fba-1350-4419-a0b9-743abe053682%3A%3A for more details.
+  warnings.warn(
+[execute_circuit_counts] submitted job_id=dai0j0hhvn6c73csking shots=150000; waiting for result ...
+Traceback (most recent call last):
+  File "/work/./q8020-cfd-ch-lbm/src/burgers_solver.py", line 711, in <module>
+    sols_method, step_metrics, genuine_steps = run_simulation_fw(
+                                               ^^^^^^^^^^^^^^^^^^
+  File "/work/q8020-cfd-ch-lbm/src/lib_fw.py", line 454, in run_simulation_fw
+    _, result_metrics = integrator.step(
+                        ^^^^^^^^^^^^^^^^
+  File "/work/q8020-cfd-ch-lbm/src/lib_fw.py", line 252, in step
+    result = self._run_all(state, grid, config, dt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/q8020-cfd-ch-lbm/src/lib_fw.py", line 394, in _run_all
+    return _run()
+           ^^^^^^
+  File "/work/q8020-cfd-ch-lbm/src/lib_fw.py", line 368, in _run
+    return run_cole_hopf_circuit_simulation(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/q8020-cfd-ch-lbm/src/lib_cole_hopf_circuit.py", line 1478, in run_cole_hopf_circuit_simulation
+    batch_results = _run_shots_measure_reprepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/q8020-cfd-ch-lbm/src/lib_cole_hopf_circuit.py", line 857, in _run_shots_measure_reprepare
+    counts, exec_info = execute_circuit_counts(
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/q8020-backend-utils/src/q8020_backend_utils/ibm/circuit.py", line 399, in execute_circuit_counts
+    pub_result = job.result()[0]
+                 ^^^^^^^^^^^^
+  File "/work/q8020-cfd-ch-lbm/.venv/lib/python3.12/site-packages/qiskit_ibm_runtime/runtime_job_v2.py", line 153, in result
+    raise RuntimeInvalidStateError(
+qiskit_ibm_runtime.exceptions.RuntimeInvalidStateError: 'Unable to retrieve result for job dai0j0hhvn6c73csking. Job was cancelled.'

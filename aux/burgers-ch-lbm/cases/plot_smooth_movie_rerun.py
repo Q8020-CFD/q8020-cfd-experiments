@@ -7,9 +7,11 @@ one style (validated categorical palette, lighter mean line over a darker
 
   smooth_movie_relL2_vs_t.png           Sep-2026 rerun, kingston/fez/miami
   smooth_movie_relL2_vs_t_no_miami.png  same, miami dropped
-  smooth_movie_relL2_vs_t_june2026.png  Melvina's June-2026 single run,
+  smooth_movie_relL2_vs_t_june2026.png  June-2026 single run,
                                         kingston/fez/miami/boston (no bands --
                                         one run per device, so no trial spread)
+  smooth_movie_relL2_vs_t_overlay.png   June (dashed) over September (solid +
+                                        band); colour = device, style = era
 
 Each curve is per-frame relL2 vs an 800-point FTCS reference. x-axis is
 physical time t = frame*dt (dt = cfl*dx = 0.3/8 = 0.0375), frames 1..6 =>
@@ -212,6 +214,54 @@ def render_june(devices, out_name, title):
     _finish(fig, ax, ymax, title, enc, out_name)
 
 
+JUNE_DASH = (0, (5, 2))    # June single-run line style (era cue, not colour)
+
+
+def render_overlay(out_name, title):
+    """Both eras on one axis: colour = device, line style = era.
+
+    September rerun -> solid line + shaded +/-1 std band (kingston/fez/miami).
+    June single run -> dashed line, no band (kingston/fez/miami + boston,
+    which has no September counterpart).  Device identity is the hue, carried
+    by direct end-labels on the September lines (and boston's June line); the
+    legend distinguishes the two eras."""
+    truth = ftcs800_truth_frames()
+    fig, ax = _new_fig()
+    ymax = 0.0
+    # September: solid mean + darker band, direct-labelled per device.
+    for dev, col, mk, dy in devs(["kingston", "fez", "miami"]):
+        tn, mn, sd, n = new_run_stats(dev, truth)
+        if not tn.size:
+            continue
+        ax.fill_between(tn, mn - sd, mn + sd, color=col, alpha=BAND_ALPHA,
+                        lw=0, zorder=2)
+        ax.plot(tn, mn, color=lighten(col, LINE_LIGHTEN), lw=2.2, ls="-",
+                marker=mk, ms=1, mfc=col, mec=SURFACE, mew=1.0, zorder=5)
+        ax.annotate(dev, xy=(tn[-1], mn[-1]), xytext=(6, dy),
+                    textcoords="offset points", color=col, fontsize=10,
+                    fontweight="bold", va="center", ha="left")
+        ymax = max(ymax, (mn + sd).max())
+    # June: dashed, no band; boston is June-only so it gets its own label.
+    for dev, col, mk, dy in devs(["kingston", "fez", "miami", "boston"]):
+        t, y = june_curve(dev, truth)
+        if not t.size:
+            continue
+        ax.plot(t, y, color=lighten(col, LINE_LIGHTEN), lw=1.8, ls=JUNE_DASH,
+                marker=mk, ms=1, mfc=col, mec=SURFACE, mew=1.0, zorder=4)
+        if dev == "boston":
+            ax.annotate("boston (June only)", xy=(t[-1], y[-1]), xytext=(6, 0),
+                        textcoords="offset points", color=col, fontsize=10,
+                        fontweight="bold", va="center", ha="left")
+        ymax = max(ymax, y.max())
+    enc = [
+        Line2D([0], [0], color=lighten(INK2, LINE_LIGHTEN), lw=2.2, ls="-",
+               label="September 2026  (mean +/- 1 std)"),
+        Line2D([0], [0], color=lighten(INK2, LINE_LIGHTEN), lw=1.8,
+               ls=JUNE_DASH, label="June 2026  (single run)"),
+    ]
+    _finish(fig, ax, ymax, title, enc, out_name)
+
+
 def main():
     render_new(devs(["kingston", "fez", "miami"]),
                "smooth_movie_relL2_vs_t.png",
@@ -222,6 +272,9 @@ def main():
     render_june(devs(["kingston", "fez", "miami", "boston"]),
                 "smooth_movie_relL2_vs_t_june2026.png",
                 "Cole-Hopf HW movie: error growth over time (June 2026)")
+    render_overlay("smooth_movie_relL2_vs_t_overlay.png",
+                   "Cole-Hopf HW movie: error growth over time "
+                   "(June vs September 2026)")
 
 
 if __name__ == "__main__":

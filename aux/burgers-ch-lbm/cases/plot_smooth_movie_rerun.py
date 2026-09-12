@@ -5,13 +5,13 @@ Emits three PNGs into <results>/ch_smooth_movie_rerun/analysis/, all sharing
 one style (validated categorical palette, lighter mean line over a darker
 +/-1 std band, direct end-labels, FTCS-800 footnote):
 
-  smooth_movie_relL2_vs_t.png           Sep-2026 rerun, kingston/fez/miami
-  smooth_movie_relL2_vs_t_no_miami.png  same, miami dropped
-  smooth_movie_relL2_vs_t_june2026.png  June-2026 single run,
-                                        kingston/fez/miami/boston (no bands --
-                                        one run per device, so no trial spread)
-  smooth_movie_relL2_vs_t_overlay.png   June (dashed) over September (solid +
-                                        band); colour = device, style = era
+  relL2_vs_t_september.png           Sep-2026 rerun, kingston/fez/miami
+  relL2_vs_t_september_no_miami.png  same, miami dropped
+  relL2_vs_t_june.png                June-2026 single run,
+                                     kingston/fez/miami/boston (no bands --
+                                     one run per device, so no trial spread)
+  relL2_vs_t_all.png                 June (dashed) over September (solid +
+                                     band); colour = device, style = era
 
 Each curve is per-frame relL2 vs an 800-point FTCS reference. x-axis is
 physical time t = frame*dt (dt = cfl*dx = 0.3/8 = 0.0375), frames 1..6 =>
@@ -264,15 +264,15 @@ def render_overlay(out_name, title):
 
 def main():
     render_new(devs(["kingston", "fez", "miami"]),
-               "smooth_movie_relL2_vs_t.png",
+               "relL2_vs_t_september.png",
                "Cole-Hopf HW movie: error growth over time (September 2026)")
     render_new(devs(["kingston", "fez"]),
-               "smooth_movie_relL2_vs_t_no_miami.png",
+               "relL2_vs_t_september_no_miami.png",
                "Cole-Hopf HW movie: error growth over time (September 2026)")
     render_june(devs(["kingston", "fez", "miami", "boston"]),
-                "smooth_movie_relL2_vs_t_june2026.png",
+                "relL2_vs_t_june.png",
                 "Cole-Hopf HW movie: error growth over time (June 2026)")
-    render_overlay("smooth_movie_relL2_vs_t_overlay.png",
+    render_overlay("relL2_vs_t_all.png",
                    "Cole-Hopf HW movie: error growth over time "
                    "(June vs September 2026)")
 

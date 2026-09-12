@@ -40,28 +40,40 @@ def _rhs_periodic(u, dx, nu):
     return nu * lap - u * grad
 
 
-def ftcs800_truth_frames() -> list[np.ndarray]:
-    """FTCS-800 truth at each macro frame [0..N_STEPS] on the 8 q-nodes.
+def ftcs800_full_frames() -> tuple[np.ndarray, list[np.ndarray]]:
+    """FTCS-800 truth at FULL 800-pt resolution: (x_ref, frames[0..N_STEPS]).
 
-    Mirrors make_reference_grid (periodic, k=ceil(800/8)=100 -> 800 pts,
-    q-nodes are exact subset take=[0,100,..,700]) and
-    solve_burgers_subsampled (sub-step to the FTCS diffusion floor)."""
-    x = np.arange(N) / N                       # periodic, endpoint excluded
+    The fine reference curve itself, before sampling to the 8 q-nodes -- used
+    to draw a smooth truth line in the u(x) profile plots.  Mirrors
+    make_reference_grid (periodic, k=ceil(800/8)=100 -> 800 pts) and
+    solve_burgers_subsampled (sub-step to the FTCS diffusion floor).
+    ftcs800_truth_frames subsamples THESE frames, so the two never diverge."""
     k = max(1, int(np.ceil(REF_POINTS / N)))
     n_ref = k * N
     x_ref = (1.0 / n_ref) * np.arange(n_ref)   # length = N*dx = 1.0
-    take = np.arange(N) * k
     dx_ref = x_ref[1] - x_ref[0]
     u = A * np.sin(2.0 * np.pi * x_ref)        # initial_condition_sine * A
     dt_stable = 0.25 * dx_ref * dx_ref / NU
     sub = max(1, int(np.ceil(DT / dt_stable)))
     dt_sub = DT / sub
-    frames = [u[take].copy()]
+    frames = [u.copy()]
     for _ in range(N_STEPS):
         for _ in range(sub):
             u = u + dt_sub * _rhs_periodic(u, dx_ref, NU)
-        frames.append(u[take].copy())
-    return frames
+        frames.append(u.copy())
+    return x_ref, frames
+
+
+def ftcs800_truth_frames() -> list[np.ndarray]:
+    """FTCS-800 truth at each macro frame [0..N_STEPS] on the 8 q-nodes.
+
+    q-nodes are an exact subset of the 800-pt grid (take=[0,100,..,700]);
+    subsamples ftcs800_full_frames so the fine and node-level references
+    are the same evolution."""
+    k = max(1, int(np.ceil(REF_POINTS / N)))
+    take = np.arange(N) * k
+    _, frames = ftcs800_full_frames()
+    return [f[take].copy() for f in frames]
 
 
 def rel_l2(u, ref):

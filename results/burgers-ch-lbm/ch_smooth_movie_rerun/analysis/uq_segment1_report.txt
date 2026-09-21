@@ -1,0 +1,158 @@
+==============================================================================
+UQ of the FIRST SEGMENT relL2 -- ch_smooth_movie_rerun
+frame 1 of 6;  T = 0.0375 (dt = 0.0375);  q=3 N=8 nu=0.08 A=0.3 cfl=0.3 shots=150000
+truth = FTCS-800 subsampled to 8 q-nodes; ||truth_1|| = 0.532930
+==============================================================================
+
+## 0. Realized replication (10x requested per device)
+
+device     planned  usable  note
+kingston        10      10  all 10 exit 0
+fez             10      10  all 10 exit 0
+miami           10       3  trials 3-9 exit 1 (IBM usage limit hit)
+boston          10       0  all 10 exit 1 (usage limit; never ran)
+
+## 1. Per-trial frame-1 values
+
+device     tr    relL2  inlineL2   gain g    cos c    shape   p_succ   n_kept
+kingston    0   0.6657    0.6682   0.7372   0.7463   0.6656   0.5810    87154
+kingston    1   0.6708    0.6729   0.7340   0.7417   0.6708   0.5815    87220
+kingston    2   0.6995    0.7020   0.7474   0.7153   0.6988   0.5791    86867
+kingston    3   0.6999    0.7023   0.7313   0.7144   0.6997   0.5803    87047
+kingston    4   0.6699    0.6725   0.7561   0.7425   0.6698   0.5817    87256
+kingston    5   0.6778    0.6803   0.7275   0.7353   0.6777   0.5818    87272
+kingston    6   0.6613    0.6638   0.7419   0.7501   0.6613   0.5805    87072
+kingston    7   0.6786    0.6809   0.7229   0.7346   0.6785   0.5799    86990
+kingston    8   0.6783    0.6804   0.7429   0.7349   0.6782   0.5827    87407
+kingston    9   0.6469    0.6487   0.7175   0.7640   0.6452   0.5840    87597
+fez         0   0.6985    0.7032   0.6569   0.7182   0.6958   0.8234   123514
+fez         1   0.7312    0.7359   0.6752   0.6822   0.7312   0.8218   123268
+fez         2   0.7092    0.7140   0.6652   0.7062   0.7081   0.8243   123640
+fez         3   0.7296    0.7346   0.6934   0.6839   0.7296   0.8223   123350
+fez         4   0.7080    0.7128   0.6866   0.7065   0.7077   0.8233   123490
+fez         5   0.7130    0.7178   0.6845   0.7014   0.7128   0.8240   123600
+fez         6   0.7203    0.7253   0.7063   0.6938   0.7202   0.8247   123707
+fez         7   0.7520    0.7571   0.7298   0.6625   0.7490   0.8292   124385
+fez         8   0.7124    0.7174   0.7118   0.7019   0.7123   0.8277   124149
+fez         9   0.7172    0.7222   0.7068   0.6969   0.7171   0.8294   124405
+miami       0   0.7783    0.7782   0.4050   0.6893   0.7245   0.8652   129781
+miami       1   0.8013    0.8005   0.4109   0.6410   0.7675   0.8616   129241
+miami       2   0.8025    0.8020   0.4253   0.6312   0.7757   0.8599   128979
+
+## 2. Frame-1 relL2 -- descriptive uncertainty
+
+device     n    mean      sd     sem    95% CI on mean    95% PI 1 trial    CV%   range
+kingston  10  0.6749  0.0162  0.0051   [0.6633,0.6865]   [0.6364,0.7133]   2.40  0.0531
+fez       10  0.7191  0.0152  0.0048   [0.7083,0.7300]   [0.6831,0.7552]   2.11  0.0535
+miami      3  0.7940  0.0137  0.0079   [0.7601,0.8279]   [0.7262,0.8619]   1.72  0.0242
+boston     0   (no usable trials)
+
+  CI = uncertainty on the DEVICE MEAN (what a paper table cell should carry).
+  PI = spread a single re-run would land in (what June's n=1 number is drawn from).
+
+## 3. Where the error and its variance come from (relL2^2 = 1 + g^2 - 2gc)
+
+device      g mean     g sd   c mean     c sd  shape floor  gain-only
+kingston    0.7359   0.0117   0.7379   0.0150       0.6746     0.2641
+fez         0.6916   0.0225   0.6953   0.0157       0.7184     0.3084
+miami       0.4137   0.0104   0.6538   0.0311       0.7559     0.5863
+
+  shape floor = sqrt(1-c^2) = relL2 achievable if the amplitude were rescaled
+  perfectly; gain-only = |g-1| = relL2 if the shape were perfect.
+
+  variance attribution (first-order in g, c):
+  device     d/dg * sd(g)  d/dc * sd(c)  corr(g,c)  predicted sd  observed sd
+  kingston       -0.00004      -0.01636     -0.265       0.01635      0.01620
+  fez            -0.00012      -0.01515     -0.659       0.01507      0.01518
+  miami          -0.00315      -0.01620     -0.824       0.01373      0.01365
+
+## 4. Separating the noise sources at frame 1
+
+  CH statevector, shots=0        relL2 = 0.1426  (g=0.8581, c=0.9999)   <- algorithm/truncation floor
+  CH noiseless sim, shots=150000 relL2 = 0.1525  (g=0.8508, c=0.9994)   <- + shot sampling
+  => sampling adds +0.0099 relL2 at this shot budget (one draw, so a magnitude not an sd)
+  => kingston hardware mean 0.6749; device noise adds +0.5224 over the sampled sim
+  => fez      hardware mean 0.7191; device noise adds +0.5667 over the sampled sim
+  => miami    hardware mean 0.7940; device noise adds +0.6415 over the sampled sim
+
+  shape-noise budget in the ANGLE theta = arccos(c) (relL2 ~ sin theta on the floor):
+    noiseless sim, shots=150000, n_kept=148881: sampling moved theta by 0.0192 rad (1 draw)
+    device      n_kept  shot-noise  sd(theta) obs  obs/shot
+    kingston     87188      0.0251         0.0222      0.88
+    fez         123750      0.0211         0.0218      1.03
+    miami       129333      0.0206         0.0415      2.01
+    obs/shot <~1 => the frame-1 run-to-run band is at or below the sampling
+    floor, i.e. sampling-limited, not device-drift-limited.  CAVEAT: the sim
+    floor is ONE draw, so this is an order-of-magnitude bound (see note at end).
+
+  correlation of frame-1 relL2 with the segment-1 survival fraction:
+  device     corr(relL2,p_succ)  corr(relL2,n_kept)
+  kingston               -0.687              -0.687
+  fez                     0.294               0.294
+  miami                  -0.961              -0.961
+
+  post-selection survival p_success: observed scatter vs the multinomial floor
+  device      p mean  p sd obs  p sd shot  ratio  excess sd
+  kingston    0.5813   0.00141    0.00127   1.11    0.00061
+  fez         0.8250   0.00276    0.00098   2.81    0.00258
+  miami       0.8622   0.00273    0.00089   3.06    0.00258
+  ratio ~1 => run-to-run survival is sampling-limited; >1 => real device drift on top.
+
+  drift within the trial series (trials ran back-to-back):
+  device     slope/trial       t        p  lag-1 acf  total drift
+  kingston      -0.00200   -1.14   0.2873      0.104     -0.01800
+  fez            0.00138    0.81   0.4421     -0.337      0.01241
+  miami          0.01212    1.93   0.3044     -0.141      0.02425
+
+## 5. Between-device vs within-device (run-to-run) variance
+
+  groups: kingston, fez, miami
+  sigma_within  (run-to-run, one device) = 0.01551
+  sigma_between (device-to-device)       = 0.04934
+  ratio between/within                   = 3.18
+  one-way ANOVA F = 71.4, p = 7.809e-10
+
+  pairwise Welch on the frame-1 mean:
+    kingston  vs fez       d = -0.0443  t =  -6.31  dof =  17.9  p = 6.17e-06
+    kingston  vs miami     d = -0.1191  t = -12.67  dof =   3.9  p = 2.62e-04
+    fez       vs miami     d = -0.0749  t =  -8.11  dof =   3.6  p = 1.84e-03
+
+## 6. Is June's single frame-1 value consistent with the new band?
+
+device    June relL2 paper col S Sept mean  Sept sd       z  inside 95% PI?
+kingston      0.6341      0.6341    0.6749   0.0162   -2.51              NO
+fez           0.5951      0.5951    0.7191   0.0152   -8.17              NO
+miami         0.5764      0.5764    0.7940   0.0137  -15.94              NO
+boston        0.8135      0.8135         -        -       -   (no Sept band)
+
+  all z < 0 and |z| >> 2  =>  the shift is systematic (mean z = -8.9 sd),
+  not run-to-run scatter: the new code/stack is WORSE at frame 1 by a margin
+  many times the run-to-run band.
+
+  June vs September segment-1 conditions:
+  device    p_succ Jun p_succ Sep    delta   g Jun   g Sep   c Jun   c Sep
+  kingston      0.8819     0.5813  -0.3006  0.6824  0.7359  0.7793  0.7379
+  fez           0.8621     0.8250  -0.0371  0.9472  0.6916  0.8145  0.6953
+  miami         0.8714     0.8622  -0.0092  0.6902  0.4137  0.8289  0.6538
+
+## 7. Replication budget implied by the observed sd
+
+  device          sd  n for +/-0.01 (95%)  n for +/-0.005
+  kingston    0.0162                  11              41
+  fez         0.0152                   9              36
+  miami       0.0137                   8              29
+
+  (normal approximation; n<=3 devices need the t inflation on top.)
+
+## 8. Quotable frame-1 result
+
+  kingston  relL2(T=0.0375) = 0.675 +/- 0.016 (1 sd, n=10), 95% CI on mean [0.663, 0.686]
+  fez       relL2(T=0.0375) = 0.719 +/- 0.015 (1 sd, n=10), 95% CI on mean [0.708, 0.730]
+  miami     relL2(T=0.0375) = 0.794 +/- 0.014 (1 sd, n=3), 95% CI on mean [0.760, 0.828]
+  boston    no data (quota)
+
+  Caveat to close the shot-noise floor properly: the floor in section 4 rests on
+  ONE sampled-sim draw.  k independent noiseless-sim replicates at these params
+  would turn it into a real sd (statevector q=3, no QPU, seconds per run):
+    q8020-sweep smooth_movie_rerun_4dev.toml kingston \
+      --set backend-type=sim --set shots=150000 --set seed=<1234,1235,...>

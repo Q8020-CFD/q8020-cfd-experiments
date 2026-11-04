@@ -1,0 +1,133 @@
+# FVM Euler 1D nozzle, nelem 5, 150000 shots: four linear-solver arms on
+# seeds 1, 2, 3, 6, 7 in one TOML.
+#
+# Change: add-qsvt-arm-nelem5-shots (proj:aiaa-4q26). The SQLS, HHL and
+# HHL-best groups repeat, argument for argument, the groups that change
+# compare-hhl-sqls-nelem5-shots ran (there HHL was split into hhl_150k_a and
+# hhl_150k_b to run two lanes); this change runs only qsvt_best_150k.
+#
+# Case: the November 2025 HHL shots case: nelem 5, BDF1, CFL 1e10, 15 Newton
+#   steps, 1 inner iteration, restol 1e-2, tol 1e-10, local time step, ideal
+#   statevector simulator, 150000 shots.
+# Code, per group (each a detached worktree with its own .venv from its
+#   uv.lock, uv sync --frozen):
+#   - SQLS, HHL, HHL best: Q8020-CFD/fvm_euler_1d_solver d4a531bd
+#     (feature/sqls-aiaa-4q26) at ./fvm_euler_1d_solver-aiaa
+#   - QSVT: 219907cf (feature/sqls-aiaa-4q26-svd-deflation, which contains
+#     d4a531bd) at ./fvm_euler_1d_solver-qsvt
+#   Both locks give qiskit 2.6.0, qiskit-aer 0.17.2, qiskit-ibm-runtime
+#   0.50.0, sqls 67057e4b, quantum_linear_solvers 99231b85.
+#
+# Run from the workspace root (the directory holding the two worktrees,
+# q8020-cfd-metautil and q8020-cfd-experiments):
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> --dry-run
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> _smoke_qsvt
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> qsvt_best_150k
+#
+# Settings:
+# - SQLS at its best: full_svd, initialize, repeats 1, -pad_eps 0.
+# - HHL at every default (the November 2025 behaviour); HHL best adds
+#   -hhl_shots_sign_first on -pad_eps 0.
+# - QSVT at its best shots settings: -qsvt_shots_sign_first on (signs of the
+#   classical solution before the magnitude fit) and -pad_eps 0;
+#   qsvt_eps, qsvt_max_degree and the angle solver (fvm-fpi) at their
+#   defaults.
+# - Wall-time caps per case by GNU timeout: HHL 14400 s, SQLS 600 s, QSVT
+#   3600 s; one thread per process except the 2-thread best-settings groups.
+# - Postproc per case: delete .qpy circuits, then the fvm harvester, best
+#   effort.
+# - The QSVT groups name their worktree through _qsvt_solver_dir: the
+#   sweeper expands templates from [global] only, so a group-level
+#   _solver_dir would be ignored.
+
+[global]
+_output_dir = "~/q8020/aiaa-4q26-hhl-sqls-nelem5"
+_solver_dir = "./fvm_euler_1d_solver-aiaa"
+_qsvt_solver_dir = "./fvm_euler_1d_solver-qsvt"
+_experiment_dir = "./q8020-cfd-experiments"
+_postproc_venv = "./q8020-cfd-metautil/.venv"
+_slurm = false
+_run_mode = "sequential"
+_inject_outdir = "-outdir"
+_case_postproc = """\
+pp() { d=$(dirname "$1"); find "$d" -name '*.qpy' -delete; \
+source ${_postproc_venv}/bin/activate && \
+python3 ${_experiment_dir}/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py "$1" \
+|| echo "harvest failed for $1"; true; }; pp\
+"""
+"-nelem" = 5
+"-time_scheme" = "BDF1"
+"-cfl" = 1e10
+"-iters" = 15
+"-initers" = 1
+"-restol" = 1e-2
+"-tol" = 1e-10
+"-localdt" = true
+"-noshow" = true
+"-shots" = 150000
+
+[global._env_exports]
+MPLBACKEND = "Agg"
+PYTHONDONTWRITEBYTECODE = "1"
+OMP_NUM_THREADS = "1"
+OPENBLAS_NUM_THREADS = "1"
+MKL_NUM_THREADS = "1"
+
+
+# ============ SQLS full SVD, best shots settings (run by the earlier change)
+[sqls_150k]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 30 600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "SQLS"
+"-sqls_method" = "full_svd"
+"-sqls_state_prep" = "initialize"
+"-sqls_repeats" = 1
+"-pad_eps" = 0
+"-seed" = [1, 2, 3, 6, 7]
+
+# ============ HHL, November 2025 defaults (run by the earlier change)
+[hhl_150k]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 14400 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-seed" = [1, 2, 3, 6, 7]
+
+# ============ HHL, best shots settings (run by the earlier change)
+[hhl_best_150k]
+_script = """\
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 && \
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 14400 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-hhl_shots_sign_first" = "on"
+"-pad_eps" = 0
+"-seed" = [1, 2, 3, 6, 7]
+
+# ============ QSVT, best shots settings (run by this change)
+[qsvt_best_150k]
+_script = """\
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 && \
+source ${_qsvt_solver_dir}/.venv/bin/activate && \
+timeout -k 60 3600 python3 ${_qsvt_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "QSVT"
+"-qsvt_shots_sign_first" = "on"
+"-pad_eps" = 0
+"-seed" = [1, 2, 3, 6, 7]
+
+[_smoke_qsvt]
+_script = """\
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 && \
+source ${_qsvt_solver_dir}/.venv/bin/activate && \
+timeout -k 60 900 python3 ${_qsvt_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "QSVT"
+"-qsvt_shots_sign_first" = "on"
+"-pad_eps" = 0
+"-seed" = 1
+"-iters" = 1

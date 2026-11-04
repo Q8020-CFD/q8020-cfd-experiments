@@ -1,0 +1,426 @@
+{
+  "config_file": "/quantum-data/agallojr/install/agent-mesh-agallojr/spaces/proj-aiaa-4q26/changes/compare-hhl-sqls-nelem5-shots/hhl_sqls_nelem5_shots.toml",
+  "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run",
+  "workflow_id": "_240dac46",
+  "run_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46",
+  "timestamp": "2026-11-03T19:46:53Z",
+  "start_time": "2026-11-03T19:46:53.885437Z",
+  "sweeper_library_versions": {
+    "Jinja2": "3.1.6",
+    "MarkupSafe": "3.0.4",
+    "PyYAML": "6.0.3",
+    "Pygments": "2.21.0",
+    "altair": "6.3.0",
+    "anyio": "4.16.0",
+    "attrs": "26.1.0",
+    "awsume": "4.5.4",
+    "boto3": "1.43.51",
+    "botocore": "1.43.51",
+    "certifi": "2026.10.23",
+    "charset-normalizer": "3.5.2",
+    "click": "8.5.0",
+    "colorama": "0.4.6",
+    "contourpy": "1.4.0",
+    "cycler": "0.12.1",
+    "duckdb": "2.0.0",
+    "fonttools": "4.68.0",
+    "h11": "0.16.0",
+    "idna": "3.20",
+    "iniconfig": "2.3.1",
+    "itsdangerous": "2.2.0",
+    "jmespath": "1.1.0",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "kiwisolver": "1.5.1",
+    "matplotlib": "3.11.2",
+    "narwhals": "2.28.0",
+    "numpy": "2.5.4",
+    "packaging": "26.3",
+    "pandas": "3.1.0",
+    "pillow": "13.0.0",
+    "pip": "26.1.2",
+    "plotly": "7.1.0",
+    "pluggy": "1.7.0",
+    "protobuf": "7.36.2",
+    "psutil": "7.2.2",
+    "pyarrow": "26.0.1",
+    "pydeck": "0.9.3",
+    "pyparsing": "3.3.3",
+    "pytest": "9.2.0",
+    "python": "3.12.15",
+    "python-dateutil": "4.0.0",
+    "python-multipart": "0.0.33",
+    "q8020-cfd-metautil": "0.1.0",
+    "referencing": "0.37.0",
+    "requests": "2.34.2",
+    "rpds-py": "2026.9.1",
+    "s3transfer": "0.19.1",
+    "scipy": "1.18.1",
+    "six": "1.17.0",
+    "starlette": "1.10.0",
+    "streamlit": "1.66.1",
+    "subprocess-tee": "0.4.2",
+    "typing_extensions": "4.16.0",
+    "tzdata": "2026.6",
+    "urllib3": "2.8.0",
+    "uvicorn": "0.54.0",
+    "watchdog": "6.0.0",
+    "websockets": "17.4"
+  },
+  "groups": {},
+  "cases": {
+    "8d129c41": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 1 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/8d129c41"
+      ],
+      "case_id": "sqls_150k_0",
+      "experiment_id": "8d129c41",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/8d129c41",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.102109,
+        "post_seconds": 0.104589,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.175333,
+        "harvest_seconds": 0.00471
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/8d129c41/q8020_case_postproc_8d129c41.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/8d129c41\n"
+        }
+      ]
+    },
+    "96fc69af": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 2 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/96fc69af"
+      ],
+      "case_id": "sqls_150k_1",
+      "experiment_id": "96fc69af",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/96fc69af",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.103137,
+        "post_seconds": 0.104819,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.179273,
+        "harvest_seconds": 0.00468
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/96fc69af/q8020_case_postproc_96fc69af.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/96fc69af\n"
+        }
+      ]
+    },
+    "9d95249b": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 3 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/9d95249b"
+      ],
+      "case_id": "sqls_150k_2",
+      "experiment_id": "9d95249b",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/9d95249b",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.105036,
+        "post_seconds": 0.103944,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.179315,
+        "harvest_seconds": 0.004772
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/9d95249b/q8020_case_postproc_9d95249b.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/9d95249b\n"
+        }
+      ]
+    },
+    "bcefc5fc": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 4 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/bcefc5fc"
+      ],
+      "case_id": "sqls_150k_3",
+      "experiment_id": "bcefc5fc",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/bcefc5fc",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.105513,
+        "post_seconds": 0.106498,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.17753,
+        "harvest_seconds": 0.004806
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/bcefc5fc/q8020_case_postproc_bcefc5fc.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/bcefc5fc\n"
+        }
+      ]
+    },
+    "89075b8a": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 5 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/89075b8a"
+      ],
+      "case_id": "sqls_150k_4",
+      "experiment_id": "89075b8a",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/89075b8a",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.103888,
+        "post_seconds": 0.10599,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.180282,
+        "harvest_seconds": 0.004958
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/89075b8a/q8020_case_postproc_89075b8a.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/89075b8a\n"
+        }
+      ]
+    },
+    "ead766e0": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 6 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/ead766e0"
+      ],
+      "case_id": "sqls_150k_5",
+      "experiment_id": "ead766e0",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/ead766e0",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.10475,
+        "post_seconds": 0.103296,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.174799,
+        "harvest_seconds": 0.004813
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/ead766e0/q8020_case_postproc_ead766e0.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/ead766e0\n"
+        }
+      ]
+    },
+    "36d1ea1a": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 7 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/36d1ea1a"
+      ],
+      "case_id": "sqls_150k_6",
+      "experiment_id": "36d1ea1a",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/36d1ea1a",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.103362,
+        "post_seconds": 0.104743,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.175019,
+        "harvest_seconds": 0.004913
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/36d1ea1a/q8020_case_postproc_36d1ea1a.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/36d1ea1a\n"
+        }
+      ]
+    },
+    "771d4b50": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 8 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/771d4b50"
+      ],
+      "case_id": "sqls_150k_7",
+      "experiment_id": "771d4b50",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/771d4b50",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.104095,
+        "post_seconds": 0.105024,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.178912,
+        "harvest_seconds": 0.00475
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/771d4b50/q8020_case_postproc_771d4b50.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/771d4b50\n"
+        }
+      ]
+    },
+    "3f2a259d": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 9 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/3f2a259d"
+      ],
+      "case_id": "sqls_150k_8",
+      "experiment_id": "3f2a259d",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/3f2a259d",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.103515,
+        "post_seconds": 0.105811,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.176985,
+        "harvest_seconds": 0.004765
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/3f2a259d/q8020_case_postproc_3f2a259d.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/3f2a259d\n"
+        }
+      ]
+    },
+    "f1ab2c82": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm_euler_1d_solver-aiaa/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-aiaa/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -seed 10 -outdir /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/f1ab2c82"
+      ],
+      "case_id": "sqls_150k_9",
+      "experiment_id": "f1ab2c82",
+      "output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/f1ab2c82",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.103852,
+        "post_seconds": 0.104862,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.175508,
+        "harvest_seconds": 0.004936
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/f1ab2c82/q8020_case_postproc_f1ab2c82.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run/2026-11-03/_240dac46/f1ab2c82\n"
+        }
+      ]
+    }
+  },
+  "invocation": {
+    "command_line": "./q8020-cfd-metautil/.venv/bin/q8020-sweep /quantum-data/agallojr/install/agent-mesh-agallojr/spaces/proj-aiaa-4q26/changes/compare-hhl-sqls-nelem5-shots/hhl_sqls_nelem5_shots.toml sqls_150k --set _output_dir=/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run",
+    "argv": [
+      "./q8020-cfd-metautil/.venv/bin/q8020-sweep",
+      "/quantum-data/agallojr/install/agent-mesh-agallojr/spaces/proj-aiaa-4q26/changes/compare-hhl-sqls-nelem5-shots/hhl_sqls_nelem5_shots.toml",
+      "sqls_150k",
+      "--set",
+      "_output_dir=/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run"
+    ],
+    "python_executable": "/quantum-data/agallojr/proj/src/q8020-cfd-metautil/.venv/bin/python",
+    "toml_path": "/quantum-data/agallojr/install/agent-mesh-agallojr/spaces/proj-aiaa-4q26/changes/compare-hhl-sqls-nelem5-shots/hhl_sqls_nelem5_shots.toml",
+    "toml_path_resolved": "/quantum-data/agallojr/proj/src/agent-mesh-agallojr/spaces/proj-aiaa-4q26/changes/compare-hhl-sqls-nelem5-shots/hhl_sqls_nelem5_shots.toml",
+    "cwd": "/quantum-data/agallojr/proj/src",
+    "groups": [
+      "sqls_150k"
+    ],
+    "overrides": {
+      "_output_dir": "/quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/run"
+    },
+    "start_time_utc": "2026-11-03T19:46:53.870740Z",
+    "user": {
+      "username": "de578984",
+      "hostname": "leb1dt4dops"
+    },
+    "metautil": {
+      "version": "0.1.0",
+      "commit": "9ce8669122ff7e6dba84110434162dce64a04e01",
+      "branch": "main",
+      "dirty": false,
+      "commit_source": "git"
+    }
+  },
+  "end_time": "2026-11-03T19:47:59.165588Z"
+}

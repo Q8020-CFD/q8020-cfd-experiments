@@ -1,0 +1,196 @@
+# FVM Euler 1D nozzle, nelem 5, 150000 shots: HHL against SQLS on one code.
+#
+# Change: compare-hhl-sqls-nelem5-shots (proj:aiaa-4q26).
+# Case: the November 2025 HHL shots case (q8020-cfd-experiments,
+#   results/fvm_euler_1d_solver/2025-11-11/shots_150000, its q8020_case JSON):
+#   nelem 5, BDF1, CFL 1e10, 15 Newton steps, 1 inner iteration, restol 1e-2,
+#   tol 1e-10, local time step, ideal statevector simulator, 150000 shots.
+# Code: Q8020-CFD/fvm_euler_1d_solver d4a531bd (feature/sqls-aiaa-4q26), as a
+#   detached worktree at ./fvm_euler_1d_solver-aiaa with its own .venv from
+#   its uv.lock (uv sync --frozen): qiskit 2.6.0, qiskit-aer 0.17.2,
+#   qiskit-ibm-runtime 0.50.0, sqls 67057e4b, quantum_linear_solvers 99231b85.
+#
+# Run from the workspace root, the directory holding fvm_euler_1d_solver,
+# fvm_euler_1d_solver-aiaa, q8020-cfd-metautil and q8020-cfd-experiments.
+# Every path below is relative to it. Groups are positional:
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> --dry-run
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> _smoke_sqls
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> _smoke_hhl
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> sqls_150k
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> hhl_150k_a
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> hhl_150k_b
+# Groups whose name starts with "_" run only when named. hhl_150k_a and
+# hhl_150k_b are the 10 HHL seeds split in two so two sweeper processes can
+# run them side by side on a node with 4 or more cores.
+#
+# Settings:
+# - HHL: every solver option at its default, which on d4a531b is the November
+#   2025 behaviour (pad_eps 1e-8, shots sign order: fit then signs,
+#   hhl_scale leastsq, library spectrum; proj:fvm-euler note-20261030T2120Z-
+#   4c7f). -v left at its default 1, as in November (-v 2 adds circuit
+#   drawing and a diagnostic statevector solve per step).
+# - SQLS at its best shots settings: full_svd and initialize (both exact),
+#   repeats 1 (one 150000-shot draw per solve, the HHL budget), and
+#   -pad_eps 0. At the default 1e-8 the pad entry takes most of the sampled
+#   norm once ||b|| nears 1e-8 and shots solves near convergence return zero
+#   or wrong updates (note-20261030T2120Z-4c7f, item 4).
+# - Seeds 1 to 10 for both solvers; November's 10 trials were unseeded.
+# - Wall-time caps per case by GNU timeout in _script, since the sequential
+#   runner does not honour _case_timeout: HHL 14400 s, SQLS 600 s.
+# - One thread per solver process (OMP, OpenBLAS, MKL), so two HHL lanes use
+#   two cores.
+# - Postproc per case: delete the case's .qpy circuits (HHL writes about
+#   1.8 GB of them per case and they are regenerable), then the fvm
+#   harvester, best effort.
+# - The other November shot counts are in _hhl_ladder and _sqls_ladder, not
+#   run by this change.
+# - 2026-11-04, the operator stopped the HHL groups at 6 of 10 cases and
+#   asked for 5 runs per arm: the captured set is seeds 1, 2, 3, 6 and 7 (the
+#   five lowest seed numbers finished by both arms). hhl_best_150k adds HHL
+#   at its best shots settings on those seeds: -hhl_shots_sign_first on
+#   (signs of the classical Hermitian solution before the least-squares
+#   magnitude fit) and -pad_eps 0, everything else at its default. Run it
+#   with run_group.sh (one lane, two threads).
+
+[global]
+_output_dir = "~/q8020/aiaa-4q26-hhl-sqls-nelem5"
+
+# --- Paths (relative to the workspace root) ---
+_solver_dir = "./fvm_euler_1d_solver-aiaa"
+_experiment_dir = "./q8020-cfd-experiments"
+_postproc_venv = "./q8020-cfd-metautil/.venv"
+
+# --- Execution: local, one case at a time per sweeper process ---
+_slurm = false
+_run_mode = "sequential"
+_inject_outdir = "-outdir"
+
+# --- Per-case postproc: prune .qpy, then harvest. The sweeper appends the
+#     case's postproc JSON path, which becomes $1 of pp. ---
+_case_postproc = """\
+pp() { d=$(dirname "$1"); find "$d" -name '*.qpy' -delete; \
+source ${_postproc_venv}/bin/activate && \
+python3 ${_experiment_dir}/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py "$1" \
+|| echo "harvest failed for $1"; true; }; pp\
+"""
+
+# --- Case: the November 2025 flags ---
+"-nelem" = 5
+"-time_scheme" = "BDF1"
+"-cfl" = 1e10
+"-iters" = 15
+"-initers" = 1
+"-restol" = 1e-2
+"-tol" = 1e-10
+"-localdt" = true
+"-noshow" = true
+"-shots" = 150000
+
+[global._env_exports]
+MPLBACKEND = "Agg"
+PYTHONDONTWRITEBYTECODE = "1"
+OMP_NUM_THREADS = "1"
+OPENBLAS_NUM_THREADS = "1"
+MKL_NUM_THREADS = "1"
+
+
+# ===================== SQLS, full SVD, best shots settings =================
+[sqls_150k]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 30 600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "SQLS"
+"-sqls_method" = "full_svd"
+"-sqls_state_prep" = "initialize"
+"-sqls_repeats" = 1
+"-pad_eps" = 0
+"-seed" = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# ===================== HHL, November 2025 defaults ==========================
+[hhl_150k_a]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 14400 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-seed" = [1, 2, 3, 4, 5]
+
+[hhl_150k_b]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 14400 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-seed" = [6, 7, 8, 9, 10]
+
+# ===================== Smoke, run first, named explicitly ===================
+[_smoke_sqls]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 30 600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "SQLS"
+"-sqls_method" = "full_svd"
+"-sqls_state_prep" = "initialize"
+"-sqls_repeats" = 1
+"-pad_eps" = 0
+"-seed" = 1
+"-iters" = 2
+
+[_smoke_hhl]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 3600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-seed" = 1
+"-iters" = 1
+
+# ===================== Optional: the rest of the November ladder ============
+# Not run by this change: 6 shot counts x 10 seeds per solver.
+[_sqls_ladder]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 30 600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "SQLS"
+"-sqls_method" = "full_svd"
+"-sqls_state_prep" = "initialize"
+"-sqls_repeats" = 1
+"-pad_eps" = 0
+"-shots" = [500, 1000, 5000, 10000, 50000, 100000]
+"-seed" = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[_hhl_ladder]
+_script = """\
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 14400 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-shots" = [500, 1000, 5000, 10000, 50000, 100000]
+"-seed" = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# ===================== HHL at its best shots settings =======================
+[hhl_best_150k]
+_script = """\
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 && \
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 14400 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-hhl_shots_sign_first" = "on"
+"-pad_eps" = 0
+"-seed" = [1, 2, 3, 6, 7]
+
+[_smoke_hhl_best]
+_script = """\
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 && \
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 60 3600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+"-linsolver" = "HHL"
+"-hhl_shots_sign_first" = "on"
+"-pad_eps" = 0
+"-seed" = 1
+"-iters" = 1

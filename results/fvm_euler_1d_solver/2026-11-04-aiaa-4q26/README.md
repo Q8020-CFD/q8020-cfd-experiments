@@ -35,7 +35,11 @@ sqls 67057e4b and quantum_linear_solvers 99231b85; each case's
   in step 1 (a step-0 update left a negative pressure, then a singular Newton
   system); `qsvt_best/seed3-retry/` is its one retry, which failed the same
   way.
-- `logs/<run>/`: the run drivers' STATUS files and the sweeper group logs.
+- `logs/<run>/`: the run drivers' STATUS files and the sweeper group logs;
+  `logs/<run>/sweep/<date>/_<group>/` holds each sweep's metadata
+  (`q8020_expanded_cases.json`, `q8020_sweep_meta_*.json`,
+  `q8020_sweep_invocation.json` and the run-time TOML copy), added
+  2026-11-04 from the node's cleanup.
 - `manifest.tsv`: arm, seed, sweeper case id, finished, source path.
 
 The analysed set is seeds 1, 2, 3, 6, 7 per arm; the other finished SQLS

@@ -1,0 +1,83 @@
+
+------------------------------------------------------------
+Using ideal local simulator with 'statevector' method
+Backend: aer_simulator_statevector
+Shots: 5000
+------------------------------------------------------------
+
+A info: before HHL prepare:
+Spectral radius (A): 2.241e+01, lambda_min:2.3074021727489433
+condition number(A): 9.710e+00, norm2_cond:95.97789014324577
+det(A): 9.333e+14
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.1029832130561069
+condition number(A): 9.710e+00, norm2_cond:95.9778901432457
+det(A): 5.184e-06, nnz: 10 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 15 = 16
+Value to be padded = 1
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (15, 15)x(15, 15) -> (16, 16)x(16, 16)
+Padded shape of B: (15,) -> (16,)
+Determinant of padded matrix: 5.183984510966138e-06
+Condition # of padded matrix: 95.9778901432457
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 16x16 -> 32x32
+Shape of           B: 16 -> 32
+Determinant of Hermitian matrix: 2.6873695409936828e-11
+Condition # of Hermitian matrix: 95.9778901432459
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 4 min 43.08 sec
+
+Generated circuit: num_qubits=14, gates=19, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+Time elapsed for transpiling the circuit:  0 min 46.63 sec
+Transpiled circuit, num_qubits: 14, (original: 14)
+Transpiled circuit depth: 689027 (original: 5)
+Transpiled circuit gates: 689127 (original: 19)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  1 min 3.36 sec
+total_qubits: 14, nq:5
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 3.909029866671239
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9669618040451302
+[HHL info]: L2 error (absolute): 0.4942151940281951
+[HHL info]: L2 error (relative): 0.18273242995272115
+[HHL info]: L2 error (normalized): 0.1825258326411948
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-1.705e-02  -1.705e-02  -0.000e+00  1.000e+02
+-7.527e-03  -7.527e-03  -0.000e+00  1.000e+02
+-3.946e-02  -3.946e-02  -0.000e+00  1.000e+02
+-1.283e-01  -1.283e-01  -0.000e+00  1.000e+02
+-6.877e-02  -6.877e-02  -0.000e+00  1.000e+02
+-2.800e-01  -2.800e-01  -0.000e+00  1.000e+02
+-4.114e-01  -4.114e-01  -3.187e-01  2.254e+01
+-4.227e-01  -4.227e-01  -3.187e-01  2.461e+01
+-1.109e+00  -1.109e+00  -9.561e-01  1.382e+01
+-5.252e-01  -5.252e-01  -5.520e-01  5.106e+00
+-5.558e-01  -5.558e-01  -4.507e-01  1.890e+01
+-1.428e+00  -1.428e+00  -1.528e+00  7.056e+00
+-5.637e-01  -5.637e-01  -5.520e-01  2.078e+00
+-5.958e-01  -5.958e-01  -3.187e-01  4.650e+01
+-1.529e+00  -1.529e+00  -1.561e+00  2.097e+00
+========================================================================================
+
+step: 0/15 res:12.375368413827264, res/res0:1.0  dq_norm: [0.84321675 0.63741195 2.38497714]

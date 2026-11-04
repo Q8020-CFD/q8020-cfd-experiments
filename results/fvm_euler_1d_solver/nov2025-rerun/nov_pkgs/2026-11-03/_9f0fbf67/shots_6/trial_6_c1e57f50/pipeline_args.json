@@ -1,0 +1,50 @@
+{
+  "cmd": [
+    "bash",
+    "-c",
+    "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source /mnt/bb/ishangore/venv_0/bin/activate && python3 ./fvm_euler_1d_solver-main/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -linsolver HHL -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 150000 -outdir /ccs/home/ishangore/nov-rerun/2026-11-03/_9f0fbf67/shots_6/trial_6_c1e57f50"
+  ],
+  "case_dir": "/ccs/home/ishangore/nov-rerun/2026-11-03/_9f0fbf67/shots_6/trial_6_c1e57f50",
+  "experiment_id": "c1e57f50",
+  "workflow_id": "_9f0fbf67",
+  "case_id": "shots_6_trial_6",
+  "case_params": {
+    "_output_dir": "/ccs/home/ishangore/nov-rerun",
+    "_solver_dir": "./fvm_euler_1d_solver-main",
+    "_harvester_dir": "./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle",
+    "_postproc_venv": "./fvm_euler_1d_solver-main/.venv",
+    "_slurm": true,
+    "_run_mode": "parallel",
+    "_slurm_project": "ard189",
+    "_slurm_partition": "extended",
+    "_slurm_walltime": "012:00:00",
+    "_slurm_exclusive_node": false,
+    "_slurm_cores_per_task": 1,
+    "_slurm_cores_per_node": 56,
+    "_slurm_pack_venvs": [
+      "./fvm_euler_1d_solver-main/.venv"
+    ],
+    "_script": "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source ./fvm_euler_1d_solver-main/.venv/bin/activate && python3 ./fvm_euler_1d_solver-main/nozzle_1d_solver.py",
+    "_case_postproc": "source ./fvm_euler_1d_solver-main/.venv/bin/activate && python3 ./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
+    "_inject_outdir": "-outdir",
+    "-nelem": 5,
+    "-time_scheme": "BDF1",
+    "-linsolver": "HHL",
+    "-cfl": 10000000000.0,
+    "-iters": 15,
+    "-initers": 1,
+    "-restol": 0.01,
+    "-tol": 1e-10,
+    "-localdt": true,
+    "-noshow": true,
+    "-shots": 150000,
+    "_trial_index": 6,
+    "_parent_case_id": "shots_6"
+  },
+  "env_path": null,
+  "script_dir": "/autofs/nccs-svm1_home1/ishangore/q8020/fvm_euler_1d_solver-main",
+  "case_preproc": [],
+  "case_postproc": [
+    "source /mnt/bb/ishangore/venv_0/bin/activate && python3 ./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py"
+  ]
+}

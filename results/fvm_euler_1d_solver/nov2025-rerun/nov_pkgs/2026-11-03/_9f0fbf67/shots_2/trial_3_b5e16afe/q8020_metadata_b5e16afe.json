@@ -1,0 +1,317 @@
+{
+  "case": [
+    {
+      "_source": "sweep",
+      "name": "shots_2_trial_3",
+      "case_id": "shots_2_trial_3",
+      "params": {
+        "_output_dir": "/ccs/home/ishangore/nov-rerun",
+        "_solver_dir": "./fvm_euler_1d_solver-main",
+        "_harvester_dir": "./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle",
+        "_postproc_venv": "./fvm_euler_1d_solver-main/.venv",
+        "_slurm": true,
+        "_run_mode": "parallel",
+        "_slurm_project": "ard189",
+        "_slurm_partition": "extended",
+        "_slurm_walltime": "012:00:00",
+        "_slurm_exclusive_node": false,
+        "_slurm_cores_per_task": 1,
+        "_slurm_cores_per_node": 56,
+        "_slurm_pack_venvs": [
+          "./fvm_euler_1d_solver-main/.venv"
+        ],
+        "_script": "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source ./fvm_euler_1d_solver-main/.venv/bin/activate && python3 ./fvm_euler_1d_solver-main/nozzle_1d_solver.py",
+        "_case_postproc": "source ./fvm_euler_1d_solver-main/.venv/bin/activate && python3 ./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
+        "_inject_outdir": "-outdir",
+        "-nelem": 5,
+        "-time_scheme": "BDF1",
+        "-linsolver": "HHL",
+        "-cfl": 10000000000.0,
+        "-iters": 15,
+        "-initers": 1,
+        "-restol": 0.01,
+        "-tol": 1e-10,
+        "-localdt": true,
+        "-noshow": true,
+        "-shots": 5000,
+        "_trial_index": 3,
+        "_parent_case_id": "shots_2"
+      },
+      "command": [
+        "bash",
+        "-c",
+        "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source /mnt/bb/ishangore/venv_0/bin/activate && python3 ./fvm_euler_1d_solver-main/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -linsolver HHL -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 5000 -outdir /ccs/home/ishangore/nov-rerun/2026-11-03/_9f0fbf67/shots_2/trial_3_b5e16afe"
+      ],
+      "script": "-c",
+      "cwd": "/autofs/nccs-svm1_home1/ishangore/q8020"
+    }
+  ],
+  "analysis": [],
+  "backend": [],
+  "results": [],
+  "experiment": [
+    {
+      "_source": "sweep",
+      "name": "shots_2_trial_3",
+      "experiment_id": "b5e16afe",
+      "workflow_id": "_9f0fbf67",
+      "timestamp": "2026-11-04T00:09:23.293851Z",
+      "user": {
+        "username": "ishangore",
+        "hostname": "frontier10390"
+      }
+    }
+  ],
+  "artifacts": [
+    {
+      "_source": "sweep",
+      "directory": "/autofs/nccs-svm1_home1/ishangore/nov-rerun/2026-11-03/_9f0fbf67/shots_2/trial_3_b5e16afe",
+      "files": [
+        {
+          "name": "pipeline_args.json",
+          "path": "pipeline_args.json",
+          "size_bytes": 2257,
+          "modified": "2026-11-03T16:38:58.963116Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_env_before_b5e16afe.json",
+          "path": "q8020_env_before_b5e16afe.json",
+          "size_bytes": 1546,
+          "modified": "2026-11-04T00:09:23.285135Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_params_b5e16afe.json",
+          "path": "q8020_params_b5e16afe.json",
+          "size_bytes": 1279,
+          "modified": "2026-11-04T00:09:23.291134Z",
+          "type": "json"
+        },
+        {
+          "name": "q8020_stdout_b5e16afe.txt",
+          "path": "q8020_stdout_b5e16afe.txt",
+          "size_bytes": 3693,
+          "modified": "2026-11-04T00:17:05.292224Z",
+          "type": "txt"
+        },
+        {
+          "name": "q8020_stderr_b5e16afe.txt",
+          "path": "q8020_stderr_b5e16afe.txt",
+          "size_bytes": 2334,
+          "modified": "2026-11-04T00:17:05.293224Z",
+          "type": "txt"
+        },
+        {
+          "name": "system_Ab_nelem5_iter0.pkl",
+          "path": "system_Ab_nelem5_iter0.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-11-04T00:17:04.591918Z",
+          "type": "pkl"
+        },
+        {
+          "name": "circuit_generated_statevector_nelem5_iter0.qpy",
+          "path": "circuit_generated_statevector_nelem5_iter0.qpy",
+          "size_bytes": 69811274,
+          "modified": "2026-11-04T00:14:27.225973Z",
+          "type": "qpy"
+        },
+        {
+          "name": "circuit_transpile_statevector_shots5000_nelem5_iter0.qpy",
+          "path": "circuit_transpile_statevector_shots5000_nelem5_iter0.qpy",
+          "size_bytes": 61136127,
+          "modified": "2026-11-04T00:15:45.308228Z",
+          "type": "qpy"
+        },
+        {
+          "name": "qc_metadata_nelem5_statevector_shots5000.csv",
+          "path": "qc_metadata_nelem5_statevector_shots5000.csv",
+          "size_bytes": 548,
+          "modified": "2026-11-04T00:17:04.587919Z",
+          "type": "csv"
+        },
+        {
+          "name": "dq_nelem5_iter0_statevector_shots5000.csv",
+          "path": "dq_nelem5_iter0_statevector_shots5000.csv",
+          "size_bytes": 534,
+          "modified": "2026-11-04T00:17:04.594917Z",
+          "type": "csv"
+        },
+        {
+          "name": "results_nelem5_iter0_statevector_shots5000.csv",
+          "path": "results_nelem5_iter0_statevector_shots5000.csv",
+          "size_bytes": 317,
+          "modified": "2026-11-04T00:17:04.603916Z",
+          "type": "csv"
+        },
+        {
+          "name": "hhl_metrics_nelem5_statevector_shots5000.csv",
+          "path": "hhl_metrics_nelem5_statevector_shots5000.csv",
+          "size_bytes": 192,
+          "modified": "2026-11-04T00:17:04.610915Z",
+          "type": "csv"
+        },
+        {
+          "name": "results_nelem5_HHL_statevector_nshots5000_iter0.csv",
+          "path": "results_nelem5_HHL_statevector_nshots5000_iter0.csv",
+          "size_bytes": 317,
+          "modified": "2026-11-04T00:17:04.613914Z",
+          "type": "csv"
+        },
+        {
+          "name": "system_Ab_nelem5_iter1.pkl",
+          "path": "system_Ab_nelem5_iter1.pkl",
+          "size_bytes": 2115,
+          "modified": "2026-11-04T00:17:04.619913Z",
+          "type": "pkl"
+        }
+      ]
+    }
+  ],
+  "code": [
+    {
+      "_source": "sweep",
+      "entry_point": "nozzle_1d_solver.py",
+      "interpreter": "export",
+      "library_versions_before": {
+        "type": "venv",
+        "path": "/mnt/bb/ishangore/venv_0",
+        "packages": {
+          "annotated-types": "0.8.0",
+          "antlr4-python3-runtime": "4.13.2",
+          "certifi": "2026.10.23",
+          "cffi": "2.1.1",
+          "charset-normalizer": "3.5.2",
+          "contourpy": "1.3.2",
+          "cryptography": "50.0.2",
+          "cycler": "0.12.1",
+          "dill": "0.4.1",
+          "fonttools": "4.65.0",
+          "ibm-cloud-sdk-core": "3.24.1",
+          "ibm-platform-services": "0.66.1",
+          "idna": "3.20",
+          "iqm-client": "22.16",
+          "kiwisolver": "1.5.1",
+          "matplotlib": "3.10.9",
+          "mpmath": "1.3.0",
+          "numpy": "2.2.6",
+          "openqasm3": "1.0.1",
+          "packaging": "24.1",
+          "pillow": "12.3.0",
+          "psutil": "7.2.2",
+          "pycparser": "3.11",
+          "pydantic": "2.9.2",
+          "pydantic_core": "2.23.4",
+          "PyJWT": "2.15.1",
+          "pyparsing": "3.3.3",
+          "pyspnego": "0.12.4",
+          "python-dateutil": "2.9.0.post0",
+          "python-dotenv": "1.2.4",
+          "PyYAML": "6.0.3",
+          "qiskit": "1.2.4",
+          "qiskit-aer": "0.15.1",
+          "qiskit-algorithms": "0.3.1",
+          "qiskit-ibm-runtime": "0.35.0",
+          "qiskit-iqm": "18.0",
+          "qiskit-qasm3-import": "0.5.1",
+          "quantum-linear-solvers": "0.1.0",
+          "requests": "2.32.3",
+          "requests_ntlm": "1.3.0",
+          "rustworkx": "0.18.1",
+          "scipy": "1.15.3",
+          "six": "1.17.0",
+          "stevedore": "5.8.0",
+          "symengine": "0.13.0",
+          "sympy": "1.14.0",
+          "typing_extensions": "4.16.0",
+          "urllib3": "2.8.0",
+          "websocket-client": "1.9.2"
+        },
+        "package_count": 49,
+        "timestamp": "2026-11-04T00:09:23.278035Z",
+        "inferred_from": "command"
+      },
+      "library_versions_after": {
+        "type": "venv",
+        "path": "/mnt/bb/ishangore/venv_0",
+        "packages": {
+          "annotated-types": "0.8.0",
+          "antlr4-python3-runtime": "4.13.2",
+          "certifi": "2026.10.23",
+          "cffi": "2.1.1",
+          "charset-normalizer": "3.5.2",
+          "contourpy": "1.3.2",
+          "cryptography": "50.0.2",
+          "cycler": "0.12.1",
+          "dill": "0.4.1",
+          "fonttools": "4.65.0",
+          "ibm-cloud-sdk-core": "3.24.1",
+          "ibm-platform-services": "0.66.1",
+          "idna": "3.20",
+          "iqm-client": "22.16",
+          "kiwisolver": "1.5.1",
+          "matplotlib": "3.10.9",
+          "mpmath": "1.3.0",
+          "numpy": "2.2.6",
+          "openqasm3": "1.0.1",
+          "packaging": "24.1",
+          "pillow": "12.3.0",
+          "psutil": "7.2.2",
+          "pycparser": "3.11",
+          "pydantic": "2.9.2",
+          "pydantic_core": "2.23.4",
+          "PyJWT": "2.15.1",
+          "pyparsing": "3.3.3",
+          "pyspnego": "0.12.4",
+          "python-dateutil": "2.9.0.post0",
+          "python-dotenv": "1.2.4",
+          "PyYAML": "6.0.3",
+          "qiskit": "1.2.4",
+          "qiskit-aer": "0.15.1",
+          "qiskit-algorithms": "0.3.1",
+          "qiskit-ibm-runtime": "0.35.0",
+          "qiskit-iqm": "18.0",
+          "qiskit-qasm3-import": "0.5.1",
+          "quantum-linear-solvers": "0.1.0",
+          "requests": "2.32.3",
+          "requests_ntlm": "1.3.0",
+          "rustworkx": "0.18.1",
+          "scipy": "1.15.3",
+          "six": "1.17.0",
+          "stevedore": "5.8.0",
+          "symengine": "0.13.0",
+          "sympy": "1.14.0",
+          "typing_extensions": "4.16.0",
+          "urllib3": "2.8.0",
+          "websocket-client": "1.9.2"
+        },
+        "package_count": 49,
+        "timestamp": "2026-11-04T00:17:05.672243Z",
+        "inferred_from": "command"
+      },
+      "code_provenance": {
+        "kind": "git",
+        "code_dir": "/autofs/nccs-svm1_home1/ishangore/q8020/fvm_euler_1d_solver-main",
+        "commit": "ef7f0a8b2247615b56e4391fa1804b59825de217",
+        "describe": "ef7f0a8b",
+        "remote_url": "https://github.com/Q8020-CFD/fvm_euler_1d_solver.git",
+        "dirty": false,
+        "dependency_files": {
+          "uv.lock": "b56fcbab4d2e0359cbdee1f271b342275b50e1dc9cab21f8f96814765247bb84",
+          "pyproject.toml": "494b471d65e1449fe6daa83a4f0e5e525941c591e47428f3bb9291a31390448f"
+        },
+        "record": "/autofs/nccs-svm1_home1/ishangore/nov-rerun/2026-11-03/_9f0fbf67/q8020_code_provenance.json"
+      }
+    }
+  ],
+  "exec_stats": [
+    {
+      "_source": "sweep",
+      "start_time": "2026-11-04T00:09:23.293851Z",
+      "end_time": "2026-11-04T00:17:05.294557Z",
+      "duration_seconds": 462.00072,
+      "exit_code": 1,
+      "success": false
+    }
+  ]
+}

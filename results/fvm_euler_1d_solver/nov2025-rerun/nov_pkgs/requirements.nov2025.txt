@@ -1,0 +1,29 @@
+# Reconstructed solver stack for the 2025-11-11 Frontier fvm runs
+# (results/fvm_euler_1d_solver/2025-11-11). Install into a Python 3.10 venv.
+#
+# Provenance:
+#   python 3.10      - tracebacks in the run logs (qiskit_conda_env/lib/python3.10)
+#   numpy  2.2.x     - numpy 2.x file names in tracebacks; 2.3 dropped py3.10 -> newest 2.2
+#   scipy  1.15.x    - assume_a='banded' / _matrix_norm_general in tracebacks; 1.16 dropped py3.10
+#   qiskit pins      - verbatim from the requirements-quantum.txt saved with the run
+#   HHL library      - jw676 fork named in that file; a94cf63 is its only commit since 2025-04
+
+numpy==2.2.6
+scipy==1.15.3
+matplotlib
+PyYAML
+python-dotenv
+
+quantum_linear_solvers @ git+https://github.com/jw676/quantum_linear_solvers@a94cf634f77a9061c95baf95b4d3bf6baa9de477
+
+qiskit==1.2.4
+qiskit-aer==0.15.1
+qiskit-algorithms==0.3.1
+qiskit-ibm-runtime==0.35.0
+qiskit-qasm3-import==0.5.1
+qiskit-iqm==18.0
+
+# Transitive dep of qiskit-ibm-runtime (unused by the solver). uv can resolve
+# it to 0.55.2, which is sdist-only and fails to build with current setuptools
+# (no pkg_resources). 0.66.1 is what pip resolves and ships a py3 wheel.
+ibm-platform-services==0.66.1

@@ -1,0 +1,109 @@
+start 2026-11-04T01:26:02Z
+✅ Metadata fragments written to: /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/best/smoke/2026-11-04/_5ce0b286/6508c0c6
+[96m[1mRunning sweep:[0m 1 cases in 1 groups [sequential]
+[96m[1mOutput directory:[0m /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/best/smoke/2026-11-04/_5ce0b286
+
+[96m[1m=== Group: _smoke_hhl_best (1 cases) ===[0m
+  [93mCase:[0m _smoke_hhl_best
+
+------------------------------------------------------------
+Using ideal local simulator with 'statevector' method
+Backend: aer_simulator_statevector
+Shots: 150000
+------------------------------------------------------------
+
+A info: before HHL prepare:
+Spectral radius (A): 2.241e+01, lambda_min:2.3074021727489393
+condition number(A): 9.710e+00, norm2_cond:95.9778901432457
+det(A): 9.333e+14
+--------------------------------------------------------------------------------
+
+A_hhl info: after scaling by spectral radius:
+Spectral radius (A): 1.000e+00, lambda_min:0.10298321305610673
+condition number(A): 9.710e+00, norm2_cond:95.97789014324559
+det(A): 5.184e-06, nnz: 10 non zeros per row
+--------------------------------------------------------------------------------
+
+Size of A & B are not power of 2:
+Next 2 power of 15 = 16
+Value to be padded = 1
+--------------------------------------------------
+
+==================== Print (N)^2 padded matrix system =======================
+Padded shape of A: (15, 15)x(15, 15) -> (16, 16)x(16, 16)
+Padded shape of B: (15,) -> (16,)
+Determinant of padded matrix: 5.183984510966156e-06
+Condition # of padded matrix: 95.97789014324559
+
+
+Matrix is not Hermitian. Making it Hermitian.......
+
+==================== Print Hermitian matrix system info =======================
+Shape of hermitian A: 16x16 -> 32x32
+Shape of           B: 16 -> 32
+Determinant of Hermitian matrix: 2.6873695409936925e-11
+Condition # of Hermitian matrix: 95.97789014324559
+
+=================================== Generating HHL circuit ===================================
+Time elapsed for generating HHL circuit: 1 min 5.93 sec
+
+Generated circuit: num_qubits=14, gates=19, depth=5
+============================== Generated Circuit saved ==============================
+
+============================== Transpiling circuit ==============================
+Time elapsed for transpiling the circuit:  2 min 1.86 sec
+Transpiled circuit, num_qubits: 14, (original: 14)
+Transpiled circuit depth: 596935 (original: 5)
+Transpiled circuit gates: 641399 (original: 19)
+============================== Transpiled Circuit saved ==============================
+Time elapsed for running the circuit:  1 min 2.70 sec
+total_qubits: 14, nq:5
+
+Time elapsed for extracting shots-based hhl counts solution:  0 min 0.00 sec
+
+[HHL info]: linear system residual (e=||Ax-b||_2): 1.6372035399775688
+[HHL info]: Fidelity(true_sol, hhl_sol): 0.9986003307659759
+[HHL info]: L2 error (absolute): 0.10194241964129748
+[HHL info]: L2 error (relative): 0.037692459239226726
+[HHL info]: L2 error (normalized): 0.037418703151932124
+
+========================================================================================
+ Compare system solutions using LU of A, LU sol of A_herm, HHL of Ax=b hermition system
+LU sol 	    Herm LU sol    HHL sol    L1_diff(%)
+-1.705e-02  -1.705e-02  -0.000e+00  1.000e+02
+-7.527e-03  -7.527e-03  -0.000e+00  1.000e+02
+-3.946e-02  -3.946e-02  -8.262e-02  1.093e+02
+-1.283e-01  -1.283e-01  -1.168e-01  8.905e+00
+-6.877e-02  -6.877e-02  -5.842e-02  1.505e+01
+-2.800e-01  -2.800e-01  -2.802e-01  5.513e-02
+-4.114e-01  -4.114e-01  -4.333e-01  5.303e+00
+-4.227e-01  -4.227e-01  -4.674e-01  1.056e+01
+-1.109e+00  -1.109e+00  -1.113e+00  3.252e-01
+-5.252e-01  -5.252e-01  -5.664e-01  7.845e+00
+-5.558e-01  -5.558e-01  -5.783e-01  4.060e+00
+-1.428e+00  -1.428e+00  -1.424e+00  2.734e-01
+-5.637e-01  -5.637e-01  -6.043e-01  7.196e+00
+-5.958e-01  -5.958e-01  -5.986e-01  4.799e-01
+-1.529e+00  -1.529e+00  -1.489e+00  2.606e+00
+========================================================================================
+
+step: 0/1 res:12.375368413827264, res/res0:1.0  dq_norm: [0.94198852 0.95637085 2.36003809]
+Completed: 0 steps in 299.81s
+Saved metadata to /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/best/smoke/2026-11-04/_5ce0b286/6508c0c6/metadata_nelem5_HHL_statevector_nshots150000.pkl
+
+Solution summary:
+  x/L: [0.1000, 0.9000]
+  Mach: [1.5360, 3.0480]
+  p/p_in: [0.9537, 0.2210]
+  rho/rho_in: [1.0000, 0.3957]
+Saved combined plot to /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/best/smoke/2026-11-04/_5ce0b286/6508c0c6/solution_plot_nelem5_HHL_statevector_nshots150000.png
+    [92m[1mdone[0m
+  [93mRunning postproc:[0m [2mpp() { d=$(dirname "$1"); find "$d" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py "$1" || echo "harvest failed for $1"; true; }; pp[0m
+    [92m[1m✓ Postproc completed[0m
+
+[96m[1mResults saved to:[0m /quantum-data/agallojr/q8020/aiaa-4q26-hhl-sqls-nelem5/best/smoke/2026-11-04/_5ce0b286/q8020_sweep_meta_5ce0b286.json
+
+[96m[1m=== Summary ===[0m
+[1mTotal:[0m 1, [92m[1mSuccess:[0m 1, Failed: 0
+end 2026-11-04T01:31:06Z rc=0 wall_s=304
+SMOKE_DONE

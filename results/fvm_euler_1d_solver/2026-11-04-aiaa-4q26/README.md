@@ -19,6 +19,7 @@ tol 1e-10, local time step, ideal statevector simulator, 150000 shots, seeded.
 | `hhl_defaults/` | `-linsolver HHL` | `d4a531bd` |
 | `hhl_best/` | `-linsolver HHL -hhl_shots_sign_first on -pad_eps 0` | `d4a531bd` |
 | `qsvt_best/` | `-linsolver QSVT -qsvt_shots_sign_first on -pad_eps 0` | `219907cf` (feature/sqls-aiaa-4q26-svd-deflation) |
+| `qsvt_best_bigshot/` | as `qsvt_best`, seed 1, `-shots 1600000` and `-shots 7500000` (task T5, 2026-11-04T18:43Z) | `219907cf` |
 
 Both commits lock qiskit 2.6.0, qiskit-aer 0.17.2, qiskit-ibm-runtime 0.50.0,
 sqls 67057e4b and quantum_linear_solvers 99231b85; each case's
@@ -26,7 +27,7 @@ sqls 67057e4b and quantum_linear_solvers 99231b85; each case's
 
 ## Layout
 
-- `<arm>/seed<k>/`: one case, the solver's CSVs, metadata pickle, stdout and
+- `<arm>/seed<k>/` (or `shots<n>-seed<k>/` in `qsvt_best_bigshot`): one case, the solver's CSVs, metadata pickle, stdout and
   the sweeper and harvester `q8020_*` files. Removed: `*.qpy` circuits and
   `system_Ab_*.pkl` (regenerable).
 - `<arm>/seed<k>-unfinished/`: no final results. `hhl_defaults` seeds 4 and 9

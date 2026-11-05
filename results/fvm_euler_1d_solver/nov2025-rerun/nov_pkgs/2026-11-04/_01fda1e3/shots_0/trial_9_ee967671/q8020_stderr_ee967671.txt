@@ -1,0 +1,28 @@
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/space_solvers.py:113: RuntimeWarning: invalid value encountered in sqrt
+  c = np.sqrt(self.gamma*p/rho)
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/space_solvers.py:175: RuntimeWarning: invalid value encountered in sqrt
+  Lmax = np.abs(u) + np.sqrt(self.gamma*p/rho)
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/space_solvers.py:269: RuntimeWarning: invalid value encountered in sqrt
+  c_avg = np.sqrt(self.gamma*(pl + pr)/(rhol + rhor))
+Traceback (most recent call last):
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/./fvm_euler_1d_solver-main/nozzle_1d_solver.py", line 286, in <module>
+    time_solver.solve_one_step(q)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 201, in solve_one_step
+    self.linsys_solver.solve_one_step(q, self.resid, self.tsrc, step=self.iter)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 339, in solve_one_step
+    dQ = self.linear_sys_solve(A, b, qold, step=step)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 430, in linear_sys_solve
+    dQ, metrics = self.hhl_solve(A, b, step=step)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 526, in hhl_solve
+    dq_hhl = self.hhl_solver.solve_one_step(A, b, nelem, self.iter, step=step)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/quantum_tools.py", line 547, in solve_one_step
+    matrix_props_orig = get_matrix_properties(A_o)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/math_tools.py", line 248, in get_matrix_properties
+    'condition_number': np.linalg.cond(A),
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/numpy/linalg/_linalg.py", line 1971, in cond
+    s = svd(x, compute_uv=False)
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/numpy/linalg/_linalg.py", line 1822, in svd
+    s = _umath_linalg.svd(a, signature=signature)
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/numpy/linalg/_linalg.py", line 113, in _raise_linalgerror_svd_nonconvergence
+    raise LinAlgError("SVD did not converge")
+numpy.linalg.LinAlgError: SVD did not converge

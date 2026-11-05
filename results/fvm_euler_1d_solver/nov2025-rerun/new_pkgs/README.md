@@ -30,12 +30,12 @@ can only match statistically.
 
 Run everything from the workspace root, the directory holding the sibling
 repos (`fvm_euler_1d_solver`, `q8020-cfd-metautil`,
-`q8020-cfd-experiments-aux`, ...). Copy this directory to
-`q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/nov2025-rerun/new_pkgs/` first,
-next to `nov_pkgs/`.
+`q8020-cfd-experiments`, `q8020-cfd-experiments-aux`, ...). This directory
+lives at `q8020-cfd-experiments/results/fvm_euler_1d_solver/nov2025-rerun/new_pkgs/`; the harvester comes from `q8020-cfd-experiments-aux`.
 
 ```bash
 # 1. Update the repos
+git -C q8020-cfd-experiments pull
 git -C q8020-cfd-experiments-aux pull
 git -C fvm_euler_1d_solver fetch origin
 git -C q8020-cfd-metautil pull
@@ -45,7 +45,7 @@ git -C q8020-cfd-metautil pull
 git -C fvm_euler_1d_solver worktree add ../fvm_euler_1d_solver-main-newpkgs ef7f0a8b
 
 # 3. Venv: Python 3.12 + the locked packages, then metautil for the harvester
-REQ=q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/nov2025-rerun/new_pkgs/requirements.newpkgs.txt
+REQ=q8020-cfd-experiments/results/fvm_euler_1d_solver/nov2025-rerun/new_pkgs/requirements.newpkgs.txt
 uv venv --python 3.12 fvm_euler_1d_solver-main-newpkgs/.venv
 uv pip install --no-config --no-deps --python fvm_euler_1d_solver-main-newpkgs/.venv -r $REQ
 uv pip install --no-config --no-deps --python fvm_euler_1d_solver-main-newpkgs/.venv ./q8020-cfd-metautil
@@ -78,7 +78,7 @@ from your usual sweeper env.
 ## Run
 
 ```bash
-TOML=q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/nov2025-rerun/new_pkgs/fvm_main_newpkgs.toml
+TOML=q8020-cfd-experiments/results/fvm_euler_1d_solver/nov2025-rerun/new_pkgs/fvm_main_newpkgs.toml
 
 # Dry run: expect "71 cases in 2 groups", #SBATCH -N 2, only /mnt/bb/.../venv_0
 q8020-sweep $TOML --dry-run

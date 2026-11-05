@@ -1,0 +1,79 @@
+# SQLS on the same nozzle case as the HHL (2025-11-11 baseline, nov_pkgs
+# rerun) and HHL+LuGo runs, so the three solvers line up shot for shot.
+#
+# nelem=5 nozzle, SQLS full_svd on the ideal statevector simulator:
+#   exact  : shots=0 (statevector), 1 case
+#   shots  : 7 shot counts x seeds 1..10 = 70 cases
+#
+# Code: fvm_euler_1d_solver feature/sqls-aiaa-4q26 (d4a531bd) checked out
+# as a worktree at ./fvm_euler_1d_solver-sqls, venv from
+# requirements.sqls-aiaa-4q26.txt (Python 3.12, installed with --no-deps).
+# See README.md in this directory for setup.
+#
+# SQLS settings are from the run request: full_svd, initialize, repeats=1
+# (effective shots = shots, the same budget as one HHL run), pad_eps=0
+# (the HHL runs used the 1e-8 default; SQLS gets its best case).
+# Trials are seeds 1..10 rather than _trials, so every shot case is
+# reproducible. The HHL trials were unseeded.
+#
+# Run from the workspace root (all paths are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/nov2025-rerun/sqls_aiaa4q26/fvm_sqls_aiaa4q26.toml --dry-run
+
+[global]
+_output_dir = "/lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls"
+
+# --- Paths (override with --set for different layouts) ---
+_solver_dir = "./fvm_euler_1d_solver-sqls"
+_harvester_dir = "./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle"
+_postproc_venv = "./fvm_euler_1d_solver-sqls/.venv"
+
+# --- SLURM (off by default; enable with --set _slurm=true) ---
+# Cases are single-core; pack 56 per node (71 cases -> 2 nodes).
+# Each case is capped at 10 min by `timeout` in _script.
+_slurm = true
+_run_mode = "parallel"
+_slurm_project = "ard189"
+_slurm_partition = "extended"
+_slurm_walltime = "08:00:00"
+_slurm_exclusive_node = false
+_slurm_cores_per_task = 1
+_slurm_cores_per_node = 56
+_slurm_pack_venvs = ["${_solver_dir}/.venv"]  # NVMe burst buffer; also serves as _postproc_venv (list each venv once)
+
+# --- Solver command ---
+_script = """\
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && \
+source ${_solver_dir}/.venv/bin/activate && \
+timeout -k 30 600 python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+_case_postproc = """\
+source ${_postproc_venv}/bin/activate && \
+python3 ${_harvester_dir}/fvm_euler_1d_solver_harvester.py\
+"""
+_inject_outdir = "-outdir"
+
+# --- SQLS ---
+"-linsolver" = "SQLS"
+"-sqls_method" = "full_svd"
+"-sqls_state_prep" = "initialize"
+"-sqls_repeats" = 1
+"-pad_eps" = 0
+
+# --- Case (same as the HHL and HHL+LuGo runs) ---
+"-nelem" = 5
+"-time_scheme" = "BDF1"
+"-cfl" = 1e10
+"-iters" = 15
+"-initers" = 1
+"-restol" = 1e-2
+"-tol" = 1e-10
+"-localdt" = true
+"-noshow" = true
+
+
+[exact]
+"-shots" = 0
+
+[shots]
+"-shots" = [500, 1000, 5000, 10000, 50000, 100000, 150000]
+"-seed" = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

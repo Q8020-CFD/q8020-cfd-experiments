@@ -1,0 +1,125 @@
+# FVM Euler 1D nozzle, nelem 5, HHL: transpiler optimization level 0-3, exact
+# statevector (shots 0) and 150000 shots, nov2026 vs nov2025 codebases each on
+# its own libraries. Task 241f3c/20261107T0213-0001 (op-phone).
+#
+# nov2026: fvm d4a531bd (feature/sqls-aiaa-4q26), uv sync --frozen: qiskit 2.6.0,
+#   qiskit-aer 0.17.2, sqls 67057e4b, quantum_linear_solvers 99231b85.
+# nov2025: fvm a5317f2b, venv py3.12: qiskit 1.2.4, qiskit-aer 0.15.1,
+#   quantum_linear_solvers jw676 a94cf63.
+# Each is a detached worktree with a local -opt_level patch (default 2), see
+# optlevel-*.diff next to this file.
+#
+# Run from the workspace root (/Users/agallojr/proj/src/q8020):
+#   q8020-cfd-metautil/.venv/bin/q8020-sweep <this toml> <group> --set _output_dir=~/q8020/optlvl-hhl
+# Case settings are the 2025-11-11 nelem 5 HHL baseline: BDF1, CFL 1e10, at most
+# 15 Newton steps, 1 inner iteration, restol 1e-2, tol 1e-10, local dt.
+# Run 2: the ideal-backend transpile call is patched to take the level and seed_transpiler 1 (run 1 showed it ignored the flag). Shots runs
+# use -seed 1 on nov2026; nov2025 has no -seed (unseeded Aer).
+# Caps: perl alarm (GNU timeout is absent on macOS) 14400 s per case (raise if still progressing). One thread
+# per solver process; one sweeper process (lane) per group, sequential.
+
+[global]
+_output_dir = "~/q8020/optlvl-hhl"
+_experiment_dir = "./q8020-cfd-experiments"
+_postproc_venv = "./q8020-cfd-metautil/.venv"
+_slurm = false
+_run_mode = "sequential"
+_inject_outdir = "-outdir"
+_case_postproc = """\
+pp() { d=$(dirname "$1"); find "$d" -name '*.qpy' -delete; \
+source ${_postproc_venv}/bin/activate && \
+python3 ${_experiment_dir}/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py "$1" \
+|| echo "harvest failed for $1"; true; }; pp\
+"""
+"-nelem" = 5
+"-time_scheme" = "BDF1"
+"-cfl" = 1e10
+"-iters" = 15
+"-initers" = 1
+"-restol" = 1e-2
+"-tol" = 1e-10
+"-localdt" = true
+"-noshow" = true
+"-linsolver" = "HHL"
+
+[global._env_exports]
+MPLBACKEND = "Agg"
+PYTHONDONTWRITEBYTECODE = "1"
+OMP_NUM_THREADS = "1"
+OPENBLAS_NUM_THREADS = "1"
+MKL_NUM_THREADS = "1"
+
+[nov2026_sv_a]
+_script = """\
+source ./fvm-optlvl-nov2026/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2026/nozzle_1d_solver.py\
+"""
+"-shots" = 0
+"-opt_level" = [0, 1]
+
+[nov2026_sv_b]
+_script = """\
+source ./fvm-optlvl-nov2026/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2026/nozzle_1d_solver.py\
+"""
+"-shots" = 0
+"-opt_level" = [2, 3]
+
+[nov2026_shots_a]
+_script = """\
+source ./fvm-optlvl-nov2026/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2026/nozzle_1d_solver.py\
+"""
+"-shots" = 150000
+"-opt_level" = [0, 1]
+"-seed" = 1
+
+[nov2026_shots_b]
+_script = """\
+source ./fvm-optlvl-nov2026/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2026/nozzle_1d_solver.py\
+"""
+"-shots" = 150000
+"-opt_level" = [2, 3]
+"-seed" = 1
+
+[nov2025_sv_a]
+_script = """\
+source ./fvm-optlvl-nov2025/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2025/nozzle_1d_solver.py\
+"""
+"-shots" = 0
+"-opt_level" = [0, 1]
+
+[nov2025_sv_b]
+_script = """\
+source ./fvm-optlvl-nov2025/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2025/nozzle_1d_solver.py\
+"""
+"-shots" = 0
+"-opt_level" = [2, 3]
+
+[nov2025_shots_a]
+_script = """\
+source ./fvm-optlvl-nov2025/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2025/nozzle_1d_solver.py\
+"""
+"-shots" = 150000
+"-opt_level" = [0, 1]
+
+[nov2025_shots_b]
+_script = """\
+source ./fvm-optlvl-nov2025/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2025/nozzle_1d_solver.py\
+"""
+"-shots" = 150000
+"-opt_level" = [2, 3]
+
+[_smoke_nov2026]
+_script = """\
+source ./fvm-optlvl-nov2026/.venv/bin/activate && \
+perl -e 'alarm shift; exec @ARGV' 3600 python3 ./fvm-optlvl-nov2026/nozzle_1d_solver.py\
+"""
+"-shots" = 0
+"-opt_level" = 0
+"-iters" = 1

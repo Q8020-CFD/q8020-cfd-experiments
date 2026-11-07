@@ -1,0 +1,168 @@
+{
+  "config_file": "q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/optlevel-hhl-nelem5-2026-11/inputs/hhl_nelem5_optlevel.toml",
+  "output_dir": "/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b",
+  "workflow_id": "_66b62e72",
+  "run_dir": "/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72",
+  "timestamp": "2026-11-07T02:23:09Z",
+  "start_time": "2026-11-07T02:23:09.516480Z",
+  "sweeper_library_versions": {
+    "GitPython": "3.1.51",
+    "Jinja2": "3.1.6",
+    "MarkupSafe": "3.0.3",
+    "Pygments": "2.20.0",
+    "altair": "6.2.2",
+    "anyio": "4.14.2",
+    "attrs": "26.1.0",
+    "blinker": "1.9.0",
+    "cachetools": "7.1.4",
+    "certifi": "2026.6.17",
+    "charset-normalizer": "3.4.9",
+    "click": "8.4.2",
+    "contourpy": "1.3.3",
+    "cycler": "0.12.1",
+    "duckdb": "1.5.4",
+    "fonttools": "4.63.0",
+    "gitdb": "4.0.12",
+    "h11": "0.16.0",
+    "httptools": "0.8.0",
+    "idna": "3.18",
+    "iniconfig": "2.3.0",
+    "itsdangerous": "2.2.0",
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "kiwisolver": "1.5.0",
+    "matplotlib": "3.11.0",
+    "narwhals": "2.24.0",
+    "numpy": "2.5.1",
+    "packaging": "26.2",
+    "pandas": "3.0.3",
+    "pillow": "12.3.0",
+    "plotly": "6.9.0",
+    "pluggy": "1.6.0",
+    "protobuf": "7.35.1",
+    "pyarrow": "24.0.0",
+    "pydeck": "0.9.3",
+    "pyparsing": "3.3.2",
+    "pytest": "9.1.1",
+    "python": "3.12.10",
+    "python-dateutil": "2.9.0.post0",
+    "python-multipart": "0.0.32",
+    "q8020-cfd-metautil": "0.1.0",
+    "referencing": "0.37.0",
+    "requests": "2.34.2",
+    "rpds-py": "2026.6.3",
+    "scipy": "1.18.0",
+    "six": "1.17.0",
+    "smmap": "5.0.3",
+    "starlette": "1.3.1",
+    "streamlit": "1.59.2",
+    "subprocess-tee": "0.4.2",
+    "tenacity": "9.1.4",
+    "toml": "0.10.2",
+    "typing_extensions": "4.16.0",
+    "urllib3": "2.7.0",
+    "uvicorn": "0.51.0",
+    "watchdog": "6.0.0",
+    "websockets": "16.1"
+  },
+  "groups": {},
+  "cases": {
+    "dfd95b2d": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm-optlvl-nov2025/.venv/bin/activate && perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2025/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -linsolver HHL -shots 0 -opt_level 2 -outdir /Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/dfd95b2d"
+      ],
+      "case_id": "nov2025_sv_b_0",
+      "experiment_id": "dfd95b2d",
+      "output_dir": "/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/dfd95b2d",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.078907,
+        "post_seconds": 0.882743,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.537922,
+        "harvest_seconds": 0.019578
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/dfd95b2d/q8020_case_postproc_dfd95b2d.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/dfd95b2d\n"
+        }
+      ]
+    },
+    "b499c408": {
+      "command": [
+        "bash",
+        "-c",
+        "source ./fvm-optlvl-nov2025/.venv/bin/activate && perl -e 'alarm shift; exec @ARGV' 14400 python3 ./fvm-optlvl-nov2025/nozzle_1d_solver.py -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -linsolver HHL -shots 0 -opt_level 3 -outdir /Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/b499c408"
+      ],
+      "case_id": "nov2025_sv_b_1",
+      "experiment_id": "b499c408",
+      "output_dir": "/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/b499c408",
+      "status": "success",
+      "returncode": 0,
+      "overhead": {
+        "pre_seconds": 0.114119,
+        "post_seconds": 0.120378,
+        "preproc_seconds": 0.0,
+        "postproc_seconds": 0.178909,
+        "harvest_seconds": 0.007229
+      },
+      "_case_postproc": [
+        {
+          "command": [
+            "bash",
+            "-c",
+            "pp() { d=$(dirname \"$1\"); find \"$d\" -name '*.qpy' -delete; source ./q8020-cfd-metautil/.venv/bin/activate && python3 ./q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py \"$1\" || echo \"harvest failed for $1\"; true; }; pp /Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/b499c408/q8020_case_postproc_b499c408.json"
+          ],
+          "status": "success",
+          "returncode": 0,
+          "stdout": "",
+          "stderr": "\u2705 Metadata fragments written to: /Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b/2026-11-07/_66b62e72/b499c408\n"
+        }
+      ]
+    }
+  },
+  "invocation": {
+    "command_line": "./q8020-cfd-metautil/.venv/bin/q8020-sweep q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/optlevel-hhl-nelem5-2026-11/inputs/hhl_nelem5_optlevel.toml nov2025_sv_b --set _output_dir=/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b",
+    "argv": [
+      "./q8020-cfd-metautil/.venv/bin/q8020-sweep",
+      "q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/optlevel-hhl-nelem5-2026-11/inputs/hhl_nelem5_optlevel.toml",
+      "nov2025_sv_b",
+      "--set",
+      "_output_dir=/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b"
+    ],
+    "python_executable": "/Users/agallojr/proj/src/q8020/q8020-cfd-metautil/.venv/bin/python3",
+    "toml_path": "/Users/agallojr/proj/src/q8020/q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/optlevel-hhl-nelem5-2026-11/inputs/hhl_nelem5_optlevel.toml",
+    "toml_path_resolved": "/Users/agallojr/proj/src/q8020/q8020-cfd-experiments/aux/fvm_euler_1d_nozzle/optlevel-hhl-nelem5-2026-11/inputs/hhl_nelem5_optlevel.toml",
+    "cwd": "/Users/agallojr/proj/src/q8020",
+    "groups": [
+      "nov2025_sv_b"
+    ],
+    "overrides": {
+      "_output_dir": "/Users/agallojr/q8020/optlvl-hhl/nov2025_sv_b"
+    },
+    "start_time_utc": "2026-11-07T02:23:09.445812Z",
+    "user": {
+      "username": "agallojr",
+      "hostname": "MH-DT9TLJQR2V"
+    },
+    "metautil": {
+      "version": "0.1.0",
+      "commit": "2380796f056d0696e2056fa978a63fabd5e8511f",
+      "branch": "main",
+      "dirty": false,
+      "commit_source": "git"
+    }
+  },
+  "end_time": "2026-11-07T03:34:44.893979Z"
+}

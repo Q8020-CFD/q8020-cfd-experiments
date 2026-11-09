@@ -1,0 +1,48 @@
+{
+  "_source": "sweep",
+  "name": "shots_47",
+  "case_id": "shots_47",
+  "params": {
+    "_output_dir": "/lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls",
+    "_solver_dir": "./fvm_euler_1d_solver-sqls",
+    "_harvester_dir": "./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle",
+    "_postproc_venv": "./fvm_euler_1d_solver-sqls/.venv",
+    "_slurm": true,
+    "_run_mode": "parallel",
+    "_slurm_project": "ard189",
+    "_slurm_partition": "batch",
+    "_slurm_walltime": "02:00:00",
+    "_slurm_exclusive_node": false,
+    "_slurm_cores_per_task": 1,
+    "_slurm_cores_per_node": 56,
+    "_slurm_pack_venvs": [
+      "./fvm_euler_1d_solver-sqls/.venv"
+    ],
+    "_script": "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source ./fvm_euler_1d_solver-sqls/.venv/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-sqls/nozzle_1d_solver.py",
+    "_case_postproc": "source ./fvm_euler_1d_solver-sqls/.venv/bin/activate && python3 ./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py",
+    "_inject_outdir": "-outdir",
+    "-linsolver": "SQLS",
+    "-sqls_method": "full_svd",
+    "-sqls_state_prep": "initialize",
+    "-sqls_repeats": 1,
+    "-pad_eps": 0,
+    "-nelem": 5,
+    "-time_scheme": "BDF1",
+    "-cfl": 10000000000.0,
+    "-iters": 15,
+    "-initers": 1,
+    "-restol": 0.01,
+    "-tol": 1e-10,
+    "-localdt": true,
+    "-noshow": true,
+    "-shots": 50000,
+    "-seed": 8
+  },
+  "command": [
+    "bash",
+    "-c",
+    "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source /mnt/bb/ishangore/venv_0/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-sqls/nozzle_1d_solver.py -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 50000 -seed 8 -outdir /lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls/2026-11-05/_608b0e13/c3b01135"
+  ],
+  "script": "-c",
+  "cwd": "/lustre/orion/ard189/scratch/ishangore/q8020"
+}

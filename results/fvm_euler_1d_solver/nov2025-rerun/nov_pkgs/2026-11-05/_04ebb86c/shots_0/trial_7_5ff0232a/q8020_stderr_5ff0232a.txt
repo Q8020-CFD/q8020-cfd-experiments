@@ -1,0 +1,37 @@
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/space_solvers.py:113: RuntimeWarning: invalid value encountered in sqrt
+  c = np.sqrt(self.gamma*p/rho)
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/space_solvers.py:175: RuntimeWarning: invalid value encountered in sqrt
+  Lmax = np.abs(u) + np.sqrt(self.gamma*p/rho)
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/space_solvers.py:269: RuntimeWarning: invalid value encountered in sqrt
+  c_avg = np.sqrt(self.gamma*(pl + pr)/(rhol + rhor))
+Traceback (most recent call last):
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 486, in lu_solve
+    dQ = scipy.linalg.solve(A, b, assume_a='banded', 
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/scipy/linalg/_basic.py", line 256, in solve
+    anorm = _matrix_norm(norm, a1, check_finite)
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/scipy/linalg/_basic.py", line 379, in _matrix_norm_general
+    a = np.asarray_chkfinite(a) if check_finite else a
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/numpy/lib/_function_base_impl.py", line 646, in asarray_chkfinite
+    raise ValueError(
+ValueError: array must not contain infs or NaNs
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/./fvm_euler_1d_solver-main/nozzle_1d_solver.py", line 286, in <module>
+    time_solver.solve_one_step(q)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 201, in solve_one_step
+    self.linsys_solver.solve_one_step(q, self.resid, self.tsrc, step=self.iter)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 339, in solve_one_step
+    dQ = self.linear_sys_solve(A, b, qold, step=step)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 430, in linear_sys_solve
+    dQ, metrics = self.hhl_solve(A, b, step=step)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 514, in hhl_solve
+    dq_lu = self.lu_solve(A, b)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main/time_solvers.py", line 489, in lu_solve
+    dQ = np.linalg.solve(A, b)
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/numpy/linalg/_linalg.py", line 410, in solve
+    r = gufunc(a, b, signature=signature)
+  File "/mnt/bb/ishangore/venv_0/lib/python3.10/site-packages/numpy/linalg/_linalg.py", line 104, in _raise_linalgerror_singular
+    raise LinAlgError("Singular matrix")
+numpy.linalg.LinAlgError: Singular matrix

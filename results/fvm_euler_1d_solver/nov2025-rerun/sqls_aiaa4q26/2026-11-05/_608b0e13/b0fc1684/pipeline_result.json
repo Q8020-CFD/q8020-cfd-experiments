@@ -1,0 +1,32 @@
+{
+  "case_id": "shots_50",
+  "experiment_id": "b0fc1684",
+  "status": "success",
+  "returncode": 0,
+  "_case_postproc": [
+    {
+      "command": [
+        "bash",
+        "-c",
+        "source /mnt/bb/ishangore/venv_0/bin/activate && python3 ./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle/fvm_euler_1d_solver_harvester.py /lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls/2026-11-05/_608b0e13/b0fc1684/q8020_case_postproc_b0fc1684.json"
+      ],
+      "status": "success",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "\u2705 Metadata fragments written to: /lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls/2026-11-05/_608b0e13/b0fc1684\n"
+    }
+  ],
+  "output_dir": "/lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls/2026-11-05/_608b0e13/b0fc1684",
+  "command": [
+    "bash",
+    "-c",
+    "export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && source /mnt/bb/ishangore/venv_0/bin/activate && timeout -k 30 600 python3 ./fvm_euler_1d_solver-sqls/nozzle_1d_solver.py -linsolver SQLS -sqls_method full_svd -sqls_state_prep initialize -sqls_repeats 1 -pad_eps 0 -nelem 5 -time_scheme BDF1 -cfl 10000000000.0 -iters 15 -initers 1 -restol 0.01 -tol 1e-10 -localdt -noshow -shots 100000 -seed 1 -outdir /lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/sqls/2026-11-05/_608b0e13/b0fc1684"
+  ],
+  "overhead": {
+    "pre_seconds": 1.853534,
+    "post_seconds": 2.447816,
+    "preproc_seconds": 0.0,
+    "postproc_seconds": 1.065528,
+    "harvest_seconds": 0.033763
+  }
+}

@@ -11,6 +11,7 @@ ROOT = os.path.abspath(sys.argv[1]); OUT = sys.argv[2]
 FAMILY = {
     'nov_pkgs': ('HHL', 'qiskit 1.2.4 (nov pkgs)'),
     'new_pkgs': ('HHL', 'qiskit 2.5.2 (new pkgs)'),
+    'latest_pkgs': ('HHL', 'qiskit 2.6.2 (latest pkgs)'),
     'LuGo-rerun': ('HHL+LuGo', 'LuGo'),
     'sqls_aiaa4q26': ('SQLS', 'sqls aiaa4q26'),
 }

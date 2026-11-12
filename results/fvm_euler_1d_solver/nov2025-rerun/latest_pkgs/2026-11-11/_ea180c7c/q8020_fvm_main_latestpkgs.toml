@@ -1,0 +1,78 @@
+# Current fvm main on the NEWEST available packages, same case as the
+# 2025-11-11 baseline, ../nov_pkgs and ../new_pkgs.
+#
+# nelem=5 nozzle, HHL on the ideal statevector simulator:
+#   exact  : shots=0, 1 case
+#   shots  : 7 shot counts x 10 trials = 70 cases
+#
+# Code: fvm_euler_1d_solver main at ef7f0a8b (the commit ../nov_pkgs and
+# ../new_pkgs ran), checked out as a worktree at
+# ./fvm_euler_1d_solver-main-latestpkgs, venv from requirements.latestpkgs.txt
+# (Python 3.12, qiskit 2.6.2 / qiskit-aer 0.18.2 / qiskit-ibm-runtime 0.52.0,
+# HHL library quantum_linear_solvers@99231b8).
+# Everything else is identical to ../new_pkgs/fvm_main_newpkgs.toml, so
+# new_pkgs vs this sweep changes the packages AND the HHL library commit
+# (66eadf0 -> 99231b8).
+# HHL on main has no -seed option, so shot trials are unseeded, as before.
+# No transpiler optimization level is set: the ideal-backend transpile uses
+# qiskit's default (level 2 on qiskit 2.x).
+# See README.md in this directory for setup.
+#
+# Run from the workspace root (all paths are cwd-relative):
+#   q8020-sweep q8020-cfd-experiments/results/fvm_euler_1d_solver/nov2025-rerun/latest_pkgs/fvm_main_latestpkgs.toml --dry-run
+#
+# Check the exact case first (group `exact`): converges in 7 iterations,
+# residual ~8.9e-11, Mach [1.5204, 2.1516].
+
+[global]
+_output_dir = "/lustre/orion/ard189/proj-shared/ishangore/nov2025-rerun/latest_pkgs"
+
+# --- Paths (override with --set for different layouts) ---
+_solver_dir = "./fvm_euler_1d_solver-main-latestpkgs"
+_harvester_dir = "./q8020-cfd-experiments-aux/fvm_euler_1d_nozzle/fvm_euler_1d_nozzle"
+_postproc_venv = "./fvm_euler_1d_solver-main-latestpkgs/.venv"
+
+# --- SLURM ---
+# Cases are single-core; pack 56 per node (71 cases -> 2 nodes).
+# new_pkgs cases took ~1.5 h; same walltime budget here.
+_slurm = true
+_run_mode = "parallel"
+_slurm_project = "ard189"
+_slurm_partition = "extended"
+_slurm_walltime = "08:00:00"
+_slurm_exclusive_node = false
+_slurm_cores_per_task = 1
+_slurm_cores_per_node = 56
+_slurm_pack_venvs = ["${_solver_dir}/.venv"]  # NVMe burst buffer; also serves as _postproc_venv (list each venv once)
+
+# --- Solver command ---
+_script = """\
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 && \
+source ${_solver_dir}/.venv/bin/activate && \
+python3 ${_solver_dir}/nozzle_1d_solver.py\
+"""
+_case_postproc = """\
+source ${_postproc_venv}/bin/activate && \
+python3 ${_harvester_dir}/fvm_euler_1d_solver_harvester.py\
+"""
+_inject_outdir = "-outdir"
+
+# --- Solver parameters (identical to nov_pkgs and new_pkgs) ---
+"-nelem" = 5
+"-time_scheme" = "BDF1"
+"-linsolver" = "HHL"
+"-cfl" = 1e10
+"-iters" = 15
+"-initers" = 1
+"-restol" = 1e-2
+"-tol" = 1e-10
+"-localdt" = true
+"-noshow" = true
+
+
+[exact]
+"-shots" = 0
+
+[shots]
+"-shots" = [500, 1000, 5000, 10000, 50000, 100000, 150000]
+"_trials" = 10

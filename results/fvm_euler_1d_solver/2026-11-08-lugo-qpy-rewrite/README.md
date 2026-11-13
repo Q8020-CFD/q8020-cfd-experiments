@@ -68,3 +68,33 @@ Variants: `feb26_stored`, `feb26_qiskit26`, `rewrite_qiskit26`.
 - Shots used (ancilla 1 and clock 0): median 2140 of 150000 (1.4 %) at
   nelem 5, 2457 (1.6 %) at nelem 10. With ancilla 1 at any clock value:
   2157 and 2531.
+
+## Added 2026-11-08: the nov26 step-0 qpy, nelem 5 (`nov26-nelem5/`)
+
+The same three variants for the 2026-11-03 LuGo rerun's own qpy
+(`../nov2025-rerun/LuGo-rerun/circuits/`, written by qiskit 2.6.1, QPY format
+18; two files, nelem 5 only): `nov26_stored`, `nov26_qiskit26`,
+`rewrite_nov26_qiskit26`. Run on the macos-laptop, 2026-11-08T11:36:59Z to
+11:38:05Z (66 s, 11.4 s of it the rewrite), with the same venv and the same
+settings as above (qiskit 2.6.0, Aer 0.17.2, level 2, seed_transpiler 1,
+`OMP_NUM_THREADS` 4, experiments commit `825a74a4`, aux scripts uncommitted at
+run time). Command, from the aux folder:
+
+```
+../../../../fvm_euler_1d_solver/.venv/bin/python run_step0.py --source nov26 --nelem 5 --shots-nelem 5 --out ~/q8020/lugo-qpy-rewrite/nov26-nelem5
+```
+
+The nov26 generated qpy does not load in qiskit 2.6.0 as is (its
+ExactReciprocalGate is written without parameters). `run_step0.py` loads it
+with (nl 8, scaling 2^-7, neg_vals True), taken from the feb26 1/x block and
+checked against the nov26 stored run; the aux README has the details.
+
+| variant | all-to-all CX | Heron CZ | statevector fidelity | 150000-shot fidelity, min / median / max | state fidelity vs nov26_stored |
+|---|---|---|---|---|---|
+| nov26_stored | 55580 | 79538 | 0.999957137763 | 0.99718 / 0.99835 / 0.99897 | 1 |
+| nov26_qiskit26 | 55580 | 79540 | 0.999957137763 | same counts as stored, every seed | 1 to 1e-14 |
+| rewrite_nov26_qiskit26 | 16412 | 25915 | 0.999957137938 | same used counts as stored, every seed; one seed (9) differs in fidelity, 0.998584 vs 0.998616 | 1 - 8.7e-13 |
+
+The nov26_stored run reproduces the recorded nov26 step-0 fidelity
+(0.99995713776300) to 3e-14, and its Aer-target depth and gate count equal the
+recorded ones plus the added measurements.

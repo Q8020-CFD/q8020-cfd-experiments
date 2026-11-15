@@ -22,5 +22,7 @@ lane sequential. Wall times therefore include contention. Layout:
 `../2026-11-07-hhl-nelem5-optlevel-run1-flag-noop/` is a first full 16-case run
 whose patch only reached the fake/real-ibm transpile branch. The ideal backend
 calls `transpile(circ, backend)` with no level, so the flag changed nothing
-there (all levels were qiskit's default level 2). Kept as a replicate set of
-the level-2 behaviour and of run-to-run timing noise; not the answer.
+there: every case ran at qiskit's default level, which is 1 on qiskit 1.2.4
+(nov2025) and 2 on 2.6.0 (nov2026). Kept as a replicate set of each
+codebase's default-level behaviour and of run-to-run timing noise; not the
+answer.

@@ -171,3 +171,99 @@ Made with `run_test.py --input lugo --barriers --no-lugo --aqc-cx 48` (and
 | 40 | 4.1e-2, 4.8e-2 | 224 | 0.795492 | 12517 | 15345 | 15664 |
 
 The paper's table now carries 62, 56, 48 and 40 CX columns.
+
+## 150k-shot results by AQC level, and the sign step (added 2026-11-17)
+
+Each run above has 10 Aer seeds x 150000 shots (`shots.csv`).
+`aux/.../sign_check.py` rebuilds each AQC level and scores its exact
+statevector two ways:
+
+- as is;
+- as the shot extraction scores it: magnitudes, with the signs of the
+  classical solution x_ref (the fvm sign step).
+
+| level | statevector fidelity | statevector, x_ref signs | wrong signs (of 15) | 150k-shot fidelity, min / median / max |
+|---|---|---|---|---|
+| AQC 62 | 0.999957 | 0.999957 | 0 | 0.99718 / 0.99843 / 0.99897 |
+| AQC 56 | 0.997918 | 0.997900 | 0 | 0.99546 / 0.99650 / 0.99776 |
+| AQC 48 | 0.952632 | 0.947114 | 1 | 0.93880 / 0.94187 / 0.95962 |
+| AQC 40 | 0.795492 | 0.865799 | 5 | 0.84308 / 0.86348 / 0.87943 |
+
+The shot medians track the x_ref-sign score at every level, less shot noise,
+so the shot runs are sound.
+
+At 40 CX, five of the fifteen solution components have the wrong sign in the
+quantum state. The sign step overwrites them, which lifts the shot fidelity
+above the statevector fidelity. Quote statevector fidelity, as the paper's
+table does, for solution quality at 48 CX and below.
+
+## The rewrite with real L, and AQC of L (added 2026-11-17)
+
+Real L is from genode's analysis (mesh task 20261117T0342-0001; its modules
+`real_structure.py` and `realfit.py` are now in the aux folder).
+
+- **The method.** A is real, so the CSD factors of U are real up to column
+  phases. `real_structure` checks this and raises otherwise. L = diag(P, Q),
+  with P and Q in SO(16), is fitted with real gates (Ry + CX) on a
+  block-diagonal 5-qubit template, `bd5(cx, every=24, lower="line",
+  msb_targets=[0])`.
+- **Exactness.** At 122 CX the fit is exact (1 - F = 6.3e-13 for L), since
+  122 CX covers the 240 parameters of SO(16) x SO(16). Fewer CX is
+  approximate, which is the AQC column.
+- **Runs.** Made with
+  `run_test.py --input lugo --barriers --real-l --aqc-l-cx N --no-lugo`,
+  in `nelem5-barriers-realL-aqc112/`, `-aqc104/` and `-aqc96/`. Each run's
+  `exact` variant is the 122-CX real L.
+
+| L CX | per block | 1 - F of L | fidelity | shot median | depth a2a | depth Heron | depth Nighthawk | CX a2a | Nighthawk CZ |
+|---|---|---|---|---|---|---|---|---|---|
+| 122 (rewrite) | 276 | 6.3e-13 | 0.999957 | 0.99835 | 15455 | 15932 | 15839 | 4810 | 5767 |
+| 112 | 256 | 2.7e-4 | 0.999494 | 0.99755 | 14404 | 15256 | 15499 | 4490 | 5492 |
+| 104 | 240 | 2.8e-3 | 0.990536 | 0.99053 | 13635 | 14534 | 14547 | 4234 | 5270 |
+| 96 | 224 | 9.8e-3 | 0.982147 | 0.98128 | 12759 | 13944 | 13691 | 3978 | 4976 |
+
+- The rewrite's full state equals LuGo's to 1 - F = 6.3e-14. Its used shot
+  counts equal the stored circuit's for 10 of 10 seeds.
+- The shot medians are at or below the statevector fidelities, so the sign
+  step inflates nothing here.
+- This table feeds the paper's `tab:custom-transpile`.
+
+**Lower AQC budgets for L (`nelem5-barriers-realL-aqc88/`, `-aqc80/`,
+`-aqc72/`, `-aqc64/`).** Swept in steps of 8 CX until the solution fidelity
+fell below 0.80.
+
+| L CX | per block | 1 - F of L | fidelity | shot median | depth a2a | depth Heron | depth Nighthawk | CX a2a | Nighthawk CZ |
+|---|---|---|---|---|---|---|---|---|---|
+| 88 | 208 | 2.0e-2 | 0.921973 | 0.92134 | 11867 | 12804 | 13343 | 3722 | 4698 |
+| 80 | 192 | 4.4e-2 | 0.865683 | 0.90473 | 10900 | 11725 | 12217 | 3466 | 4381 |
+| 72 | 176 | 9.0e-2 | 0.906861 | 0.90793 | 10061 | 11411 | 11558 | 3210 | 4142 |
+| 64 | 160 | 0.13 | 0.411890 | 0.53504 | 9237 | 10807 | 10953 | 2954 | 3912 |
+
+- **Fidelity is not monotone below 96 CX.** 72 CX scores above 80 CX, even
+  though L's own error grows steadily. Each fit is picked by its own 1 - F
+  against L, never by the solution (rule 4), so the solution fidelity of an
+  approximate fit is partly luck.
+- **The sign step inflates the shot score at 80 and 64 CX.** The shot
+  median is above the statevector fidelity there, as at the complex AQC 40.
+  Quote statevector fidelity.
+- **The paper's table stops at 72 CX,** the last level at or above 0.80;
+  64 CX is excluded.
+
+**AQC of L in steps of 16 CX below the exact 122 (`nelem5-barriers-realL-aqc106/`,
+`-aqc90/`, `-aqc74/`, `-aqc58/`, `-aqc42/`).** These are the paper table's
+AQC columns, swept until the solution fidelity fell below 0.80.
+
+| L CX | per block | 1 - F of L | fidelity | shot median | depth a2a | depth Heron | depth Nighthawk | CX a2a | Nighthawk CZ |
+|---|---|---|---|---|---|---|---|---|---|
+| 106 | 244 | 1.7e-3 | 0.994373 | 0.99319 | 13797 | 14476 | 14599 | 4298 | 5280 |
+| 90 | 212 | 2.1e-2 | 0.970791 | 0.98206 | 11991 | 12939 | 13193 | 3786 | 4802 |
+| 74 | 180 | 7.0e-2 | 0.968983 | 0.96916 | 10287 | 11302 | 11497 | 3274 | 4259 |
+| 58 | 148 | 0.17 | 0.814678 | 0.84161 | 8579 | 9747 | 10043 | 2762 | 3639 |
+| 42 | 116 | 0.35 | 0.068704 | 0.35336 | 6899 | 8656 | 8582 | 2250 | 3091 |
+
+- The table shows 106 to 58 CX. At 42 CX the fidelity is 0.069, so it is
+  left out.
+- As with steps of 8, fidelity is not monotone in L's error. Here 74 CX
+  (0.969) nearly equals 90 CX (0.971).
+- At 90 and 58 CX, the sign step lifts the shot median above the
+  statevector fidelity.

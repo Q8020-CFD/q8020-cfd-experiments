@@ -1,0 +1,149 @@
+diff --git a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py
+index 9ebb2815..873c70a8 100644
+--- a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py
++++ b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py
+@@ -113,6 +113,12 @@ def main() -> None:
+     ap.add_argument("--barriers", action="store_true",
+                     help="barrier after every block: no cross-block "
+                     "cancellation by the transpiler")
++    ap.add_argument("--real-l", action="store_true",
++                    help="synthesize L as the real block-diagonal fit "
++                    "(exact at 122 CX) instead of the complex demultiplex")
++    ap.add_argument("--aqc-l-cx", type=int,
++                    help="with --real-l: the AQC variant fits L at this many "
++                    "CX (below 122 it is approximate)")
+     a = ap.parse_args()
+     out = a.out / f"nelem{a.nelem}"
+     out.mkdir(parents=True, exist_ok=True)
+@@ -140,7 +146,8 @@ def main() -> None:
+         "experiments_repo": git_head(EXP), "input": str(src),
+         "input_kind": a.input, "input_sha256": sha256(src),
+         "nelem": a.nelem, "recorded_step0": read_recorded(rec),
+-        "barriers": a.barriers,
++        "barriers": a.barriers, "real_l": a.real_l,
++        "aqc_l_cx": a.aqc_l_cx,
+         "recorded_csv": str(rec),
+     }
+     log(f"load {src.name}")
+@@ -166,10 +173,18 @@ def main() -> None:
+     summary["cond_H"] = float(np.linalg.cond(ht))
+ 
+     variants = {}
+-    new, rep = sr.build(circ, items, nb, mats, barriers=a.barriers)
+-    log(f"exact: {rep}")
+-    variants["exact"] = (new, rep, None)
+-    if not a.no_aqc:
++    rl = sr.RealL() if a.real_l else None
++    new, rep = sr.build(circ, items, nb, mats, barriers=a.barriers,
++                        real_l=rl)
++    log(f"exact: {rep}" + (f" real L {rl.info}" if rl else ""))
++    variants["exact"] = (new, rep, rl.info if rl else None)
++    if a.real_l and a.aqc_l_cx:
++        rq = sr.RealL(cx=a.aqc_l_cx)
++        new, rep = sr.build(circ, items, nb, mats, barriers=a.barriers,
++                            real_l=rq)
++        log(f"aqc: {rep} real L {rq.info}")
++        variants["aqc"] = (new, rep, rq.info)
++    elif not a.no_aqc and not a.real_l:
+         info = []
+         synth = sr.aqc_factory([int(x) for x in a.aqc_cx.split(",")],
+                                [1, 2, 3], a.aqc_tol, log, info)
+diff --git a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py
+index 4ceb0253..f88b0a56 100644
+--- a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py
++++ b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py
+@@ -62,6 +62,10 @@ HERE = Path(__file__).resolve().parent
+ sys.path.insert(0, str(HERE.parent / "lugo-qpy-rewrite-2026-11"))
+ from qpy_rewrite import RewriteReport, _rewrite_recip  # noqa: E402
+ 
++sys.path.insert(0, str(HERE))
++import real_structure as rs  # noqa: E402
++import realfit as rf  # noqa: E402
++
+ TOL = 1e-9
+ BASIS = ["cx", "rz", "sx", "x"]
+ Synth = Callable[[np.ndarray], QuantumCircuit]
+@@ -278,21 +282,79 @@ def block_circuit(lc: QuantumCircuit, theta: np.ndarray, m: int,
+     return qc
+ 
+ 
++@dataclass
++class RealL:
++    """Real-L synthesis: L = diag(P, Q) fitted with real gates (Ry + CX) on
++    genode's block-diagonal 5-qubit template (realfit.bd5). At the default
++    122 CX the fit is exact (1 - F ~ 1e-13); fewer CX is approximate (AQC).
++    The fit is accepted at the first seed with 1 - F <= tol against
++    diag(P, Q) itself, else the best seed: never by the HHL solution."""
++    cx: int = 122
++    every: int = 24
++    lower: str = "line"
++    msb_targets: tuple = (0,)
++    seeds: tuple = (1, 2, 3)
++    tol: float = 1e-12
++    maxiter: int = 20000
++    info: dict = field(default_factory=dict)
++
++
++def real_l_circuit(u: np.ndarray, nb: int, cfg: RealL
++                   ) -> tuple[QuantumCircuit, np.ndarray, np.ndarray, float]:
++    """L circuit, L (= diag(P, Q)), Rx angles and max entry error. U must be
++    real up to column phases in its CSD factors (A real): real_structure
++    raises otherwise, so the assumption is checked, not taken on trust."""
++    p, q, theta, err_s = rs.real_structure(u, nb)
++    lp = sla.block_diag(p, q)
++    gates = rf.bd5(cfg.cx, every=cfg.every, lower=cfg.lower,
++                   msb_targets=list(cfg.msb_targets))
++    best = None
++    for seed in cfg.seeds:
++        t0 = time.time()
++        inf, x, nit = rf.fit(gates, nb, lp, seed, cfg.maxiter)
++        cfg.info.setdefault("tries", []).append(
++            {"seed": seed, "infidelity": inf, "iterations": nit,
++             "seconds": round(time.time() - t0, 1)})
++        if best is None or inf < best[0]:
++            best = (inf, x, seed)
++        if inf <= cfg.tol:
++            break
++    inf, x, seed = best
++    lc = rf.RealCircuit(nb, gates).to_qiskit(x)
++    lc = transpile(lc, basis_gates=BASIS, optimization_level=2,
++                   seed_transpiler=1)
++    got = Operator(lc).data
++    k = np.unravel_index(np.argmax(np.abs(lp)), lp.shape)
++    lc.global_phase += np.angle(lp[k] / got[k])
++    err = float(np.max(np.abs(Operator(lc).data - lp)))
++    cfg.info.update({"cx": cfg.cx, "every": cfg.every, "lower": cfg.lower,
++                     "msb_targets": list(cfg.msb_targets), "seed": seed,
++                     "infidelity": inf, "real_structure_err": err_s})
++    return lc, lp, theta, err
++
++
+ def build(circ: QuantumCircuit, items: list, nb: int, mats: list,
+           synth: Synth = qsd_synth, check: bool = True,
+-          barriers: bool = False) -> tuple[QuantumCircuit, Report]:
++          barriers: bool = False, real_l: RealL | None = None
++          ) -> tuple[QuantumCircuit, Report]:
+     """Rewritten circuit (no measurements) and a report. mats are the stored
+     block unitaries (block_unitaries); the first must be controlled-U^1.
+     With barriers, a barrier follows every block, so the transpiler cannot
+     cancel one block's L against the next block's L^dag (without them,
+-    qiskit level 2 removes about 150 CX at the seams at nelem 5)."""
++    qiskit level 2 removes about 150 CX at the seams at nelem 5).
++    With real_l, L is the real block-diagonal fit (RealL) instead of the
++    complex demultiplex; synth is then unused."""
+     t0 = time.time()
+     rep = Report(nb=nb)
+     first = mats[0]
+     if not np.allclose(first[0::2, 0::2], np.eye(2 ** nb), atol=TOL):
+         raise ValueError("first block is not controlled on bit 0")
+-    lp, theta, rep.t_offpair = structure(first[1::2, 1::2], nb)
+-    lc, rep.l_err = demux_circuit(lp, nb, synth)
++    if real_l is None:
++        lp, theta, rep.t_offpair = structure(first[1::2, 1::2], nb)
++        lc, rep.l_err = demux_circuit(lp, nb, synth)
++    else:
++        lc, lp, theta, rep.l_err = real_l_circuit(first[1::2, 1::2], nb,
++                                                  real_l)
+     rep.cx_l = lc.count_ops().get("cx", 0)
+     nl = sum(1 for k, _, _ in items if k == "block") // 2
+     out = QuantumCircuit(*circ.qregs)

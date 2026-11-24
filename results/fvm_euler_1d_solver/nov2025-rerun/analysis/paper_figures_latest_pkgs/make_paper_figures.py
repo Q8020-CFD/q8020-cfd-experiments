@@ -53,8 +53,8 @@ color = {s: CMAP(i / (len(SHOTS) - 1)) for i, s in enumerate(SHOTS)}
 PRIM = ['rho', 'u', 'p']
 
 
-def save(fig, name, note=NOTE):
-    fig.text(0.01, 0.005, note, fontsize=7, color='#666666', ha='left', va='bottom')
+def save(fig, name, note=None):
+    """Save without an in-figure footnote; `note` is kept for call-site documentation only (details are in README.md)."""
     fig.savefig(os.path.join(HERE, name), dpi=150, bbox_inches='tight')
     plt.close(fig)
 

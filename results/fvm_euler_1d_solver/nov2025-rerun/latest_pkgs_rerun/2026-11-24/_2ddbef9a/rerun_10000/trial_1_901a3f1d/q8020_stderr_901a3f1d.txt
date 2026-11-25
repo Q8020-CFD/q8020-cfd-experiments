@@ -1,0 +1,33 @@
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/space_solvers.py:113: RuntimeWarning: invalid value encountered in sqrt
+  c = np.sqrt(self.gamma*p/rho)
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/space_solvers.py:175: RuntimeWarning: invalid value encountered in sqrt
+  Lmax = np.abs(u) + np.sqrt(self.gamma*p/rho)
+/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/space_solvers.py:269: RuntimeWarning: invalid value encountered in sqrt
+  c_avg = np.sqrt(self.gamma*(pl + pr)/(rhol + rhor))
+/mnt/bb/ishangore/venv_0/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2423: RuntimeWarning: invalid value encountered in det
+  r = _umath_linalg.det(a, signature=signature)
+Traceback (most recent call last):
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/./fvm_euler_1d_solver-main-latestpkgs/nozzle_1d_solver.py", line 286, in <module>
+    time_solver.solve_one_step(q)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/time_solvers.py", line 201, in solve_one_step
+    self.linsys_solver.solve_one_step(q, self.resid, self.tsrc, step=self.iter)
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/time_solvers.py", line 339, in solve_one_step
+    dQ = self.linear_sys_solve(A, b, qold, step=step)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/time_solvers.py", line 430, in linear_sys_solve
+    dQ, metrics = self.hhl_solve(A, b, step=step)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/time_solvers.py", line 526, in hhl_solve
+    dq_hhl = self.hhl_solver.solve_one_step(A, b, nelem, self.iter, step=step)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/quantum_tools.py", line 547, in solve_one_step
+    matrix_props_orig = get_matrix_properties(A_o)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/lustre/orion/ard189/scratch/ishangore/q8020/fvm_euler_1d_solver-main-latestpkgs/math_tools.py", line 257, in get_matrix_properties
+    eigenvalues = np.linalg.eigvals(A)
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/bb/ishangore/venv_0/lib/python3.12/site-packages/numpy/linalg/_linalg.py", line 1253, in eigvals
+    _assert_finite(a)
+  File "/mnt/bb/ishangore/venv_0/lib/python3.12/site-packages/numpy/linalg/_linalg.py", line 263, in _assert_finite
+    raise LinAlgError("Array must not contain infs or NaNs")
+numpy.linalg.LinAlgError: Array must not contain infs or NaNs

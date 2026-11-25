@@ -96,7 +96,7 @@ for var, ylab, fn in (('rho', r'$\rho/\rho_{ref}$', 'fig05_density_lu_vs_hhl_ide
     ax.plot(lu[5].xp, lu[5][var], marker='s', color='tab:orange', ls='--', label='LU (Nelem=5)')
     ax.plot(exact['final'].xp, exact['final'][var], marker='^', color='tab:green', ls=':', label='HHL (ideal) (Nelem=5)')
     ax.set_xlabel('x/L'); ax.set_ylabel(ylab); ax.grid(alpha=.3); ax.legend(fontsize=8)
-    ax.set_title('Density' if var == 'rho' else 'Mach number')
+    ax.set_title('Density' if var == 'rho' else 'Mach number', fontweight='bold')
     save(fig, fn)
 
 # ---- Fig 6: final solution vs shots (mean of trials) ----
@@ -121,9 +121,9 @@ for s in SHOTS:
 e = pd.DataFrame(rows); e.to_csv(os.path.join(HERE, 'fig7_l2_error.csv'), index=False)
 fig, ax = plt.subplots(1, 2, figsize=(13.9, 5.1))   # paper image is 2084x763 px (aspect 2.73)
 ax[0].loglog(e.shots, e.l2_abs_of_mean, 'o-', color='tab:blue', lw=2, ms=7)
-ax[0].set_title('Absolute L2 Error'); ax[0].set_ylabel('L2 Error (Absolute)')
+ax[0].set_title('Absolute L2 Error', fontweight='bold'); ax[0].set_ylabel('L2 Error (Absolute)')
 ax[1].loglog(e.shots, e.l2_rel_of_mean, 's-', color='tab:orange', lw=2, ms=7)
-ax[1].set_title('Relative L2 Error'); ax[1].set_ylabel('L2 Error (Relative)')
+ax[1].set_title('Relative L2 Error', fontweight='bold'); ax[1].set_ylabel('L2 Error (Relative)')
 for a in ax: a.set_xlabel('Number of Shots'); a.grid(alpha=.3, which='major')   # paper: major gridlines only
 fig.suptitle('Final Solution L2 Error vs LU (nelem=5, ntrials=10)', fontsize=15, fontweight='bold')
 fig.tight_layout()
@@ -144,7 +144,7 @@ for it in range(15):
     ax.plot(xs, ms, marker='os^vd<>ph*Hx+'[it % 13], color=c, label=f'Iteration {it}')
     ax.fill_between(xs, lo, hi, color=c, alpha=.1)
 ax.set_xscale('log'); ax.set_ylim(0, 1.05); ax.set_xlabel('Number of Shots'); ax.set_ylabel('Fidelity'); ax.grid(alpha=.3)
-ax.legend(ncol=2, fontsize=8, loc='lower right'); ax.set_title('Fidelity vs Shots - All Iterations (95% CI, nelem=5)')
+ax.legend(ncol=2, fontsize=8, loc='lower right'); ax.set_title('Fidelity vs Shots - All Iterations (95% CI, nelem=5)', fontweight='bold')
 save(fig, 'fig08_fidelity_vs_shots.png', NOTE + '. Mean over every trial that reached the iteration (crashed trials contribute their early iterations).')
 
 # ---- Fig 9: total residual history, ONE trial (trial_1), as in the paper ----
@@ -155,7 +155,7 @@ for s in SHOTS:
     ax.semilogy(c['res'].residual_total.values, 'o-', ms=4, color=color[s], label=f'HHL (shots={s})')
 ax.semilogy(exact['res'].residual_total.values, 'p-', color='olive', label='HHL exact statevector')
 ax.semilogy(lu_res.residual_total.values, '*-', color='c', label='LU')
-ax.set_xlabel('Iteration'); ax.set_ylabel('Residual'); ax.set_title('Total Residual'); ax.grid(alpha=.3, which='both'); ax.legend(fontsize=8)
+ax.set_xlabel('Iteration'); ax.set_ylabel('Residual'); ax.set_title('Total Residual', fontweight='bold'); ax.grid(alpha=.3, which='both'); ax.legend(fontsize=8)
 save(fig, 'fig09_total_residual.png', NOTE + '. Shot curves: trial_1 of each shot count (one trial, as in the paper).')
 
 # ---- Figs 10-12: per-iteration circuit metrics ----

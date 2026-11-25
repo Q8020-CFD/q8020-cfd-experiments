@@ -72,6 +72,11 @@ for s in SHOTS: assert len(cases[s]) == N_TRIALS, (s, len(cases[s]))
 EX = os.path.join(RUN, '11b8064a')
 exact = dict(qc=rd(one(os.path.join(EX, 'qc_metadata_*.csv'))), res=rd(one(os.path.join(EX, 'residual_*.csv'))),
              final=rd(one(os.path.join(EX, 'final_results_*.csv'))), hm=rd(one(os.path.join(EX, 'hhl_metrics_*.csv'))))
+NELEM34 = os.path.abspath(os.path.join(HERE, '..', '..', 'latest_pkgs_nelem34', '2026-11-25', '_47f28cd0'))
+hhl_exact = {5: exact['final']}            # exact statevector HHL (shots=0) solutions by nelem
+for n in (3, 4):
+    f = [g for g in glob.glob(os.path.join(NELEM34, '*', f'final_results_nelem{n}_HHL_statevector.csv'))]
+    assert len(f) == 1, (n, f); hhl_exact[n] = rd(f[0])
 lu = {n: rd(os.path.join(REF, f'nelem{n}', f'final_results_nelem{n}_LU.csv')) for n in (3, 4, 5, 200)}
 lu_res = rd(os.path.join(REF, 'nelem5', 'residual_nelem5_LU.csv'))
 color = {s: CMAP(i / (len(SHOTS) - 1)) for i, s in enumerate(SHOTS)}
@@ -89,12 +94,14 @@ def mean_final(s, cols):
     return np.mean(arr, axis=0), len(arr)
 
 
-# ---- Fig 5: LU vs HHL(ideal), nelem=5 only (the only mesh with HHL data), density and Mach ----
+# ---- Fig 5: LU vs HHL(ideal) for nelem 3, 4, 5, density and Mach (legend order as in the paper) ----
 for var, ylab, fn in (('rho', r'$\rho/\rho_{ref}$', 'fig05_density_lu_vs_hhl_ideal.png'), ('Mach', 'M', 'fig05_mach_lu_vs_hhl_ideal.png')):
     fig, ax = plt.subplots(figsize=(7, 5))
-    ax.plot(lu[200].xp, lu[200][var], color='#2b6cb0', lw=2, label='Ref sol (LU, nelem=200)')
-    ax.plot(lu[5].xp, lu[5][var], marker='s', color='tab:orange', ls='--', label='LU (Nelem=5)')
-    ax.plot(exact['final'].xp, exact['final'][var], marker='^', color='tab:green', ls=':', label='HHL (ideal) (Nelem=5)')
+    ax.plot(lu[200].xp, lu[200][var], color='#2b6cb0', lw=2, label='Ref sol')
+    for kind, n, mk, c, ls in (('LU', 5, 's', 'tab:orange', '--'), ('HHL', 5, '^', 'tab:green', '-.'), ('HHL', 3, 'D', 'tab:red', ':'),
+                               ('LU', 3, 'v', 'tab:purple', '-'), ('HHL', 4, '<', 'tab:brown', '-.'), ('LU', 4, '>', 'tab:pink', '--')):
+        d = lu[n] if kind == 'LU' else hhl_exact[n]
+        ax.plot(d.xp, d[var], marker=mk, color=c, ls=ls, label=f'{kind} (Nelem={n})' if kind == 'LU' else f'HHL (ideal) (Nelem={n})')
     ax.set_xlabel('x/L'); ax.set_ylabel(ylab); ax.grid(alpha=.3); ax.legend(fontsize=8)
     ax.set_title('Density' if var == 'rho' else 'Mach number', fontweight='bold')
     save(fig, fn)

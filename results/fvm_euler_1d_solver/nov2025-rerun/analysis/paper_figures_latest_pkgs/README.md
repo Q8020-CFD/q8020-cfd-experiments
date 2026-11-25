@@ -8,7 +8,7 @@ Data: `../../latest_pkgs/2026-11-11/_ea180c7c` (fvm `ef7f0a8b`, qiskit 2.6.2, HH
 
 | file | paper fig | what is plotted |
 |---|---|---|
-| fig05_density / mach_lu_vs_hhl_ideal | 5 | nelem200 LU reference, LU nelem 5, HHL exact statevector nelem 5 (only mesh with HHL data) |
+| fig05_density / mach_lu_vs_hhl_ideal | 5 | nelem200 LU reference; LU and HHL exact statevector (shots 0) for nelem 3, 4, 5. HHL nelem 5 from the 2026-11-11 exact case; nelem 3, 4 from `../../latest_pkgs_nelem34/2026-11-25/_47f28cd0` (2 cases, qiskit 2.6.2, fvm ef7f0a8b; both exit 0, max abs difference to LU 1.3e-11 / 1.5e-11) |
 | fig06_density / mach_vs_shots | 6 | final profile, mean over the 10 trials, per shot count |
 | fig07_l2_error_vs_shots | 7 | L2 norm of (trial-mean (rho,u,p) minus LU nelem5); relative = / norm(LU) = 4.308 |
 | fig08_fidelity_vs_shots | 8 | `hhl_metrics.fidelity`, mean per iteration with 95% t-interval |

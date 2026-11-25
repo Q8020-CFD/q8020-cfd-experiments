@@ -207,6 +207,40 @@ ax.semilogy(exact['qc'].sort_values('step').condition_number.values, 'o-', color
 ax.set_xlabel('Iteration'); ax.set_ylabel('Condition Number'); ax.set_title('Condition Number', fontweight='bold'); ax.grid(alpha=.3, which='both'); ax.legend(fontsize=7)
 save(fig, 'fig12_condition_number.png', NOTE + '. trial_1 of each shot count (as in the paper).')
 
+# ---- Fig 4: nozzle geometry (analytic, Eq. 11; no run data). Large fonts per reviewer comment. ----
+xs = np.linspace(0, 10, 500); S = 1.398 + 0.347 * np.tanh(0.8 * xs - 4)   # x in [0, L], L = 10
+fig, ax = plt.subplots(figsize=(10.4, 4.6))
+ax.plot(xs / 10, S, 'k', lw=3); ax.plot(xs / 10, -S, 'k', lw=3)
+ax.fill_between(xs / 10, -S, S, color='0.89'); ax.axhline(0, color='0.65', lw=1)
+ax.set_xlim(0, 1); ax.set_title('Nozzle Geometry', fontsize=20, fontweight='bold')
+ax.set_xlabel('x/L', fontsize=20, style='italic'); ax.set_ylabel('S(x)', fontsize=20, style='italic')
+ax.tick_params(axis='both', labelsize=17); ax.grid(alpha=.3)
+fig.tight_layout(); save(fig, 'fig04_nozzle_geometry.png')
+
+# ---- Figs 11b / 12b: same statistics and bands as Fig 10 (mean +- population std over the 10 trials) ----
+set2 = plt.get_cmap('Set2')
+
+
+def band_panel(ax, col, title, ylabel, exact_col=True, logy=False):
+    for i, s in enumerate(SHOTS):
+        m = stack(s, col); mu, sd = np.nanmean(m, 0), np.nanstd(m, 0); x = np.arange(len(mu))
+        ax.plot(x, mu, 'o-', ms=4, color=set2(i), label=f'shots={s}'); ax.fill_between(x, mu - sd, mu + sd, color=set2(i), alpha=.15)
+    if exact_col:
+        ax.plot(exact['qc'].sort_values('step')[col].values, 'o--', ms=4, color='#808080', lw=1.2, label='exact statevector (1 run)')
+    ax.set_title(title, fontsize=10, fontweight='bold'); ax.set_xlabel('Iteration'); ax.set_ylabel(ylabel); ax.grid(alpha=.3)
+
+
+fig, axs = plt.subplots(1, 3, figsize=(16, 4.6))
+for ax, col, t in zip(axs, ('circ_depth_transpile', 'circ_gates_transpile', 'circ_qubits_transpile'),
+                      ('Circuit Depth', 'Number of Gates', 'Number of Qubits')):
+    band_panel(ax, col, t, t)
+axs[0].legend(fontsize=7); fig.suptitle('Circuit Complexity (Transpiled), Mean ± Std, nelem=5', fontweight='bold')
+save(fig, 'fig11b_circuit_complexity_mean_std.png')
+
+fig, ax = plt.subplots(figsize=(6.4, 5.4))
+band_panel(ax, 'condition_number', 'Condition Number (Mean ± Std, nelem=5)', 'Condition Number')
+ax.legend(fontsize=7); save(fig, 'fig12b_condition_number_mean_std.png')
+
 print(e.to_string(float_format=lambda v: f'{v:.4g}'))
 print('crashed originals dropped:', {s: [os.path.basename(c['dir']) for c in crashed[s]] for s in SHOTS if crashed[s]})
 print('rerun trials used:', {s: v for s, v in reruns_used.items() if v})

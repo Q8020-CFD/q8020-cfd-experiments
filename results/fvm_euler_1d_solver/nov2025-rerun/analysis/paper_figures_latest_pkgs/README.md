@@ -16,6 +16,9 @@ Data: `../../latest_pkgs/2026-11-11/_ea180c7c` (fvm `ef7f0a8b`, qiskit 2.6.2, HH
 | fig10_circuit_timing | 10 | `circ_generate/transpile/run_time`, mean +- std per iteration |
 | fig11_circuit_complexity | 11 | `circ_depth/gates/qubits_transpile`, one trial per shot count |
 | fig12_condition_number | 12 | `condition_number`, one trial per shot count |
+| fig04_nozzle_geometry | 4 | analytic S(x) = 1.398 + 0.347 tanh(0.8x - 4), x in [0, 10], plotted vs x/L; large fonts (reviewer comment). No run data. |
+| fig11b_circuit_complexity_mean_std | (new) | same quantities as Fig 11 but mean +- population std over the 10 trials, same statistics as Fig 10; exact case drawn as a dashed line (1 run, no band) |
+| fig12b_condition_number_mean_std | (new) | same as Fig 12 but mean +- std over the 10 trials, linear y axis. Std bands dip below zero (as in Fig 10's execution-time panel); the quantities are positive |
 
 ## How exact is the recipe? (all verified against the 2025-11-11 data the paper used)
 Each choice was tested by recomputing the paper's plotted values from `results/fvm_euler_1d_solver/2025-11-11` and comparing.

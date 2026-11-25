@@ -9,7 +9,7 @@ Data: `../../latest_pkgs/2026-11-11/_ea180c7c` (fvm `ef7f0a8b`, qiskit 2.6.2, HH
 | file | paper fig | what is plotted |
 |---|---|---|
 | fig05_density / mach_lu_vs_hhl_ideal | 5 | nelem200 LU reference, LU nelem 5, HHL exact statevector nelem 5 (only mesh with HHL data) |
-| fig06_density / mach_vs_shots | 6 | final profile, mean over completed trials, per shot count |
+| fig06_density / mach_vs_shots | 6 | final profile, mean over the 10 trials, per shot count |
 | fig07_l2_error_vs_shots | 7 | L2 norm of (trial-mean (rho,u,p) minus LU nelem5); relative = / norm(LU) = 4.308 |
 | fig08_fidelity_vs_shots | 8 | `hhl_metrics.fidelity`, mean per iteration with 95% t-interval |
 | fig09_total_residual | 9 | `residual_total`, trial_1 of each shot count; exact SV; LU |
@@ -30,10 +30,14 @@ Each choice was tested by recomputing the paper's plotted values from `results/f
 | 11, 12 | **trial_1** of each shot count | 500 shots dips at iter 3,4 and 10000 shots spike at iter 2 occur only in trial_1 of the 2025 run; exact case dip at iter 1 |
 
 ## Things to know before trusting these numbers
-1. **6 of 70 cases crashed** (`LinAlgError`: shots 5000 x2, 10000 x2, 50000 x2). They have no `final_results`/`residual`, so Figs 5-7 and 9 use
-   8 trials there (see `fig7_l2_error.csv`). Figs 8, 10 use whatever iterations a crashed trial completed (1-3), so n varies per iteration.
+1. **Exactly 10 complete trials per shot count.** 6 of the 70 original shot cases crashed (`LinAlgError`): 5,000 shots trials 2 and 4,
+   10,000 shots trials 3 and 5, 50,000 shots trials 0 and 2. The figures drop crashed cases entirely and top up those three shot counts with the first
+   2 completed cases of the rerun sweep (`../../latest_pkgs_rerun/2026-11-24/_2ddbef9a`): 5,000 -> trial_0, trial_1; 10,000 -> trial_0, trial_2
+   (trial_1 crashed again); 50,000 -> trial_0, trial_1. Further completed reruns (3 at 5,000, 2 at 10,000, 3 at 50,000) are unused.
+   Overall: 7 crashes in 85 shot-case attempts. `fig7_l2_error.csv` has n_original / n_rerun / n_crashed_original per shot count.
+   The reruns are new random draws (no `-seed`), not reproductions of the crashed cases.
 2. **Fig 7 here is not the paper's curve.** Same recipe on 2026 data gives e.g. 50,000 shots 0.0176 (paper 0.0046) and 10,000 shots 0.0030 (paper 0.017):
-   different random draws, and with 8-10 unseeded trials the non-monotonic wiggles are noise. Don't read a 2025-vs-2026 difference into it.
+   different random draws, and with 10 unseeded trials the non-monotonic wiggles are noise. Don't read a 2025-vs-2026 difference into it.
 3. **Figs 9, 11, 12 are one trial: trial_1** of each shot count (all 7 trial_1 cases completed in the 2026 run).
 4. **Depth/qubit jumps are real, not artifacts.** Over all 977 steps, transpiled qubits track the condition number: 13 qubits for kappa<=63 (depth ~297k),
    14 for kappa 63-123 (~597k), 15 for 131-164 (~1.19M), 16 for 269-476 (~2.39M), 17 for kappa 928 (4.8M). Depth doubles per qubit (QPE clock register

@@ -37,13 +37,38 @@ def shots_of(case):
     return int(re.search(r'-shots\s+(\d+)', cmd).group(1))
 
 
-# ---- load every case: dict shots -> list of dict(dir, qc, hm, res, final); each may be None if the case crashed ----
-cases = {s: [] for s in SHOTS}
-for case in sorted(glob.glob(os.path.join(RUN, 'shots_*', 'trial_*'))):
-    s = shots_of(case)
+# ---- load cases: exactly N_TRIALS complete trials per shot count ----
+# Original sweep: every COMPLETE case (residual, final solution and 15 qc rows). Crashed cases are dropped everywhere.
+# Shot counts that fall short are topped up with the first completed cases (by trial index) of the rerun sweep
+# (latest_pkgs_rerun), labelled rerun_<k> so they never collide with the paper's trial_1.
+N_TRIALS = 10
+RERUN = os.path.abspath(os.path.join(HERE, '..', '..', 'latest_pkgs_rerun', '2026-11-24', '_2ddbef9a'))
+
+
+def load_case(case, label):
     f = lambda pat: (lambda p: rd(p) if p else None)(one(os.path.join(case, pat)))
-    cases[s].append(dict(dir=case, qc=f('qc_metadata_*.csv'), hm=f('hhl_metrics_*.csv'),
-                         res=f('residual_*.csv'), final=f('final_results_*.csv')))
+    c = dict(dir=case, label=label, qc=f('qc_metadata_*.csv'), hm=f('hhl_metrics_*.csv'),
+             res=f('residual_*.csv'), final=f('final_results_*.csv'))
+    c['complete'] = c['res'] is not None and c['final'] is not None and c['qc'] is not None and len(c['qc']) == 15
+    return c
+
+
+def trial_index(case):
+    return int(re.search(r'trial_(\d+)_', os.path.basename(case)).group(1))
+
+
+cases = {s: [] for s in SHOTS}; crashed = {s: [] for s in SHOTS}; reruns_used = {s: [] for s in SHOTS}
+for case in sorted(glob.glob(os.path.join(RUN, 'shots_*', 'trial_*')), key=lambda c: (shots_of(c), trial_index(c))):
+    s = shots_of(case); c = load_case(case, f'trial_{trial_index(case)}')
+    (cases if c['complete'] else crashed)[s].append(c)
+for s in SHOTS:
+    need = N_TRIALS - len(cases[s])
+    if need <= 0: continue
+    pool = [c for c in (load_case(p, f'rerun_{trial_index(p)}') for p in sorted(
+        glob.glob(os.path.join(RERUN, f'rerun_{s}', 'trial_*')), key=trial_index)) if c['complete']]
+    assert len(pool) >= need, f'shots={s}: need {need} rerun trials, only {len(pool)} complete'
+    cases[s] += pool[:need]; reruns_used[s] = [os.path.basename(c['dir']) for c in pool[:need]]
+for s in SHOTS: assert len(cases[s]) == N_TRIALS, (s, len(cases[s]))
 EX = os.path.join(RUN, '11b8064a')
 exact = dict(qc=rd(one(os.path.join(EX, 'qc_metadata_*.csv'))), res=rd(one(os.path.join(EX, 'residual_*.csv'))),
              final=rd(one(os.path.join(EX, 'final_results_*.csv'))), hm=rd(one(os.path.join(EX, 'hhl_metrics_*.csv'))))
@@ -83,7 +108,7 @@ for var, ylab, fn in (('rho', 'Density', 'fig06_density_vs_shots.png'), ('Mach',
         m, n = mean_final(s, [var])
         ax.plot(lu[5].xp, m[:, 0], color=color[s], label=f'Shots={s}')
     ax.set_xlabel('x/L'); ax.set_ylabel(ylab); ax.grid(alpha=.3); ax.legend(fontsize=8)
-    save(fig, fn, NOTE + '. Mean over the completed trials (n in README table).')
+    save(fig, fn, NOTE + '. Mean over the 10 trials.')
 
 # ---- Fig 7: L2 error of the trial-MEAN primitive solution (rho,u,p) vs LU nelem=5 ----
 ref5 = lu[5][PRIM].values; nref = np.linalg.norm(ref5)
@@ -91,7 +116,7 @@ rows = []
 for s in SHOTS:
     m, n = mean_final(s, PRIM)
     per = [np.linalg.norm(c['final'][PRIM].values - ref5) for c in cases[s] if c['final'] is not None]
-    rows.append(dict(shots=s, n_trials_complete=n, n_trials_total=len(cases[s]), l2_abs_of_mean=np.linalg.norm(m - ref5),
+    rows.append(dict(shots=s, n_trials=n, n_original=sum(c['label'].startswith('trial_') for c in cases[s]), n_rerun=sum(c['label'].startswith('rerun_') for c in cases[s]), n_crashed_original=len(crashed[s]), l2_abs_of_mean=np.linalg.norm(m - ref5),
                      l2_rel_of_mean=np.linalg.norm(m - ref5) / nref, l2_abs_mean_of_errors=np.mean(per)))
 e = pd.DataFrame(rows); e.to_csv(os.path.join(HERE, 'fig7_l2_error.csv'), index=False)
 fig, ax = plt.subplots(1, 2, figsize=(13.9, 5.1))   # paper image is 2084x763 px (aspect 2.73)
@@ -100,11 +125,10 @@ ax[0].set_title('Absolute L2 Error'); ax[0].set_ylabel('L2 Error (Absolute)')
 ax[1].loglog(e.shots, e.l2_rel_of_mean, 's-', color='tab:orange', lw=2, ms=7)
 ax[1].set_title('Relative L2 Error'); ax[1].set_ylabel('L2 Error (Relative)')
 for a in ax: a.set_xlabel('Number of Shots'); a.grid(alpha=.3, which='major')   # paper: major gridlines only
-fig.suptitle('Final Solution L2 Error vs LU (nelem=5, mean solution of completed trials)', fontsize=15, fontweight='bold')
+fig.suptitle('Final Solution L2 Error vs LU (nelem=5, ntrials=10)', fontsize=15, fontweight='bold')
 fig.tight_layout()
-nmin = int(e.n_trials_complete.min())
 save(fig, 'fig07_l2_error_vs_shots.png', NOTE + f'. Error of the trial-mean (rho,u,p) vs LU; relative = / ||LU|| = {nref:.3f}. '
-     f'{nmin}-10 completed trials per point (crashed cases excluded).')
+     '10 complete trials per point (see README).')
 
 # ---- Fig 8: fidelity vs shots, per iteration, mean with 95% CI (Student t) ----
 fig, ax = plt.subplots(figsize=(11, 6))
@@ -126,7 +150,7 @@ save(fig, 'fig08_fidelity_vs_shots.png', NOTE + '. Mean over every trial that re
 # ---- Fig 9: total residual history, ONE trial (trial_1), as in the paper ----
 fig, ax = plt.subplots(figsize=(7.5, 5.4))
 for s in SHOTS:
-    c = next((c for c in cases[s] if os.path.basename(c['dir']).startswith('trial_1_')), None)
+    c = next((c for c in cases[s] if c['label'] == 'trial_1'), None)
     if c is None or c['res'] is None: print('Fig 9: no complete trial_1 for shots', s); continue
     ax.semilogy(c['res'].residual_total.values, 'o-', ms=4, color=color[s], label=f'HHL (shots={s})')
 ax.semilogy(exact['res'].residual_total.values, 'p-', color='olive', label='HHL exact statevector')
@@ -135,13 +159,13 @@ ax.set_xlabel('Iteration'); ax.set_ylabel('Residual'); ax.set_title('Total Resid
 save(fig, 'fig09_total_residual.png', NOTE + '. Shot curves: trial_1 of each shot count (one trial, as in the paper).')
 
 # ---- Figs 10-12: per-iteration circuit metrics ----
-PAPER_TRIAL = 'trial_1_'   # verified: the paper's Figs 9, 11, 12 are trial index 1 of the 2025 run
+PAPER_TRIAL = 'trial_1'   # verified: the paper's Figs 9, 11, 12 are trial index 1 of the 2025 run
 
 
 def full_trial(s):
     """Trial index 1 (as in the paper); None if it is missing or crashed."""
     for c in cases[s]:
-        if os.path.basename(c['dir']).startswith(PAPER_TRIAL) and c['qc'] is not None and len(c['qc']) == 15: return c
+        if c['label'] == PAPER_TRIAL: return c
     return None
 
 
@@ -184,4 +208,5 @@ ax.set_xlabel('Iteration'); ax.set_ylabel('Condition Number'); ax.set_title('Con
 save(fig, 'fig12_condition_number.png', NOTE + '. trial_1 of each shot count (as in the paper).')
 
 print(e.to_string(float_format=lambda v: f'{v:.4g}'))
-print('trials with qc rows:', {s: [len(c['qc']) if c['qc'] is not None else 0 for c in cases[s]] for s in SHOTS})
+print('crashed originals dropped:', {s: [os.path.basename(c['dir']) for c in crashed[s]] for s in SHOTS if crashed[s]})
+print('rerun trials used:', {s: v for s, v in reruns_used.items() if v})

@@ -267,3 +267,41 @@ AQC columns, swept until the solution fidelity fell below 0.80.
   (0.969) nearly equals 90 CX (0.971).
 - At 90 and 58 CX, the sign step lifts the shot median above the
   statevector fidelity.
+
+## The real-L rewrite at nelem 10 (`nelem10-barriers-realL/`, added 2026-11-24)
+
+Run 2026-11-24T19:28:31Z to 19:40:20Z (708.9 s) on macos-laptop with
+`run_test.py --nelem 10 --input lugo --barriers --real-l --no-lugo`; fvm
+repo venv (Python 3.12.10, qiskit 2.6.0, qiskit-aer 0.17.2,
+qiskit-ibm-runtime 0.50.0); aux `a88c51e09af5` plus `code/aux.patch`
+(uncommitted at run time: `bd_template` and `real_exact_cx` in
+`structured_rewrite.py`, `--real-l-cx` and `--real-l-maxiter` in
+`run_test.py`). That patch was committed unchanged as aux `12ee673b` on
+2026-11-26.
+
+- **Template.** genode's `bd5` carried to 6 qubits (`bd_template`): the
+  MSB (qubit 5) is control-only, lower CX run on the line 0-1-2-3-4, and
+  every 24th CX goes from the MSB to qubit 0. 508 CX and 1000 Ry, against
+  dim SO(32) x SO(32) = 992; the minimum is 504 CX, plus 4 as margin. At
+  nelem 5 the code still calls `bd5` with 122 CX, and `bd_template(5, 122)`
+  builds the same gate list.
+- **Structure.** `real_structure` at nb 6: P and Q in SO(32), error
+  1.1e-13. The one repeated singular value goes through its cluster step.
+- **Fit.** L-BFGS-B, maxiter 20000, tol 1e-12. Seed 1 ended at 1.47e-12
+  (4660 iterations, 199 s), seed 2 at 1.24e-12 (5968, 255 s), seed 3 at
+  6.75e-13 (3835, 162 s), accepted. The fits took 616 s of the 709 s.
+- **Equivalence.** Block max entry error 6.5e-7 and L entry error 7.0e-7
+  (nelem 5: 1.2e-6 and 6.7e-7). Statevector 1 - F against the stored
+  circuit 3.7e-13; fidelity 0.999673, as recorded. Used shot counts equal
+  the stored circuit's for all 10 seeds (150000 shots, Aer seeds 1 to 10);
+  median shot fidelity 0.99715.
+
+| nelem | circuit | target | 2q gates | 2q depth | total depth |
+|---|---|---|---|---|---|
+| 10 | real-L rewrite, exact | all-to-all | 20153 | 10259 | 51622 |
+| 10 | real-L rewrite, exact | Heron | 23736 | 12372 | 50060 |
+| 10 | real-L rewrite, exact | Nighthawk | 22206 | 11460 | 50373 |
+
+L is 508 CX and a block 1080 CX (nelem 5: 122 and 276). On Heron that is
+15.2x fewer two-qubit gates than LuGo at nelem 10 (361770,
+`nelem10-barriers/`), against 12.5x at nelem 5 (6305 against 78993).

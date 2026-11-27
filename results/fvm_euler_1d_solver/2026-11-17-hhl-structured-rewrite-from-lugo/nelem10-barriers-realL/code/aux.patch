@@ -1,0 +1,118 @@
+diff --git a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py
+index 873c70a8..a70b8330 100644
+--- a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py
++++ b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/run_test.py
+@@ -119,6 +119,12 @@ def main() -> None:
+     ap.add_argument("--aqc-l-cx", type=int,
+                     help="with --real-l: the AQC variant fits L at this many "
+                     "CX (below 122 it is approximate)")
++    ap.add_argument("--real-l-cx", type=int,
++                    help="with --real-l: CX of the exact variant's template "
++                    "(default 122 at nelem 5, else the parameter-count "
++                    "minimum + 4)")
++    ap.add_argument("--real-l-maxiter", type=int, default=20000,
++                    help="with --real-l: L-BFGS-B iterations per seed")
+     a = ap.parse_args()
+     out = a.out / f"nelem{a.nelem}"
+     out.mkdir(parents=True, exist_ok=True)
+@@ -173,13 +179,14 @@ def main() -> None:
+     summary["cond_H"] = float(np.linalg.cond(ht))
+ 
+     variants = {}
+-    rl = sr.RealL() if a.real_l else None
++    rl = (sr.RealL(cx=a.real_l_cx, maxiter=a.real_l_maxiter)
++          if a.real_l else None)
+     new, rep = sr.build(circ, items, nb, mats, barriers=a.barriers,
+                         real_l=rl)
+     log(f"exact: {rep}" + (f" real L {rl.info}" if rl else ""))
+     variants["exact"] = (new, rep, rl.info if rl else None)
+     if a.real_l and a.aqc_l_cx:
+-        rq = sr.RealL(cx=a.aqc_l_cx)
++        rq = sr.RealL(cx=a.aqc_l_cx, maxiter=a.real_l_maxiter)
+         new, rep = sr.build(circ, items, nb, mats, barriers=a.barriers,
+                             real_l=rq)
+         log(f"aqc: {rep} real L {rq.info}")
+diff --git a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py
+index f88b0a56..4d8afa24 100644
+--- a/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py
++++ b/fvm_euler_1d_nozzle/hhl-structured-rewrite-2026-11/structured_rewrite.py
+@@ -285,11 +285,13 @@ def block_circuit(lc: QuantumCircuit, theta: np.ndarray, m: int,
+ @dataclass
+ class RealL:
+     """Real-L synthesis: L = diag(P, Q) fitted with real gates (Ry + CX) on
+-    genode's block-diagonal 5-qubit template (realfit.bd5). At the default
+-    122 CX the fit is exact (1 - F ~ 1e-13); fewer CX is approximate (AQC).
+-    The fit is accepted at the first seed with 1 - F <= tol against
+-    diag(P, Q) itself, else the best seed: never by the HHL solution."""
+-    cx: int = 122
++    a block-diagonal nb-qubit template: genode's realfit.bd5 at nb 5,
++    bd_template (the same construction, more lower qubits) above. cx None
++    is 122 at nb 5 (exact, 1 - F ~ 1e-13) and real_exact_cx(nb) + 4
++    otherwise; fewer CX is approximate (AQC). The fit is accepted at the
++    first seed with 1 - F <= tol against diag(P, Q) itself, else the best
++    seed: never by the HHL solution."""
++    cx: int | None = None
+     every: int = 24
+     lower: str = "line"
+     msb_targets: tuple = (0,)
+@@ -299,6 +301,43 @@ class RealL:
+     info: dict = field(default_factory=dict)
+ 
+ 
++def bd_template(nb: int, k: int, every: int = 24,
++                msb_targets: tuple = (0,)) -> list:
++    """Block-diagonal nb-qubit real template, as realfit.bd5 with
++    lower='line' on nb - 1 lower qubits: the MSB (qubit nb - 1) is only a
++    CX control and carries no rotation, so the unitary is diag(U0, U1).
++    Lower CX alternate over the even then odd nearest-neighbour pairs,
++    direction flipping each round; every 'every'-th CX is MSB -> target."""
++    m = nb - 1
++    pairs = [(i, i + 1) for i in range(0, m - 1, 2)] + \
++        [(i, i + 1) for i in range(1, m - 1, 2)]
++    cxs, i, j = [], 0, 0
++    while len(cxs) < k:
++        if every and (len(cxs) + 1) % every == 0:
++            cxs.append((m, msb_targets[j % len(msb_targets)]))
++            j += 1
++        else:
++            a, b = pairs[i % len(pairs)]
++            if (i // len(pairs)) % 2 == 1:
++                a, b = b, a
++            cxs.append((a, b))
++            i += 1
++    return rf.with_ry(nb, cxs, rot_qubits=list(range(m)))
++
++
++def real_exact_cx(nb: int, every: int = 24) -> int:
++    """Fewest template CX whose Ry count covers dim SO(h) x SO(h),
++    h = 2^(nb-1): m initial Ry, 2 per lower CX, 1 per MSB CX."""
++    h, m = 2 ** (nb - 1), nb - 1
++    need = h * (h - 1)
++    k = 1
++    while True:
++        n_msb = k // every if every else 0
++        if m + 2 * (k - n_msb) + n_msb >= need:
++            return k
++        k += 1
++
++
+ def real_l_circuit(u: np.ndarray, nb: int, cfg: RealL
+                    ) -> tuple[QuantumCircuit, np.ndarray, np.ndarray, float]:
+     """L circuit, L (= diag(P, Q)), Rx angles and max entry error. U must be
+@@ -306,8 +345,14 @@ def real_l_circuit(u: np.ndarray, nb: int, cfg: RealL
+     raises otherwise, so the assumption is checked, not taken on trust."""
+     p, q, theta, err_s = rs.real_structure(u, nb)
+     lp = sla.block_diag(p, q)
+-    gates = rf.bd5(cfg.cx, every=cfg.every, lower=cfg.lower,
+-                   msb_targets=list(cfg.msb_targets))
++    if cfg.cx is None:
++        cfg.cx = 122 if nb == 5 else real_exact_cx(nb, cfg.every) + 4
++    if nb == 5:
++        gates = rf.bd5(cfg.cx, every=cfg.every, lower=cfg.lower,
++                       msb_targets=list(cfg.msb_targets))
++    else:
++        gates = bd_template(nb, cfg.cx, every=cfg.every,
++                            msb_targets=cfg.msb_targets)
+     best = None
+     for seed in cfg.seeds:
+         t0 = time.time()
